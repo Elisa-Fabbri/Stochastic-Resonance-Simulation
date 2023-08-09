@@ -18,3 +18,9 @@ def black_body_emitted_radiation(Temperature):
 	"""
 	Stefan_Boltzmann_constant = 5.67e-8*(number_of_seconds_in_a_year**3) #W/(m^2 K^4)
 	return Stefan_Boltzmann_constant*(Temperature**4)
+
+def periodic_forcing(A, omega, time):
+	"""
+	This function computes the periodic forcing applied to the system
+	"""
+	return 1+A*np.cos(omega*time)
