@@ -9,13 +9,13 @@ T3 = 290 #K
 
 #Constant of the model
 
+number_of_seconds_in_a_year = 365.25*24*60*60
+
 C = 0.31e9*(number_of_seconds_in_a_year**2) #-> 0.31e9 J/(m^2 K)
 tau = 13 #years
 A = 0.0005
 omega = (2*np.pi)/(1e5) #1/years
 
-
-number_of_seconds_in_a_year = 365.25*24*60*60
 
 def linear_emitted_radiation(Temperature):
 
@@ -40,24 +40,18 @@ def periodic_forcing(A, omega, time):
 	"""
 	return 1+A*np.cos(omega*time)
 
-
-beta_linear = -((C/(tau*linear_emitted_radiation(T3)))*((T1*T2*T3) / ((T1 - T3)*(T2 - T3))))
-beta_black_body = -((C/(tau*black_body_emitted_radiation(T3)))*((T1*T2*T3) / ((T1 - T3)*(T2 - T3))))
-
-#print(beta_linear, '\n', beta_black_body)
-
-# F(T)
-
-def F_linear(Temperature, mu = 1):
+def F_linear(Temperature, C, tau, T3, T1, T2, mu = 1):
 	"""
 	This function returns the value of F(T) given a certain value for the temperature using a linear model for the computation of beta.
 	"""
+	beta_linear = -((C/(tau*linear_emitted_radiation(T3)))*((T1*T2*T3) / ((T1 - T3)*(T2 - T3))))
 	F_linear = (linear_emitted_radiation(Temperature)/C)*((mu/(1 + beta_linear*(1-(Temperature/T1))*(1-(Temperature/T2))*(1-(Temperature/T3))))-1)
 	return F_linear
 
-def F_black_body(Temperature, mu = 1):
+def F_black_body(Temperature, C, tau, T3, T1, T2, mu = 1):
 	"""
 	This function returns the value of F(T) given a certain value for the temperature using the black body radiation model for the computation of beta.
 	"""
+	beta_black_body = -((C/(tau*black_body_emitted_radiation(T3)))*((T1*T2*T3) / ((T1 - T3)*(T2 - T3))))
 	F_black_body = (black_body_emitted_radiation(Temperature)/C)*((mu/(1 + beta_black_body*(1-(Temperature/T1))*(1-(Temperature/T2))*(1-(Temperature/T3))))-1)
 	return F_black_body
