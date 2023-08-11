@@ -1,22 +1,5 @@
 import numpy as np
 
-number_of_seconds_in_a_year = 365.25*24*60*60
-
-#Steady solutions:
-T1 = 280 #K
-T2 = 285 #K
-T3 = 290 #K
-
-#Constant of the model
-
-number_of_seconds_in_a_year = 365.25*24*60*60
-
-C = 0.31e9*(number_of_seconds_in_a_year**2) #-> 0.31e9 J/(m^2 K)
-tau = 13 #years
-A = 0.0005
-omega = (2*np.pi)/(1e5) #1/years
-
-
 def linear_emitted_radiation(Temperature):
 
 	"""
