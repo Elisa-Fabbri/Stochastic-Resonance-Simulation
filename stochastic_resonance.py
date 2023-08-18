@@ -54,7 +54,7 @@ def simulate_ito(T_start, t_start, dt, num_steps, num_simulations,
     seed_value = 42
     np.random.seed(seed_value)
 
-    t = np.arange(t_start, t_start+num_steps*dt + dt, dt) #len(t) = num_steps
+    t = np.arange(t_start, t_start+num_steps*dt, dt) #len(t) = num_steps
     T = np.zeros((num_simulations, num_steps))
 
     T[:, 0] = T_start
