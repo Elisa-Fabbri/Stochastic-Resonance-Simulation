@@ -2,6 +2,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import stochastic_resonance
+import configparser
+
+config = configparser.ConfigParser()
+config.read('configuration.txt')
+
+T1 = config['settings'].getfloat('T1')
+T2 = config['settings'].getfloat('T2')
+T3 = config['settings'].getfloat('T3')
+
 
 def Plot_Emission_Models():
 
@@ -40,14 +49,9 @@ def Plot_F():
     T_end = 300
     num_points = 300
 
-    num_sec_in_a_year = 365.25*24*60*60
-    C = 0.31e9*(num_sec_in_a_year**2)
-    tau = 13
-    T1, T2, T3 = 280, 285, 290
-
     T = np.linspace(T_start, T_end, num_points)
-    F_linear_values = [stochastic_resonance.F(Ti, C, tau, T3, T1, T2, model = 'linear', mu = 1) for Ti in T]
-    F_black_body_values = [stochastic_resonance.F(Ti, C, tau, T3, T1, T2, model = 'black body', mu = 1) for Ti in T]
+    F_linear_values = [stochastic_resonance.F(Ti, model = 'linear') for Ti in T]
+    F_black_body_values = [stochastic_resonance.F(Ti, model = 'black body') for Ti in T]
 
     f = plt.figure(figsize=(15, 10))
     plt.plot(T, F_linear_values, label='Linear')
@@ -67,26 +71,19 @@ def Plot_evolution_towards_steady_states():
     """
     This function plots the evolution of the temperature towards the steady states
     """
-    T1, T2, T3 = 280, 285, 290
+    stable_solution_1 = T1
+    unstable_solution = T2
+    stable_solution_2 = T3
     epsilon = 2.5
-    T_start = np.array([T1-epsilon, T1, T1+epsilon, T2-epsilon, T2, T2+epsilon, T3-epsilon, T3, T3+epsilon])
-    num_simulations = len(T_start)
-    num_steps = 100
-    t_start = 0
-    num_sec_in_a_year = 365.25*24*60*60
-    C = 0.31e9*(num_sec_in_a_year**2)
-    tau = 13
-    dt = 1
-    noise = False
-    forcing = 'constant'
-    model = 'linear'
-    A = 0.0005
-    omega = (2*np.pi)/(1e5)
-    sigma = np.sqrt(0.12)
 
-    time, simulated_temperature = stochastic_resonance.simulate_ito(T_start, t_start, dt, num_steps, num_simulations,
-								    C, tau, T3, T1, T2, A, omega, sigma, noise,
-								    model, forcing)
+    T_start = np.array([stable_solution_1-epsilon, stable_solution_1, stable_solution_1+epsilon,
+			unstable_solution-epsilon, unstable_solution, unstable_solution+epsilon,
+			stable_solution_2-epsilon, stable_solution_2, stable_solution_2+epsilon])
+    t_start = 0
+
+    time, simulated_temperature = stochastic_resonance.simulate_ito(T_start, t_start,
+								    num_steps = 100, num_simulations = len(T_start),
+								    noise = False, forcing = 'constant')
     f = plt.figure(figsize=(15, 10))
     for i in range(len(simulated_temperature)):
         plt.plot(simulated_temperature[i], time)
