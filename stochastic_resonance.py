@@ -17,6 +17,9 @@ num_sec_in_a_year = 365.25*24*60*60
 C_years = C_j_per_m2_K*np.power(num_sec_in_a_year,2)
 omega = (2*np.pi)/period
 
+num_steps_default = config['settings'].getint('num_steps')
+num_simulations_default = config['settings'].getint('num_simulations')
+
 def emitted_radiation(Temperature, model='linear', conversion_from_sec_to_year = num_sec_in_a_year):
     """
     This function computes the emitted radiation based on the selected model.
@@ -61,8 +64,8 @@ def F(Temperature,
 def simulate_ito(T_start, t_start,
 		 noise_variance = 0,
 		 dt = 1,
-		 num_steps = 1000000,
-		 num_simulations = 10,
+		 num_steps = num_steps_default,
+		 num_simulations = num_simulations_default,
 		 surface_heat_capacity = C_years,
 		 relaxation_time = tau,
                  stable_solution_1 = T1, unstable_solution = T2, stable_solution_2 = T3,

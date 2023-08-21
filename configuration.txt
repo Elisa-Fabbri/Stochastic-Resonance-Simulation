@@ -8,3 +8,19 @@ C = 0.31e9
 tau = 13
 A = 0.0005
 period = 1e5
+
+num_steps = 1000000
+num_simulations = 10
+
+variance_start = 0.01
+variance_end = 0.2
+num_variances = 2
+
+[paths]
+
+simulated_time = ./data/simulated_time.npy
+simulated_temperature = ./data/simulated_temperature.npy
+
+emitted_radiation_plot = ./images/emitted_radiation_plot.png
+F_plot = ./images/F_plot.png
+evolution_towards_steady_states = ./images/Evolution_of_temperature_towards_steady_states.png

@@ -11,6 +11,11 @@ T1 = config['settings'].getfloat('T1')
 T2 = config['settings'].getfloat('T2')
 T3 = config['settings'].getfloat('T3')
 
+os.makedirs('images', exist_ok = True)
+
+radiation_destination = config['paths'].get('emitted_radiation_plot')
+F_destination = config['paths'].get('F_plot')
+evolution_towards_steady_states_destination = config['paths'].get('evolution_towards_steady_states')
 
 def Plot_Emission_Models():
 
@@ -35,7 +40,7 @@ def Plot_Emission_Models():
     plt.title('Comparison between the two models for the emitted radiation')
 
     save_file_path = os.path.join('images', 'emitted_radiation_plot.png')
-    plt.savefig(save_file_path)
+    plt.savefig(radiation_destination)
 
     plt.show()
 
@@ -62,8 +67,7 @@ def Plot_F():
     #plt.legend()
     plt.title('Comparison between F(T) using a linear and a black body model for beta')
 
-    save_file_path = os.path.join('images', 'F_plot.png')
-    plt.savefig(save_file_path)
+    plt.savefig(F_destination)
 
     plt.show()
 
@@ -94,8 +98,7 @@ def Plot_evolution_towards_steady_states():
     #plt.legend()
     plt.title('Evolution of the temperature towards steady states')
 
-    save_file_path = os.path.join('images', 'Evolution_of_the_temperature_towards_steady_states.png')
-    plt.savefig(save_file_path)
+    plt.savefig(evolution_towards_steady_states_destination)
 
     plt.show()
 
