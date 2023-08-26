@@ -56,7 +56,7 @@ def F(Temperature,
     This function returns the value of F(T) given a certain value for the temperature using a specified emission model for the computation of beta.
     """
 
-    beta = -((surface_heat_capacity / (relaxation_time * emitted_radiation(stable_solution_2, model))) * ((stable_solution_1 * unstable_solution * stable_solution_2) / ((stable_solution_1 - unstable_solution) * (unstable_solution - stable_solution_2))))
+    beta = -((surface_heat_capacity / (relaxation_time * emitted_radiation(stable_solution_2, model))) * ((stable_solution_1 * unstable_solution * stable_solution_2) / ((stable_solution_1 - stable_solution_2) * (unstable_solution - stable_solution_2))))
     F_value = (emitted_radiation(Temperature, model) / surface_heat_capacity) * ((mu / (1 + beta * (1 - (Temperature / stable_solution_1)) * (1 - (Temperature / unstable_solution)) * (1 - (Temperature / stable_solution_2)))) - 1)
 
     return F_value
