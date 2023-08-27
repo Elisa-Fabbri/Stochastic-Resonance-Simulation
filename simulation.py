@@ -85,3 +85,5 @@ print('Data saved successfully!')
 
 peaks_indices = stochastic_resonance.find_peak_indices(Frequencies, period)
 peaks = stochastic_resonance.calculate_peaks(Frequencies, PSD_mean, peaks_indices)
+peaks_base = stochastic_resonance.calculate_peaks_base(Frequencies, PSD_mean, peaks_indices)
+SNR = stochastic_resonance.calculate_SNR(peaks, peaks_base)

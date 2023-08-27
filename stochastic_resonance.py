@@ -118,3 +118,26 @@ def calculate_peaks(frequencies, PSD_mean, peaks_indices):
     """
     peaks = PSD_mean[np.arange(frequencies.shape[0]), peaks_indices]
     return peaks
+
+def calculate_peaks_base(frequencies, PSD_mean, peaks_indices, num_neighbors = 2):
+    """
+    This function calculates the value of the base of the peaks.
+    """
+
+    peaks_base = np.empty_like(peaks_indices, dtype = float)
+
+    for i in range(frequencies.shape[0]):
+        current_indices = peaks_indices[i]
+        neighbor_indices = np.arange(current_indices - num_neighbors, current_indices + num_neighbors + 1)
+        valid_indices = np.clip(neighbor_indices, 0, PSD_mean.shape[1]-1)
+        neighbor_values = PSD_mean[i, valid_indices]
+        peaks_base[i] = np.mean(neighbor_values)
+
+    return peaks_base
+
+def calculate_SNR(peaks, peaks_base):
+    """
+    This function calculates the signal to noise ratio
+    """
+    SNR = peaks - peaks_base
+    return SNR
