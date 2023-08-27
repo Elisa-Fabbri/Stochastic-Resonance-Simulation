@@ -16,6 +16,7 @@ os.makedirs('images', exist_ok = True)
 radiation_destination = config['paths'].get('emitted_radiation_plot')
 F_destination = config['paths'].get('F_plot')
 evolution_towards_steady_states_destination = config['paths'].get('evolution_towards_steady_states')
+temperature_evolution_plot_destination = config['paths'].get('temperature_evolution_plot')
 
 def Plot_Emission_Models():
 
@@ -39,7 +40,8 @@ def Plot_Emission_Models():
     #plt.legend()
     plt.title('Comparison between the two models for the emitted radiation')
 
-    save_file_path = os.path.join('images', 'emitted_radiation_plot.png')
+    #save_file_path = os.path.join('images', 'emitted_radiation_plot.png')
+    #plt.savefig(save_file_path)
     plt.savefig(radiation_destination)
 
     plt.show()
@@ -67,6 +69,7 @@ def Plot_F():
     #plt.legend()
     plt.title('Comparison between F(T) using a linear and a black body model for beta')
 
+    #save_file_path = os.path.join('images', 'F_plot.png')
     plt.savefig(F_destination)
 
     plt.show()
@@ -98,11 +101,37 @@ def Plot_evolution_towards_steady_states():
     #plt.legend()
     plt.title('Evolution of the temperature towards steady states')
 
+    #save_file_path = os.path.join('images', 'Evolution_of_temperature_towards_steady_states.png')
     plt.savefig(evolution_towards_steady_states_destination)
-
     plt.show()
 
+def plot_simulate_ito():
+    """
+    This function plots the evolution of the temperature w.r.t. the time with and without noise and periodic forcing
+    """
+
+    fig, axs = plt.subplots(2, 2, figsize = (30, 30))
+    axs = axs.ravel()
+
+    time1, temperature1 = stochastic_resonance.simulate_ito(T_start = T3, t_start = 0, num_simulations = 1, noise = False, forcing = 'constant')
+    time2, temperature2 = stochastic_resonance.simulate_ito(T_start = T3, t_start = 0, noise_variance = 0.11 , num_simulations = 1, noise = True, forcing = 'constant')
+    time3, temperature3 = stochastic_resonance.simulate_ito(T_start = T3, t_start = 0, num_simulations = 1, noise = False, forcing = 'varying')
+    time4, temperature4 = stochastic_resonance.simulate_ito(T_start = T3, t_start = 0, noise_variance = 0.11 , num_simulations = 1, noise = True, forcing = 'varying')
+
+    for i, (ax, time, temperature) in enumerate(zip(axs, [time1, time2, time3, time4], [temperature1, temperature2, temperature3, temperature4])):
+        temperature_mean = np.mean(temperature, axis = 0)
+        ax.plot(time, temperature_mean)
+        ax.grid(True)
+        ax.set_xlabel('time')
+        ax.set_ylabel('temperature')
+        ax.set_title(f'Plot {i+1}')
+
+    plt.tight_layout()
+    #save_file_path = os.path.join('images', 'temperature_evolution_plot.png')
+    plt.savefig(temperature_evolution_plot_destination)
+    plt.show()
 
 Plot_Emission_Models()
 Plot_F()
 Plot_evolution_towards_steady_states()
+plot_simulate_ito()

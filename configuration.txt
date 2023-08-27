@@ -24,3 +24,4 @@ simulated_temperature = ./data/simulated_temperature.npy
 emitted_radiation_plot = ./images/emitted_radiation_plot.png
 F_plot = ./images/F_plot.png
 evolution_towards_steady_states = ./images/Evolution_of_temperature_towards_steady_states.png
+temperature_evolution_plot = ./images/temperature_evolution_plot.png
