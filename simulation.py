@@ -82,3 +82,6 @@ np.save(PSD_destination, PSD_mean)
 print('Data saved successfully!')
 
 #-------------------------------------------------------------------------
+
+peaks_indices = stochastic_resonance.find_peak_indices(Frequencies, period)
+peaks = stochastic_resonance.calculate_peaks(Frequencies, PSD_mean, peaks_indices)

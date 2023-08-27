@@ -104,3 +104,17 @@ def simulate_ito(T_start, t_start,
         T[:, i+1] = T[:, i] + dT
 
     return t, T
+
+def find_peak_indices(frequencies, period):
+    """
+    This function returns the indices of the theoretically predicted peaks.
+    """
+    peaks_indices = np.abs(frequencies - (1/period)).argmin(axis = 1)
+    return peaks_indices
+
+def calculate_peaks(frequencies, PSD_mean, peaks_indices):
+    """
+    This function returns the values of the peaks
+    """
+    peaks = PSD_mean[np.arange(frequencies.shape[0]), peaks_indices]
+    return peaks
