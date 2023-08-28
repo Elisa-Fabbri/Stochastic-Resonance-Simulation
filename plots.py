@@ -4,6 +4,8 @@ import os
 import stochastic_resonance
 import configparser
 
+import simulation
+
 config = configparser.ConfigParser()
 config.read('configuration.txt')
 
@@ -17,6 +19,7 @@ radiation_destination = config['paths'].get('emitted_radiation_plot')
 F_destination = config['paths'].get('F_plot')
 evolution_towards_steady_states_destination = config['paths'].get('evolution_towards_steady_states')
 temperature_evolution_plot_destination = config['paths'].get('temperature_evolution_plot')
+SNR_destination = config['paths'].get('SNR_plot')
 
 def Plot_Emission_Models():
 
@@ -131,7 +134,22 @@ def plot_simulate_ito():
     plt.savefig(temperature_evolution_plot_destination)
     plt.show()
 
+def SNR_plot():
+    """
+    This function plots the Signal to Noise Ratio as a function of the noise variance.
+    """
+    f = plt.figure(figsize=(15, 10))
+    #print('Size V:', len(simulation.V), '\n', 'Size SNR', len(simulation.SNR))
+    plt.scatter(simulation.V, simulation.SNR)
+    plt.xlabel('Noise variance')
+    plt.ylabel('SNR')
+    plt.title('')
+    plt.grid(True)
+    plt.savefig(SNR_destination)
+    plt.show()
+
 Plot_Emission_Models()
 Plot_F()
 Plot_evolution_towards_steady_states()
 plot_simulate_ito()
+SNR_plot()

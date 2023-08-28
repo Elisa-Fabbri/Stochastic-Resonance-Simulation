@@ -15,7 +15,7 @@ time_step = 1
 
 variance_start = 0.01
 variance_end = 0.2
-num_variances = 2
+num_variances = 40
 
 [paths]
 
@@ -28,3 +28,4 @@ emitted_radiation_plot = ./images/emitted_radiation_plot.png
 F_plot = ./images/F_plot.png
 evolution_towards_steady_states = ./images/Evolution_of_temperature_towards_steady_states.png
 temperature_evolution_plot = ./images/temperature_evolution_plot.png
+SNR_plot = ./images/SNR.png
