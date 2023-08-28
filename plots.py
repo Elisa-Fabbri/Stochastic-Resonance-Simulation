@@ -4,14 +4,11 @@ import os
 import stochastic_resonance
 import configparser
 
-import simulation
 
 config = configparser.ConfigParser()
 config.read('configuration.txt')
 
-T1 = config['settings'].getfloat('T1')
-T2 = config['settings'].getfloat('T2')
-T3 = config['settings'].getfloat('T3')
+SNR_data = config['paths'].get('simulated_SNR')
 
 os.makedirs('images', exist_ok = True)
 
@@ -43,8 +40,6 @@ def Plot_Emission_Models():
     #plt.legend()
     plt.title('Comparison between the two models for the emitted radiation')
 
-    #save_file_path = os.path.join('images', 'emitted_radiation_plot.png')
-    #plt.savefig(save_file_path)
     plt.savefig(radiation_destination)
 
     plt.show()
@@ -72,7 +67,6 @@ def Plot_F():
     #plt.legend()
     plt.title('Comparison between F(T) using a linear and a black body model for beta')
 
-    #save_file_path = os.path.join('images', 'F_plot.png')
     plt.savefig(F_destination)
 
     plt.show()
@@ -81,9 +75,9 @@ def Plot_evolution_towards_steady_states():
     """
     This function plots the evolution of the temperature towards the steady states
     """
-    stable_solution_1 = T1
-    unstable_solution = T2
-    stable_solution_2 = T3
+    stable_solution_1 = config['settings'].getfloat('T1')
+    unstable_solution = config['settings'].getfloat('T2')
+    stable_solution_2 = config['settings'].getfloat('T3')
     epsilon = 2.5
 
     T_start = np.array([stable_solution_1-epsilon, stable_solution_1, stable_solution_1+epsilon,
@@ -104,7 +98,6 @@ def Plot_evolution_towards_steady_states():
     #plt.legend()
     plt.title('Evolution of the temperature towards steady states')
 
-    #save_file_path = os.path.join('images', 'Evolution_of_temperature_towards_steady_states.png')
     plt.savefig(evolution_towards_steady_states_destination)
     plt.show()
 
@@ -115,6 +108,8 @@ def plot_simulate_ito():
 
     fig, axs = plt.subplots(2, 2, figsize = (30, 30))
     axs = axs.ravel()
+
+    T3 = config['settings'].getfloat('T3')
 
     time1, temperature1 = stochastic_resonance.simulate_ito(T_start = T3, t_start = 0, num_simulations = 1, noise = False, forcing = 'constant')
     time2, temperature2 = stochastic_resonance.simulate_ito(T_start = T3, t_start = 0, noise_variance = 0.11 , num_simulations = 1, noise = True, forcing = 'constant')
@@ -130,7 +125,6 @@ def plot_simulate_ito():
         ax.set_title(f'Plot {i+1}')
 
     plt.tight_layout()
-    #save_file_path = os.path.join('images', 'temperature_evolution_plot.png')
     plt.savefig(temperature_evolution_plot_destination)
     plt.show()
 
@@ -138,9 +132,15 @@ def SNR_plot():
     """
     This function plots the Signal to Noise Ratio as a function of the noise variance.
     """
-    f = plt.figure(figsize=(15, 10))
-    #print('Size V:', len(simulation.V), '\n', 'Size SNR', len(simulation.SNR))
-    plt.scatter(simulation.V, simulation.SNR)
+    variance_start = config['settings'].getfloat('variance_start')
+    variance_end = config['settings'].getfloat('variance_end')
+    num_variances = config['settings'].getint('num_variances')
+
+    V = np.linspace(variance_start, variance_end, num = num_variances)
+    SNR = np.load(SNR_data)
+
+    f = plt.figure(figsize = (15, 10))
+    plt.scatter(V, SNR)
     plt.xlabel('Noise variance')
     plt.ylabel('SNR')
     plt.title('')
