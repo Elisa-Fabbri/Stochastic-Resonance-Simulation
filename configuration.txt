@@ -15,7 +15,7 @@ time_step = 1
 
 variance_start = 0.01
 variance_end = 0.2
-num_variances = 40
+num_variances = 10
 
 [paths]
 
@@ -23,6 +23,7 @@ simulated_time = ./data/simulated_time.npy
 simulated_temperature = ./data/simulated_temperature.npy
 simulated_frequencies = ./data/simulated_frequencies.npy
 simulated_PSD = ./data/simulated_PSD.npy
+simulated_SNR = ./data/simulated_SNR.npy
 
 emitted_radiation_plot = ./images/emitted_radiation_plot.png
 F_plot = ./images/F_plot.png
