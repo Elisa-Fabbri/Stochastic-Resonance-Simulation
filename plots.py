@@ -49,7 +49,7 @@ def emission_models_comparison_plot():
 
     plt.savefig(radiation_destination)
 
-def Plot_F():
+def F_plot():
 
     """
     This function plots F(T) using the two different models for the emitted radiation.
@@ -65,15 +65,18 @@ def Plot_F():
     f = plt.figure(figsize=(15, 10))
     plt.plot(T, F_linear_values, label='Linear')
     plt.plot(T, F_black_body_values, label = 'Black body')
-    plt.grid(True)
-    plt.xlabel('Temperature (K)')
-    plt.ylabel('F(T)')
-    #plt.legend()
-    plt.title('Comparison between F(T) using a linear and a black body model for beta')
+    plt.grid(True, linestyle='--', linewidth=0.5, color='gray', alpha=0.7)
+    plt.xlabel(r'Temperature $ \left[ K \right] $ ', fontsize = 11)
+    plt.ylabel(r'$F(T)$ ' + r'$ \left[ \dfrac{K}{year} \right] $ ', fontsize = 11)
+    plt.legend()
+    plt.title('Comparison between $F(T)$ using a linear and a black body model for the emitted radiation', fontsize = 15, fontweight = 'bold')
+    caption = """The graph shows the the rate of temperature change F(T), as a function of temperature.
+    \nThe blue curve depicts the F(T) trend using a linear emission model, while the orange curve represents the F(T) trend using a blackbody emission model."""
+
+    plt.figtext(0.5, 0.01, caption, horizontalalignment = 'center', fontsize = 11, linespacing = 0.8, style = 'italic')
 
     plt.savefig(F_destination)
 
-    plt.show()
 
 def Plot_evolution_towards_steady_states():
     """
@@ -153,7 +156,7 @@ def SNR_plot():
     plt.show()
 
 emission_models_comparison_plot()
-Plot_F()
+F_plot()
 Plot_evolution_towards_steady_states()
 plot_simulate_ito()
 SNR_plot()
