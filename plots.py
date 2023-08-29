@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.ticker import ScalarFormatter
 import os
 import stochastic_resonance
 import configparser
@@ -18,32 +19,35 @@ evolution_towards_steady_states_destination = config['paths'].get('evolution_tow
 temperature_evolution_plot_destination = config['paths'].get('temperature_evolution_plot')
 SNR_destination = config['paths'].get('SNR_plot')
 
-def Plot_Emission_Models():
+def emission_models_comparison_plot():
 
     """
     This function plots the two models for the emitted radiation
     """
+
     T_start = 270
     T_end = 300
     num_points = 300
 
-    T = np.linspace(T_start, T_end, num_points)
+    T = np.linspace(T_start, T_end, num = num_points)
     emitted_radiation_linear_values = [stochastic_resonance.emitted_radiation(Ti, model = 'linear') for Ti in T]
     emitted_radiation_black_body_values = [stochastic_resonance.emitted_radiation(Ti, model = 'black body') for Ti in T]
 
     f = plt.figure(figsize=(15, 10))
     plt.plot(T, emitted_radiation_linear_values, label='Linear emitted radiation')
     plt.plot(T, emitted_radiation_black_body_values, label='Black body emitted radiation')
-    plt.grid(True)
-    plt.xlabel('Temperature (K)')
-    plt.ylabel('Emitted radiation')
-    #plt.legend()
-    plt.title('Comparison between the two models for the emitted radiation')
+    plt.grid(True, linestyle='--', linewidth=0.5, color='gray', alpha=0.7)
+    plt.xlabel(r'Temperature $ \left[ K \right] $ ', fontsize=11)
+    plt.ylabel(r'Emitted radiation $ \left[ \dot 10^{25} \dfrac{kg}{year^3} \right]$ ', fontsize=11)
+    plt.legend()
+    plt.title('Comparison between the two models for the emitted radiation', fontsize = 15, fontweight = 'bold')
+    caption = """The graph illustrates the relationship between emitted radiation per unit of surface area from the Earth as a function of the temperature.
+    \nThe blue curve represents the calculated radiation trend using a linear emission model, while the orange curve corresponds to a blackbody emission model."""
+    plt.figtext(0.5, 0.01, caption , horizontalalignment='center', fontsize=11, linespacing = 0.8, style = 'italic' )
+
+    plt.gca().get_yaxis().get_offset_text().set_visible(False)
 
     plt.savefig(radiation_destination)
-
-    plt.show()
-
 
 def Plot_F():
 
@@ -148,7 +152,7 @@ def SNR_plot():
     plt.savefig(SNR_destination)
     plt.show()
 
-Plot_Emission_Models()
+emission_models_comparison_plot()
 Plot_F()
 Plot_evolution_towards_steady_states()
 plot_simulate_ito()
