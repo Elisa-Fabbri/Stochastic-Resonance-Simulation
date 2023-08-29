@@ -78,14 +78,14 @@ def F_plot():
     plt.savefig(F_destination)
 
 
-def Plot_evolution_towards_steady_states():
+def evolution_towards_steady_states_plot():
     """
     This function plots the evolution of the temperature towards the steady states
     """
     stable_solution_1 = config['settings'].getfloat('T1')
     unstable_solution = config['settings'].getfloat('T2')
     stable_solution_2 = config['settings'].getfloat('T3')
-    epsilon = 2.5
+    epsilon = 1.75
 
     T_start = np.array([stable_solution_1-epsilon, stable_solution_1, stable_solution_1+epsilon,
 			unstable_solution-epsilon, unstable_solution, unstable_solution+epsilon,
@@ -99,14 +99,18 @@ def Plot_evolution_towards_steady_states():
     for i in range(len(simulated_temperature)):
         plt.plot(simulated_temperature[i], time)
 
-    plt.grid(True)
-    plt.xlabel('Temperature (K)')
-    plt.ylabel('time')
+    plt.grid(True, linestyle = '--', linewidth = 0.5, color = 'gray', alpha = 0.7)
+    plt.xlabel(r'Temperature $\left[ K \right]$', fontsize=11)
+    plt.ylabel(r'time $\left[ year \right] $', fontsize = 11)
     #plt.legend()
-    plt.title('Evolution of the temperature towards steady states')
+    plt.title('Evolution of the temperature towards steady states', fontsize = 15, fontweight = 'bold')
+
+    caption = f""" The graph illustrates the temporal evolution of the temperature without periodic forcing and noise. The different curves represent temperature trends for various initial values.
+              \nThe temperature gradually converges towards the stable solutions {stable_solution_1} and {stable_solution_2}; while {unstable_solution} represents an unstable solution."""
+
+    plt.figtext(0.5, 0.01, caption, horizontalalignment = 'center', fontsize = 10, linespacing = 0.8, style = 'italic')
 
     plt.savefig(evolution_towards_steady_states_destination)
-    plt.show()
 
 def plot_simulate_ito():
     """
@@ -157,6 +161,6 @@ def SNR_plot():
 
 emission_models_comparison_plot()
 F_plot()
-Plot_evolution_towards_steady_states()
+evolution_towards_steady_states_plot()
 plot_simulate_ito()
 SNR_plot()

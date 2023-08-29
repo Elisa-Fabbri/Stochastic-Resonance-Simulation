@@ -27,6 +27,6 @@ simulated_SNR = ./data/simulated_SNR.npy
 
 emitted_radiation_plot = ./images/emitted_radiation_plot.png
 F_plot = ./images/F_plot.png
-evolution_towards_steady_states = ./images/Evolution_of_temperature_towards_steady_states.png
+evolution_towards_steady_states = ./images/evolution_of_temperature_towards_steady_states.png
 temperature_evolution_plot = ./images/temperature_evolution_plot.png
 SNR_plot = ./images/SNR.png
