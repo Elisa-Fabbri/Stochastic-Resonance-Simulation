@@ -117,27 +117,43 @@ def plot_simulate_ito():
     This function plots the evolution of the temperature w.r.t. the time with and without noise and periodic forcing
     """
 
-    fig, axs = plt.subplots(2, 2, figsize = (30, 30))
+    fig, axs = plt.subplots(2, 2, figsize = (40, 30))
     axs = axs.ravel()
 
-    T3 = config['settings'].getfloat('T3')
+    stable_solution_1 = config['settings'].getfloat('T1')
+    stable_solution_2 = config['settings'].getfloat('T3')
 
-    time1, temperature1 = stochastic_resonance.simulate_ito(T_start = T3, t_start = 0, num_simulations = 1, noise = False, forcing = 'constant')
-    time2, temperature2 = stochastic_resonance.simulate_ito(T_start = T3, t_start = 0, noise_variance = 0.11 , num_simulations = 1, noise = True, forcing = 'constant')
-    time3, temperature3 = stochastic_resonance.simulate_ito(T_start = T3, t_start = 0, num_simulations = 1, noise = False, forcing = 'varying')
-    time4, temperature4 = stochastic_resonance.simulate_ito(T_start = T3, t_start = 0, noise_variance = 0.11 , num_simulations = 1, noise = True, forcing = 'varying')
+    temperatures = []
+    times = []
 
-    for i, (ax, time, temperature) in enumerate(zip(axs, [time1, time2, time3, time4], [temperature1, temperature2, temperature3, temperature4])):
+    for noise_status, forcing_type in [(False, 'constant'), (True, 'constant'), (False, 'varying'), (True, 'varying')]:
+        time, temperature = stochastic_resonance.simulate_ito(T_start=stable_solution_2, t_start=0, noise_variance=0.11 if noise_status else 0, num_simulations=1, noise=noise_status, forcing=forcing_type)
+        times.append(time)
+        temperatures.append(temperature)
+
+    titles = ['without noise and without periodic forcing',
+	      'with noise and without periodic forcing',
+              'without noise and with periodic forcing',
+              'with noise and with periodic forcing']
+
+    for i, (ax, time, temperature, title) in enumerate(zip(axs, times, temperatures, titles)):
         temperature_mean = np.mean(temperature, axis = 0)
         ax.plot(time, temperature_mean)
-        ax.grid(True)
-        ax.set_xlabel('time')
-        ax.set_ylabel('temperature')
-        ax.set_title(f'Plot {i+1}')
+        ax.grid(True, linestyle = '--', linewidth = 0.5, color = 'gray', alpha = 0.7)
+        ax.set_xlabel(r'time $ \left[ \dot 10^{6} year \right] $', fontsize = 30)
+        ax.set_ylabel(r'Temperature $ \left[ K \right] $', fontsize = 30)
+        ax.set_ylim(stable_solution_1 - 5, stable_solution_2 + 5)
+        ax.tick_params(axis='both', which='both', labelsize=22)
+        ax.set_title(title, fontsize = 35, fontweight = 'bold')
 
-    plt.tight_layout()
+        ax.xaxis.get_offset_text().set_visible(False)
+
+    plt.tight_layout(pad = 4.0)
+    fig.suptitle('Temperature evolution', fontsize = 50, fontweight = 'bold')
+    plt.subplots_adjust(top=0.92)
+
     plt.savefig(temperature_evolution_plot_destination)
-    plt.show()
+
 
 def SNR_plot():
     """
