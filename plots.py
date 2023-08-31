@@ -9,7 +9,7 @@ import configparser
 config = configparser.ConfigParser()
 config.read('configuration.txt')
 
-SNR_data = config['paths'].get('simulated_SNR')
+peak_height_data = config['paths'].get('simulated_peak_height')
 
 os.makedirs('images', exist_ok = True)
 
@@ -17,7 +17,7 @@ radiation_destination = config['paths'].get('emitted_radiation_plot')
 F_destination = config['paths'].get('F_plot')
 evolution_towards_steady_states_destination = config['paths'].get('evolution_towards_steady_states')
 temperature_evolution_plot_destination = config['paths'].get('temperature_evolution_plot')
-SNR_destination = config['paths'].get('SNR_plot')
+peak_height_destination = config['paths'].get('peak_height_plot')
 
 def emission_models_comparison_plot():
 
@@ -155,28 +155,32 @@ def plot_simulate_ito():
     plt.savefig(temperature_evolution_plot_destination)
 
 
-def SNR_plot():
+def peak_height_plot():
     """
-    This function plots the Signal to Noise Ratio as a function of the noise variance.
+    This function plots the height of the peak as a function of the noise variance.
     """
     variance_start = config['settings'].getfloat('variance_start')
     variance_end = config['settings'].getfloat('variance_end')
     num_variances = config['settings'].getint('num_variances')
 
     V = np.linspace(variance_start, variance_end, num = num_variances)
-    SNR = np.load(SNR_data)
+    peaks_height = np.load(peak_height_data)
 
     f = plt.figure(figsize = (15, 10))
-    plt.scatter(V, SNR)
-    plt.xlabel('Noise variance')
-    plt.ylabel('SNR')
-    plt.title('')
-    plt.grid(True)
-    plt.savefig(SNR_destination)
-    plt.show()
+    plt.scatter(V, peaks_height)
+    plt.xlabel(r'Noise variance $\left[ \dfrac{K^2}{year} \right]$')
+    plt.ylabel(r'Peak height $\left[ \dot 10^{6} K^2 \dot year \right]$')
+    plt.title('Peak height as a function of the noise variance', fontsize = 15, fontweight = 'bold')
+    plt.grid(True, linestyle = '--', linewidth = 0.5, color = 'gray', alpha = 0.7)
+    caption = """The plot illustrates the height of the peak in the power spectrum computed for various noise variance values.
+              \nThe quantity is determined by measuring the peak height in the power spectrum and subtracting the baseline height."""
+
+    plt.gca().get_yaxis().get_offset_text().set_visible(False)
+    plt.figtext(0.5, 0.01, caption, horizontalalignment = 'center', fontsize = 10, linespacing = 0.8, style = 'italic')
+    plt.savefig(peak_height_destination)
 
 emission_models_comparison_plot()
 F_plot()
 evolution_towards_steady_states_plot()
 plot_simulate_ito()
-SNR_plot()
+peak_height_plot()

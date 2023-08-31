@@ -23,10 +23,10 @@ simulated_time = ./data/simulated_time.npy
 simulated_temperature = ./data/simulated_temperature.npy
 simulated_frequencies = ./data/simulated_frequencies.npy
 simulated_PSD = ./data/simulated_PSD.npy
-simulated_SNR = ./data/simulated_SNR.npy
+simulated_peak_height = ./data/simulated_peak_height.npy
 
 emitted_radiation_plot = ./images/emitted_radiation_plot.png
 F_plot = ./images/F_plot.png
 evolution_towards_steady_states = ./images/evolution_of_temperature_towards_steady_states.png
 temperature_evolution_plot = ./images/temperature_evolution_plot.png
-SNR_plot = ./images/SNR.png
+peak_height_plot = ./images/peak_height.png

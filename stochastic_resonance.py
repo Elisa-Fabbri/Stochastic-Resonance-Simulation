@@ -135,9 +135,9 @@ def calculate_peaks_base(frequencies, PSD_mean, peaks_indices, num_neighbors = 2
 
     return peaks_base
 
-def calculate_SNR(peaks, peaks_base):
+def calculate_peak_height(peaks, peaks_base):
     """
-    This function calculates the signal to noise ratio
+    This function calculates the height of the peak in the power spectrum.
     """
-    SNR = peaks - peaks_base
-    return SNR
+    peak_height = peaks - peaks_base
+    return peak_height

@@ -38,7 +38,7 @@ time_destination = config['paths'].get('simulated_time')
 temperature_destination = config['paths'].get('simulated_temperature')
 frequencies_destination = config['paths'].get('simulated_frequencies')
 PSD_destination = config['paths'].get('simulated_PSD')
-SNR_destination = config['paths'].get('simulated_SNR')
+peak_height_destination = config['paths'].get('simulated_peak_height')
 
 
 V = np.linspace(variance_start, variance_end, num_variances)
@@ -87,6 +87,6 @@ print('Data saved successfully!')
 peaks_indices = stochastic_resonance.find_peak_indices(Frequencies, period)
 peaks = stochastic_resonance.calculate_peaks(Frequencies, PSD_mean, peaks_indices)
 peaks_base = stochastic_resonance.calculate_peaks_base(Frequencies, PSD_mean, peaks_indices)
-SNR = stochastic_resonance.calculate_SNR(peaks, peaks_base)
+peaks_height = stochastic_resonance.calculate_peak_height(peaks, peaks_base)
 
-np.save(SNR_destination, SNR)
+np.save(peak_height_destination, peaks_height)
