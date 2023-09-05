@@ -9,73 +9,68 @@ import configparser
 config = configparser.ConfigParser()
 config.read('configuration.txt')
 
+models_comparison_temperatures_path = config['paths'].get('models_comparison_temperatures_destination')
+emitted_radiation_values_path = config['paths'].get('emitted_radiation_values_destination')
+F_values_path = config['paths'].get('F_values_destination')
+
 peak_height_data = config['paths'].get('simulated_peak_height')
 
 os.makedirs('images', exist_ok = True)
 
-radiation_destination = config['paths'].get('emitted_radiation_plot')
-F_destination = config['paths'].get('F_plot')
+emission_models_comparison_plots_destination = config['paths'].get('emission_models_comparison_plots')
 evolution_towards_steady_states_destination = config['paths'].get('evolution_towards_steady_states')
 temperature_evolution_plot_destination = config['paths'].get('temperature_evolution_plot')
 peak_height_destination = config['paths'].get('peak_height_plot')
 
-def emission_models_comparison_plot():
+def emission_models_comparison_plots():
+    fig, axes = plt.subplots(1, 2, figsize = (20, 10))
 
-    """
-    This function plots the two models for the emitted radiation
-    """
+    T = np.load(models_comparison_temperatures_path)
 
-    T_start = 270
-    T_end = 300
-    num_points = 300
+    #First plot
+    emitted_radiation_values = np.load(emitted_radiation_values_path)
+    emitted_radiation_linear_values = emitted_radiation_values[0]
+    emitted_radiation_black_body_values = emitted_radiation_values[1]
 
-    T = np.linspace(T_start, T_end, num = num_points)
-    emitted_radiation_linear_values = [stochastic_resonance.emitted_radiation(Ti, model = 'linear') for Ti in T]
-    emitted_radiation_black_body_values = [stochastic_resonance.emitted_radiation(Ti, model = 'black body') for Ti in T]
+    axes[0].plot(T, emitted_radiation_linear_values, label='Linear emitted radiation')
+    axes[0].plot(T, emitted_radiation_black_body_values, label = 'Black body emitted radiation')
 
-    f = plt.figure(figsize=(15, 10))
-    plt.plot(T, emitted_radiation_linear_values, label='Linear emitted radiation')
-    plt.plot(T, emitted_radiation_black_body_values, label='Black body emitted radiation')
-    plt.grid(True, linestyle='--', linewidth=0.5, color='gray', alpha=0.7)
-    plt.xlabel(r'Temperature $ \left[ K \right] $ ', fontsize=11)
-    plt.ylabel(r'Emitted radiation $ \left[ \dot 10^{25} \dfrac{kg}{year^3} \right]$ ', fontsize=11)
-    plt.legend()
-    plt.title('Comparison between the two models for the emitted radiation', fontsize = 15, fontweight = 'bold')
-    caption = """The graph illustrates the relationship between emitted radiation per unit of surface area from the Earth as a function of the temperature.
-    \nThe blue curve represents the calculated radiation trend using a linear emission model, while the orange curve corresponds to a blackbody emission model."""
-    plt.figtext(0.5, 0.01, caption , horizontalalignment='center', fontsize=11, linespacing = 0.8, style = 'italic' )
+    axes[0].grid(True, linestyle='--', linewidth=0.5, color='gray', alpha=0.7)
 
-    plt.gca().get_yaxis().get_offset_text().set_visible(False)
+    axes[0].set_xlabel(r'Temperature $ \left[ K \right] $ ', fontsize=11)
+    axes[0].set_ylabel(r'Emitted radiation $ \left[ \dfrac{kg}{year^3} \right]$ ', fontsize=11)
+    axes[0].set_title("Emitted radiation", fontsize = 13, fontweight = 'bold')
+    axes[0].legend()
 
-    plt.savefig(radiation_destination)
+    axes[0].yaxis.set_major_formatter(ScalarFormatter(useMathText=True, useOffset=True))
 
-def F_plot():
+    # Second plot
+    F_values = np.load(F_values_path)
+    F_linear_values = F_values[0]
+    F_black_body_values = F_values[1]
 
-    """
-    This function plots F(T) using the two different models for the emitted radiation.
-    """
-    T_start = 270
-    T_end = 300
-    num_points = 300
+    axes[1].plot(T, F_linear_values, label = r'Linear $F(T)$')
+    axes[1].plot(T, F_black_body_values, label = r"Black body $F(T)$")
 
-    T = np.linspace(T_start, T_end, num_points)
-    F_linear_values = [stochastic_resonance.F(Ti, model = 'linear') for Ti in T]
-    F_black_body_values = [stochastic_resonance.F(Ti, model = 'black body') for Ti in T]
+    axes[1].grid(True, linestyle='--', linewidth=0.5, color='gray', alpha=0.7)
 
-    f = plt.figure(figsize=(15, 10))
-    plt.plot(T, F_linear_values, label='Linear')
-    plt.plot(T, F_black_body_values, label = 'Black body')
-    plt.grid(True, linestyle='--', linewidth=0.5, color='gray', alpha=0.7)
-    plt.xlabel(r'Temperature $ \left[ K \right] $ ', fontsize = 11)
-    plt.ylabel(r'$F(T)$ ' + r'$ \left[ \dfrac{K}{year} \right] $ ', fontsize = 11)
-    plt.legend()
-    plt.title('Comparison between $F(T)$ using a linear and a black body model for the emitted radiation', fontsize = 15, fontweight = 'bold')
-    caption = """The graph shows the the rate of temperature change F(T), as a function of temperature.
-    \nThe blue curve depicts the F(T) trend using a linear emission model, while the orange curve represents the F(T) trend using a blackbody emission model."""
+    axes[1].set_xlabel(r'Temperature $ \left[ K \right] $ ', fontsize=11)
+    axes[1].set_ylabel(r'$F(T)$ ' + r'$ \left[ \dfrac{K}{year} \right] $ ', fontsize = 11)
+    axes[1].set_title("Computed F(T)", fontsize = 13, fontweight = 'bold')
 
-    plt.figtext(0.5, 0.01, caption, horizontalalignment = 'center', fontsize = 11, linespacing = 0.8, style = 'italic')
+    axes[1].legend()
 
-    plt.savefig(F_destination)
+    # Title
+    title = "Linear and Black Body Emission Models Comparison"
+    plt.suptitle(title, fontsize=16, fontweight = 'bold')
+
+    # Caption
+    caption = """The graphs compare the linear emission model with the black body emission model.
+              \nThe left graph shows how Earth's emitted radiation varies with Earth's temperature, while the right graph illustrates the rate of temperature change, F(T), as a function of Earth's temperature. """
+
+    fig.text(0.5, 0.01, caption , horizontalalignment='center', fontsize=11, linespacing = 0.8, style = 'italic' )
+
+    plt.savefig(emission_models_comparison_plots_destination)
 
 
 def evolution_towards_steady_states_plot():
@@ -179,8 +174,8 @@ def peak_height_plot():
     plt.figtext(0.5, 0.01, caption, horizontalalignment = 'center', fontsize = 10, linespacing = 0.8, style = 'italic')
     plt.savefig(peak_height_destination)
 
-emission_models_comparison_plot()
-F_plot()
+
+emission_models_comparison_plots()
 evolution_towards_steady_states_plot()
 plot_simulate_ito()
 peak_height_plot()

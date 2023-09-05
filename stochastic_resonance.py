@@ -62,6 +62,26 @@ def F(Temperature,
 
     return F_value
 
+def emission_models_comparison(*temperatures):
+
+    T_start = min(temperatures) - 10
+    T_end = max(temperatures) + 10
+
+    num_points = int((T_end - T_start))*10
+
+    T = np.linspace(T_start, T_end, num = num_points)
+    emitted_radiation_linear_values = [emitted_radiation(Ti, model = 'linear') for Ti in T]
+    emitted_radiation_black_body_values = [emitted_radiation(Ti, model = 'black body') for Ti in T]
+
+    emitted_radiation_values = np.array([emitted_radiation_linear_values, emitted_radiation_black_body_values])
+
+    F_linear_values = [F(Ti, model = 'linear') for Ti in T]
+    F_black_body_values = [F(Ti, model = 'black body') for Ti in T]
+
+    F_values = np.array([F_linear_values, F_black_body_values])
+
+    return T, emitted_radiation_values, F_values
+
 def simulate_ito(T_start, t_start,
 		 noise_variance = 0,
 		 dt = 1,

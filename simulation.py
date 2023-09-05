@@ -35,14 +35,28 @@ num_variances = config['settings'].getint('num_variances')
 
 os.makedirs('data', exist_ok = True)
 
+models_comparison_temperatures_destination = config['paths'].get('models_comparison_temperatures_destination')
+emitted_radiation_values_destination = config['paths'].get('emitted_radiation_values_destination')
+F_values_destination = config['paths'].get('F_values_destination')
+
 time_destination = config['paths'].get('simulated_time')
 temperature_destination = config['paths'].get('simulated_temperature')
+
 frequencies_destination = config['paths'].get('simulated_frequencies')
 PSD_destination = config['paths'].get('simulated_PSD')
+
 peak_height_destination = config['paths'].get('simulated_peak_height')
 
 
 V = np.linspace(variance_start, variance_end, num_variances)
+
+#----------------------------------------------------------------------
+
+models_comparison_temperatures, emitted_radiation_values, F_values = stochastic_resonance.emission_models_comparison(T1, T2, T3)
+
+np.save(models_comparison_temperatures_destination, models_comparison_temperatures)
+np.save(emitted_radiation_values_destination, emitted_radiation_values)
+np.save(F_values_destination, F_values)
 
 #-----------------------------------------------------------------------
 
