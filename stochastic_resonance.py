@@ -1,5 +1,6 @@
 import numpy as np
 import configparser
+import aesthetics as aes
 
 config = configparser.ConfigParser()
 config.read('configuration.txt')
@@ -98,10 +99,13 @@ def simulate_ito(T_start, t_start,
     else:
         raise ValueError("Invalid value for 'forcing'. Please use 'constant' or 'varying'")
 
-    for i in range(num_steps-1):
+
+    for i in aes.progress(range(num_steps-1)):
         Fi = F(T[:, i], surface_heat_capacity, relaxation_time, stable_solution_1, unstable_solution, stable_solution_2, model, forcing_values[i])
         dT = Fi*dt + sigma*W[:, i]
         T[:, i+1] = T[:, i] + dT
+    with aes.green_text():
+        print('finished!')
 
     return t, T
 

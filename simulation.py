@@ -4,6 +4,7 @@ import numpy as np
 from scipy import signal
 
 import stochastic_resonance
+import aesthetics as aes
 
 #---------------------------------------------------------------------
 
@@ -49,25 +50,28 @@ Time = np.zeros((len(V), num_steps))
 Temperature = np.zeros((len(V), num_simulations, num_steps))
 
 for i, v in enumerate(V):
+    print('\nSimulating the temperature evolution:  {0} of {1}  '.format((i+1), len(V)))
     time, simulated_temperature = stochastic_resonance.simulate_ito(T_start = T3, t_start = 0,
 					       			    noise_variance = v)
     Temperature[i, :, :] = simulated_temperature
     Time[i, :] = time
-    print('Simulation {0} of {1} done!'.format(i+1, len(V)))
 
 #----------------------------------------------------------------------
 
 np.save(temperature_destination, Temperature)
 np.save(time_destination, Time)
 
-print('Data saved successfully!')
+with aes.green_text():
+    print('Data saved successfully!')
 
 #-----------------------------------------------------------------------
 
 Frequencies = np.zeros((len(V), np.floor_divide(num_steps, 2) +1))
 PSD_mean = np.zeros((len(V), np.floor_divide(num_steps, 2) +1))
 
-for i in range(len(V)):
+print('Computing the power spectra:')
+
+for i in aes.progress(range(len(V))):
     psd = np.zeros((num_simulations, np.floor_divide(num_steps, 2) + 1))
     for j in range(num_simulations):
         frequencies, power_spectrum = signal.periodogram(Temperature[i, j, :], 1/dt)
@@ -80,7 +84,8 @@ for i in range(len(V)):
 np.save(frequencies_destination, Frequencies)
 np.save(PSD_destination, PSD_mean)
 
-print('Data saved successfully!')
+with aes.green_text():
+    print('Data saved successfully!')
 
 #-------------------------------------------------------------------------
 
