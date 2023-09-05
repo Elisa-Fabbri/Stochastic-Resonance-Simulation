@@ -22,6 +22,8 @@ num_variances = 10
 models_comparison_temperatures_destination = ./data/models_comparison_temperatures.npy
 emitted_radiation_values_destination = ./data/emitted_radiation_values.npy
 F_values_destination = ./data/F_values.npy
+evolution_towards_steady_states_time_destination = ./data/evolution_towards_steady_states_time.npy
+evolution_towards_steady_states_temperature_destination = ./data/evolution_towards_steady_states_temperature.npy
 
 simulated_time = ./data/simulated_time.npy
 simulated_temperature = ./data/simulated_temperature.npy

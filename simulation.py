@@ -11,9 +11,11 @@ import aesthetics as aes
 config = configparser.ConfigParser()
 config.read('configuration.txt')
 
-T1 = config['settings'].getfloat('T1')
-T2 = config['settings'].getfloat('T2')
-T3 = config['settings'].getfloat('T3')
+stable_solution_1 = config['settings'].getfloat('T1')
+unstable_solution = config['settings'].getfloat('T2')
+stable_solution_2 = config['settings'].getfloat('T3')
+
+temperature_solutions = [stable_solution_1, unstable_solution, stable_solution_2]
 
 C_j_per_m2_K = config['settings'].getfloat('C')
 tau = config['settings'].getfloat('tau')
@@ -38,6 +40,8 @@ os.makedirs('data', exist_ok = True)
 models_comparison_temperatures_destination = config['paths'].get('models_comparison_temperatures_destination')
 emitted_radiation_values_destination = config['paths'].get('emitted_radiation_values_destination')
 F_values_destination = config['paths'].get('F_values_destination')
+evolution_towards_steady_states_time_destination = config['paths'].get('evolution_towards_steady_states_time_destination')
+evolution_towards_steady_states_temperature_destination = config['paths'].get('evolution_towards_steady_states_temperature_destination')
 
 time_destination = config['paths'].get('simulated_time')
 temperature_destination = config['paths'].get('simulated_temperature')
@@ -48,24 +52,31 @@ PSD_destination = config['paths'].get('simulated_PSD')
 peak_height_destination = config['paths'].get('simulated_peak_height')
 
 
-V = np.linspace(variance_start, variance_end, num_variances)
+#------Generation of data for the emission models comparison----------------------------------
 
-#----------------------------------------------------------------------
-
-models_comparison_temperatures, emitted_radiation_values, F_values = stochastic_resonance.emission_models_comparison(T1, T2, T3)
+models_comparison_temperatures, emitted_radiation_values, F_values = stochastic_resonance.emission_models_comparison(*temperature_solutions)
 
 np.save(models_comparison_temperatures_destination, models_comparison_temperatures)
 np.save(emitted_radiation_values_destination, emitted_radiation_values)
 np.save(F_values_destination, F_values)
 
+#----Generation of data for showing the evolution of temperature towards steady states----------
+
+evolution_towards_steady_states_time, evolution_towards_steady_states_temperature = stochastic_resonance.calculate_evolution_towards_steady_states(temperature_solutions)
+
+np.save(evolution_towards_steady_states_time_destination, evolution_towards_steady_states_time)
+np.save(evolution_towards_steady_states_temperature_destination, evolution_towards_steady_states_temperature)
+
 #-----------------------------------------------------------------------
+
+V = np.linspace(variance_start, variance_end, num_variances)
 
 Time = np.zeros((len(V), num_steps))
 Temperature = np.zeros((len(V), num_simulations, num_steps))
 
 for i, v in enumerate(V):
     print('\nSimulating the temperature evolution:  {0} of {1}  '.format((i+1), len(V)))
-    time, simulated_temperature = stochastic_resonance.simulate_ito(T_start = T3, t_start = 0,
+    time, simulated_temperature = stochastic_resonance.simulate_ito(T_start = stable_solution_2, t_start = 0,
 					       			    noise_variance = v)
     Temperature[i, :, :] = simulated_temperature
     Time[i, :] = time

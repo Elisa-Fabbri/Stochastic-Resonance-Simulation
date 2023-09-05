@@ -5,13 +5,14 @@ import os
 import stochastic_resonance
 import configparser
 
-
 config = configparser.ConfigParser()
 config.read('configuration.txt')
 
 models_comparison_temperatures_path = config['paths'].get('models_comparison_temperatures_destination')
 emitted_radiation_values_path = config['paths'].get('emitted_radiation_values_destination')
 F_values_path = config['paths'].get('F_values_destination')
+evolution_towards_steady_states_time_path = config['paths'].get('evolution_towards_steady_states_time_destination')
+evolution_towards_steady_states_temperature_path = config['paths'].get('evolution_towards_steady_states_temperature_destination')
 
 peak_height_data = config['paths'].get('simulated_peak_height')
 
@@ -77,19 +78,9 @@ def evolution_towards_steady_states_plot():
     """
     This function plots the evolution of the temperature towards the steady states
     """
-    stable_solution_1 = config['settings'].getfloat('T1')
-    unstable_solution = config['settings'].getfloat('T2')
-    stable_solution_2 = config['settings'].getfloat('T3')
-    epsilon = 1.75
+    time = np.load(evolution_towards_steady_states_time_path)
+    simulated_temperature = np.load(evolution_towards_steady_states_temperature_path)
 
-    T_start = np.array([stable_solution_1-epsilon, stable_solution_1, stable_solution_1+epsilon,
-			unstable_solution-epsilon, unstable_solution, unstable_solution+epsilon,
-			stable_solution_2-epsilon, stable_solution_2, stable_solution_2+epsilon])
-    t_start = 0
-
-    time, simulated_temperature = stochastic_resonance.simulate_ito(T_start, t_start,
-								    num_steps = 100, num_simulations = len(T_start),
-								    noise = False, forcing = 'constant')
     f = plt.figure(figsize=(15, 10))
     for i in range(len(simulated_temperature)):
         plt.plot(simulated_temperature[i], time)
@@ -97,11 +88,10 @@ def evolution_towards_steady_states_plot():
     plt.grid(True, linestyle = '--', linewidth = 0.5, color = 'gray', alpha = 0.7)
     plt.xlabel(r'Temperature $\left[ K \right]$', fontsize=11)
     plt.ylabel(r'time $\left[ year \right] $', fontsize = 11)
-    #plt.legend()
     plt.title('Evolution of the temperature towards steady states', fontsize = 15, fontweight = 'bold')
 
     caption = f""" The graph illustrates the temporal evolution of the temperature without periodic forcing and noise. The different curves represent temperature trends for various initial values.
-              \nThe temperature gradually converges towards the stable solutions {stable_solution_1} and {stable_solution_2}; while {unstable_solution} represents an unstable solution."""
+              \nThe temperature gradually converges towards the stable solutions."""
 
     plt.figtext(0.5, 0.01, caption, horizontalalignment = 'center', fontsize = 10, linespacing = 0.8, style = 'italic')
 

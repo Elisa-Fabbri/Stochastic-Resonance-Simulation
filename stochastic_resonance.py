@@ -129,6 +129,15 @@ def simulate_ito(T_start, t_start,
 
     return t, T
 
+def calculate_evolution_towards_steady_states(temperatures):
+    epsilon = 1.75
+    T_start = np.array([temp - epsilon for temp in temperatures] + temperatures + [temp + epsilon for temp in temperatures])
+    t_start = 0
+
+    time, temperature = simulate_ito(T_start, t_start, num_steps = 100, num_simulations = len(T_start), noise = False, forcing = 'constant')
+
+    return time, temperature
+
 def find_peak_indices(frequencies, period):
     """
     This function returns the indices of the theoretically predicted peaks.
