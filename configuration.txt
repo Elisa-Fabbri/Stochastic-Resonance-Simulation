@@ -14,8 +14,8 @@ num_simulations = 10
 time_step = 1
 
 variance_start = 0.01
-variance_end = 0.2
-num_variances = 10
+variance_end = 0.4
+num_variances = 20
 
 [paths]
 
@@ -27,11 +27,14 @@ evolution_towards_steady_states_temperature_destination = ./data/evolution_towar
 
 simulated_time = ./data/simulated_time.npy
 simulated_temperature = ./data/simulated_temperature.npy
+
 simulated_frequencies = ./data/simulated_frequencies.npy
 simulated_PSD = ./data/simulated_PSD.npy
+
 simulated_peak_height = ./data/simulated_peak_height.npy
 
 emission_models_comparison_plots = ./images/emission_models_comparison_plots.png
 evolution_towards_steady_states = ./images/evolution_of_temperature_towards_steady_states.png
 temperature_evolution_plot = ./images/temperature_evolution_plot.png
 peak_height_plot = ./images/peak_height.png
+power_spectra_plots = ./images/power_spectra_plots.png

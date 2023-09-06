@@ -13,6 +13,8 @@ emitted_radiation_values_path = config['paths'].get('emitted_radiation_values_de
 F_values_path = config['paths'].get('F_values_destination')
 evolution_towards_steady_states_time_path = config['paths'].get('evolution_towards_steady_states_time_destination')
 evolution_towards_steady_states_temperature_path = config['paths'].get('evolution_towards_steady_states_temperature_destination')
+frequencies_path = config['paths'].get('simulated_frequencies')
+PSD_mean_path = config['paths'].get('simulated_PSD')
 
 peak_height_data = config['paths'].get('simulated_peak_height')
 
@@ -22,6 +24,7 @@ emission_models_comparison_plots_destination = config['paths'].get('emission_mod
 evolution_towards_steady_states_destination = config['paths'].get('evolution_towards_steady_states')
 temperature_evolution_plot_destination = config['paths'].get('temperature_evolution_plot')
 peak_height_destination = config['paths'].get('peak_height_plot')
+power_spectra_plots_destination = config['paths'].get('power_spectra_plots')
 
 def emission_models_comparison_plots():
     fig, axes = plt.subplots(1, 2, figsize = (20, 10))
@@ -97,6 +100,50 @@ def evolution_towards_steady_states_plot():
 
     plt.savefig(evolution_towards_steady_states_destination)
 
+def power_spectra_plots():
+
+    frequencies = np.load(frequencies_path)
+    PSD_mean = np.load(PSD_mean_path)
+
+    variance_start = config['settings'].getfloat('variance_start')
+    variance_end = config['settings'].getfloat('variance_end')
+    num_variances = config['settings'].getint('num_variances')
+
+    V = np.linspace(variance_start, variance_end, num = num_variances)
+
+    if frequencies.shape[0] != PSD_mean.shape[0]:
+        raise ValueError("The dimensions of the two arrays do not align.")
+
+    num_plots = frequencies.shape[0]
+
+    num_cols = num_plots // 2
+    num_rows = (num_plots // num_cols) + int(num_plots % num_cols != 0)
+
+    fig, axes = plt.subplots(num_rows, num_cols, figsize=(30, 10))
+
+    for i in range(num_plots):
+        row = i // num_cols
+        col = i % num_cols
+        ax = axes[row, col]
+        ax.semilogy(frequencies[i], PSD_mean[i])
+        ax.set_xlabel(r'Frequency $\left[ \dfrac{1}{year} \right]$', fontsize = 11)
+        ax.set_ylabel('PSD', fontsize = 11)
+        ax.set_title('Variance: {0}'.format(round(V[i], 3)), fontsize = 13, fontweight = 'bold')
+        ax.set_xlim(0, 2.5e-5)
+        ax.set_ylim(1e-1, 1e8)
+        ax.grid(True)
+        ax.xaxis.set_major_formatter(ScalarFormatter(useMathText=True, useOffset=True))
+
+    title = 'Power Spectral Density as a function of the Frequency for different Noise Variance Values'
+    plt.suptitle(title, fontsize=20, fontweight='bold')
+
+    caption = 'The plots show the computed power spectral density for different values of the noise variance'
+    fig.text(0.5, 0.01, caption, horizontalalignment = 'center', fontsize = 12, linespacing = 0.8, style = 'italic')
+
+    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+
+    plt.savefig(power_spectra_plots_destination)
+
 def plot_simulate_ito():
     """
     This function plots the evolution of the temperature w.r.t. the time with and without noise and periodic forcing
@@ -169,3 +216,4 @@ emission_models_comparison_plots()
 evolution_towards_steady_states_plot()
 plot_simulate_ito()
 peak_height_plot()
+power_spectra_plots()
