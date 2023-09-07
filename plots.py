@@ -5,6 +5,8 @@ from os import makedirs
 import configparser
 import sys
 
+import aesthetics as aes
+
 config = configparser.ConfigParser()
 config.read(sys.argv[1])
 
@@ -216,3 +218,6 @@ evolution_towards_steady_states_plot()
 power_spectra_plots()
 peak_height_plot()
 plot_simulate_ito_combinations()
+
+with aes.green_text():
+    print('Plots saved!')

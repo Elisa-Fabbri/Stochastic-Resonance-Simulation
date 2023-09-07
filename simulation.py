@@ -4,7 +4,7 @@ from os import makedirs
 import numpy as np
 from scipy import signal
 
-import stochastic_resonance
+import stochastic_resonance as sr
 import aesthetics as aes
 
 #---------------------------------------------------------------------
@@ -12,13 +12,13 @@ import aesthetics as aes
 config = configparser.ConfigParser()
 config.read(sys.argv[1])
 
-stable_solution_1 = config['settings'].getfloat('stable_temperature_solution_1')
-unstable_solution = config['settings'].getfloat('unstable_temperature_solution')
-stable_solution_2 = config['settings'].getfloat('stable_temperature_solution_2')
+stable_temperature_solution_1 = config['settings'].getfloat('stable_temperature_solution_1')
+unstable_temperature_solution = config['settings'].getfloat('unstable_temperature_solution')
+stable_temperature_solution_2 = config['settings'].getfloat('stable_temperature_solution_2')
 
-temperature_solutions = [stable_solution_1, unstable_solution, stable_solution_2]
+temperature_solutions = [stable_temperature_solution_1, unstable_temperature_solution, stable_temperature_solution_2]
 
-period = config['settings'].getfloat('forcing_period')
+forcing_period = config['settings'].getfloat('forcing_period')
 
 num_steps = config['settings'].getint('num_steps')
 num_simulations = config['settings'].getint('num_simulations')
@@ -49,20 +49,30 @@ temperatures_combinations_destination = config['data_paths'].get('temperatures_c
 
 #------Generation of data for the emission models comparison----------------------------------
 
-models_comparison_temperatures, emitted_radiation_values, F_values = stochastic_resonance.emission_models_comparison(*temperature_solutions)
+print('Calculating times and temperature values for comparing emission models...')
 
-np.save(temperatures_for_emission_models_comparison_destination, models_comparison_temperatures)
+temperatures_values, emitted_radiation_values, F_values = sr.emission_models_comparison(*temperature_solutions)
+
+np.save(temperatures_for_emission_models_comparison_destination, temperatures_values)
 np.save(emitted_radiation_for_emission_models_comparison_destination, emitted_radiation_values)
 np.save(F_for_emission_models_comparison_destination, F_values)
 
+with aes.green_text():
+    print('Results saved!')
+
 #----Generation of data for showing the evolution of temperature towards steady states----------
 
-evolution_towards_steady_states_time, evolution_towards_steady_states_temperature = stochastic_resonance.calculate_evolution_towards_steady_states(temperature_solutions)
+print('Calculating temperature evolution data without noise or periodic forcing...')
+evolution_towards_steady_states_time, evolution_towards_steady_states_temperature = sr.calculate_evolution_towards_steady_states(temperature_solutions)
 
 np.save(times_for_evolution_towards_steady_states_destination, evolution_towards_steady_states_time)
 np.save(temperatures_for_evolution_towards_steady_states_destination, evolution_towards_steady_states_temperature)
 
+with aes.green_text():
+    print('Results saved!')
 #-----------------------------------------------------------------------
+
+print('Simulating temperature evolution with noise and periodic forcing...')
 
 V = np.linspace(variance_start, variance_end, num_variances)
 
@@ -70,13 +80,18 @@ Time = np.zeros((len(V), num_steps))
 Temperature = np.zeros((len(V), num_simulations, num_steps))
 
 for i, v in enumerate(V):
-    print('\nSimulating the temperature evolution:  {0} of {1}  '.format((i+1), len(V)))
-    time, simulated_temperature = stochastic_resonance.simulate_ito(T_start = stable_solution_2,
-					       			    noise_variance = v)
-    Temperature[i, :, :] = simulated_temperature
+    print(f'Simulation {i + 1}/{len(V)}, Noise: {v:.3f}...')
+    time, temperature = sr.simulate_ito(T_start = stable_temperature_solution_2,
+					noise_variance = v)
+    Temperature[i, :, :] = temperature
     Time[i, :] = time
 
+with aes.green_text():
+    print('Simulation completed.')
+
 #----------------------------------------------------------------------
+
+print('Saving results...')
 
 np.save(temperatures_destination, Temperature)
 np.save(times_destination, Time)
@@ -89,7 +104,7 @@ with aes.green_text():
 Frequencies = np.zeros((len(V), np.floor_divide(num_steps, 2) +1))
 PSD_mean = np.zeros((len(V), np.floor_divide(num_steps, 2) +1))
 
-print('Computing the power spectra:')
+print('Computing power spectra...')
 
 for i in aes.progress(range(len(V))):
     psd = np.zeros((num_simulations, np.floor_divide(num_steps, 2) + 1))
@@ -99,7 +114,12 @@ for i in aes.progress(range(len(V))):
     PSD_mean[i, :] = np.mean(psd, axis = 0)
     Frequencies[i, :] = frequencies
 
+with aes.green_text():
+    print('Done!')
+
 #-----------------------------------------------------------------------
+
+print('Saving the results')
 
 np.save(frequencies_destination, Frequencies)
 np.save(averaged_PSD_destination, PSD_mean)
@@ -109,19 +129,33 @@ with aes.green_text():
 
 #-------------------------------------------------------------------------
 
-peaks_indices = stochastic_resonance.find_peak_indices(Frequencies, period)
-peaks = stochastic_resonance.calculate_peaks(Frequencies, PSD_mean, peaks_indices)
-peaks_base = stochastic_resonance.calculate_peaks_base(Frequencies, PSD_mean, peaks_indices)
-peaks_height = stochastic_resonance.calculate_peak_height(peaks, peaks_base)
+print('Calculating peak heights in the power spectral density...')
 
-np.save(peak_heights_in_PSD_destination, peaks_height)
+peaks_indices = sr.find_peak_indices(Frequencies, forcing_period)
+peaks = sr.calculate_peaks(Frequencies, PSD_mean, peaks_indices)
+peaks_bases = sr.calculate_peaks_base(Frequencies, PSD_mean, peaks_indices)
+peaks_heights = sr.calculate_peak_height(peaks, peaks_bases)
 
-V_SR_index = np.argmax(peaks_height)
+np.save(peak_heights_in_PSD_destination, peaks_heights)
+
+with aes.green_text():
+    print('Results saved!')
+
+V_SR_index = np.argmax(peaks_heights)
 V_SR = V[V_SR_index]
 
-print('The value of the variance for which the system shows the stochastic resonance mechanism is : {0}'.format(V_SR))
+print(f'Stochastic resonance mechanism found at variance value: {V_SR:.3f}')
 
-time_combinations, temperatures_combinations = stochastic_resonance.simulate_ito_combinations_and_collect_results(initial_temperature = stable_solution_2, noise_variance = V_SR)
+#-----------------------------------------------------------------------------
+
+print('Simulating Temperature Combinations: Periodic Forcing, No Forcing, Noise, and No Noise...')
+
+time_combinations, temperatures_combinations = sr.simulate_ito_combinations_and_collect_results(initial_temperature = stable_temperature_solution_2, noise_variance = V_SR)
 
 np.save(times_combinations_destination, time_combinations)
 np.save(temperatures_combinations_destination, temperatures_combinations)
+
+with aes.green_text():
+    print('Results saved!')
+
+
