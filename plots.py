@@ -2,7 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter
 import os
-import stochastic_resonance
 import configparser
 
 config = configparser.ConfigParser()
@@ -25,6 +24,8 @@ evolution_towards_steady_states_destination = config['paths'].get('evolution_tow
 temperature_evolution_plot_destination = config['paths'].get('temperature_evolution_plot')
 peak_height_destination = config['paths'].get('peak_height_plot')
 power_spectra_plots_destination = config['paths'].get('power_spectra_plots')
+time_combinations = config['paths'].get('time_combinations')
+temperatures_combinations = config['paths'].get('temperatures_combinations')
 
 def emission_models_comparison_plots():
     fig, axes = plt.subplots(1, 2, figsize = (20, 10))
@@ -144,7 +145,7 @@ def power_spectra_plots():
 
     plt.savefig(power_spectra_plots_destination)
 
-def plot_simulate_ito():
+def plot_simulate_ito_combinations():
     """
     This function plots the evolution of the temperature w.r.t. the time with and without noise and periodic forcing
     """
@@ -155,13 +156,8 @@ def plot_simulate_ito():
     stable_solution_1 = config['settings'].getfloat('T1')
     stable_solution_2 = config['settings'].getfloat('T3')
 
-    temperatures = []
-    times = []
-
-    for noise_status, forcing_type in [(False, 'constant'), (True, 'constant'), (False, 'varying'), (True, 'varying')]:
-        time, temperature = stochastic_resonance.simulate_ito(T_start=stable_solution_2, t_start=0, noise_variance=0.11 if noise_status else 0, num_simulations=1, noise=noise_status, forcing=forcing_type)
-        times.append(time)
-        temperatures.append(temperature)
+    times = np.load(time_combinations)
+    temperatures = np.load(temperatures_combinations)
 
     titles = ['without noise and without periodic forcing',
 	      'with noise and without periodic forcing',
@@ -214,6 +210,6 @@ def peak_height_plot():
 
 emission_models_comparison_plots()
 evolution_towards_steady_states_plot()
-plot_simulate_ito()
+plot_simulate_ito_combinations()
 peak_height_plot()
 power_spectra_plots()

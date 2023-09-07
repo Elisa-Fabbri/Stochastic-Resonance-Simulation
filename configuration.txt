@@ -15,7 +15,7 @@ time_step = 1
 
 variance_start = 0.01
 variance_end = 0.4
-num_variances = 20
+num_variances = 30
 
 [paths]
 
@@ -32,6 +32,9 @@ simulated_frequencies = ./data/simulated_frequencies.npy
 simulated_PSD = ./data/simulated_PSD.npy
 
 simulated_peak_height = ./data/simulated_peak_height.npy
+
+time_combinations = ./data/time_combinations.npy
+temperatures_combinations = ./data/temperatures_combinations.npy
 
 emission_models_comparison_plots = ./images/emission_models_comparison_plots.png
 evolution_towards_steady_states = ./images/evolution_of_temperature_towards_steady_states.png

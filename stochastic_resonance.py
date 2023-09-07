@@ -174,3 +174,17 @@ def calculate_peak_height(peaks, peaks_base):
     """
     peak_height = peaks - peaks_base
     return peak_height
+
+def simulate_ito_combinations_and_collect_results(initial_temperature, noise_variance):
+
+    times = []
+    temperatures = []
+
+    for noise_status, forcing_type in [(False, 'constant'), (True, 'constant'), (False, 'varying'), (True, 'varying')]:
+        time, temperature = simulate_ito(T_start= initial_temperature, t_start=0,
+					 noise_variance=noise_variance if noise_status else 0, num_simulations=1,
+					 noise=noise_status, forcing=forcing_type)
+        times.append(time)
+        temperatures.append(temperature)
+
+    return times, temperatures

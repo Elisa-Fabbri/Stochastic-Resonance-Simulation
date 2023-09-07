@@ -50,6 +50,8 @@ frequencies_destination = config['paths'].get('simulated_frequencies')
 PSD_destination = config['paths'].get('simulated_PSD')
 
 peak_height_destination = config['paths'].get('simulated_peak_height')
+time_combinations_destination = config['paths'].get('time_combinations')
+temperatures_combinations_destination = config['paths'].get('temperatures_combinations')
 
 
 #------Generation of data for the emission models comparison----------------------------------
@@ -118,5 +120,14 @@ peaks_indices = stochastic_resonance.find_peak_indices(Frequencies, period)
 peaks = stochastic_resonance.calculate_peaks(Frequencies, PSD_mean, peaks_indices)
 peaks_base = stochastic_resonance.calculate_peaks_base(Frequencies, PSD_mean, peaks_indices)
 peaks_height = stochastic_resonance.calculate_peak_height(peaks, peaks_base)
-
 np.save(peak_height_destination, peaks_height)
+
+V_SR_index = np.argmax(peaks_height)
+V_SR = V[V_SR_index]
+
+print('The value of the variance for which the system shows the stochastic resonance mechanism is : {0}'.format(V_SR))
+
+time_combinations, temperatures_combinations = stochastic_resonance.simulate_ito_combinations_and_collect_results(initial_temperature = stable_solution_2, noise_variance = V_SR)
+
+np.save(time_combinations_destination, time_combinations)
+np.save(temperatures_combinations_destination, temperatures_combinations)
