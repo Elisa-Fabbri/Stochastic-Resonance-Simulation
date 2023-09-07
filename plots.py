@@ -3,9 +3,10 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter
 from os import makedirs
 import configparser
+import sys
 
 config = configparser.ConfigParser()
-config.read('configuration.txt')
+config.read(sys.argv[1])
 
 temperatures_for_emission_models_comparison_path = config['data_paths'].get('temperatures_for_emission_models_comparison')
 emitted_radiation_for_emission_models_comparison_path = config['data_paths'].get('emitted_radiation_for_emission_models_comparison')

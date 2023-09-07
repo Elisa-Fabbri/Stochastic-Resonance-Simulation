@@ -16,7 +16,7 @@ time_step = 1
 
 variance_start = 0.01
 variance_end = 0.3
-num_variances = 26
+num_variances = 16
 
 [data_paths]
 

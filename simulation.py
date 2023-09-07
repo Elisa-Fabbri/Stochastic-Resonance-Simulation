@@ -1,4 +1,5 @@
 import configparser
+import sys
 from os import makedirs
 import numpy as np
 from scipy import signal
@@ -9,7 +10,7 @@ import aesthetics as aes
 #---------------------------------------------------------------------
 
 config = configparser.ConfigParser()
-config.read('configuration.txt')
+config.read(sys.argv[1])
 
 stable_solution_1 = config['settings'].getfloat('stable_temperature_solution_1')
 unstable_solution = config['settings'].getfloat('unstable_temperature_solution')

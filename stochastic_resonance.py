@@ -1,9 +1,11 @@
 import numpy as np
 import configparser
+import sys
 import aesthetics as aes
 
 config = configparser.ConfigParser()
-config.read('configuration.txt')
+
+config.read(sys.argv[1])
 
 T1 = config['settings'].getfloat('stable_temperature_solution_1')
 T2 = config['settings'].getfloat('unstable_temperature_solution')
