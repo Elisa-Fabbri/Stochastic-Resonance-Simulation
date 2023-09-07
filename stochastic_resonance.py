@@ -5,14 +5,15 @@ import aesthetics as aes
 config = configparser.ConfigParser()
 config.read('configuration.txt')
 
-T1 = config['settings'].getfloat('T1')
-T2 = config['settings'].getfloat('T2')
-T3 = config['settings'].getfloat('T3')
+T1 = config['settings'].getfloat('stable_temperature_solution_1')
+T2 = config['settings'].getfloat('unstable_temperature_solution')
+T3 = config['settings'].getfloat('stable_temperature_solution_2')
 
-C_j_per_m2_K = config['settings'].getfloat('C')
-tau = config['settings'].getfloat('tau')
-A = config['settings'].getfloat('A')
-period = config['settings'].getfloat('period')
+C_j_per_m2_K = config['settings'].getfloat('surface_earth_thermal_capacity')
+tau = config['settings'].getfloat('relaxation_time')
+emission_model = config['settings'].get('emission_model')
+A = config['settings'].getfloat('forcing_amplitude')
+period = config['settings'].getfloat('forcing_period')
 
 num_sec_in_a_year = 365.25*24*60*60
 C_years = C_j_per_m2_K*np.power(num_sec_in_a_year,2)
@@ -20,8 +21,9 @@ omega = (2*np.pi)/period
 
 num_steps_default = config['settings'].getint('num_steps')
 num_simulations_default = config['settings'].getint('num_simulations')
+time_step_default = config['settings'].getint('time_step')
 
-def emitted_radiation(Temperature, model='linear', conversion_from_sec_to_year = num_sec_in_a_year):
+def emitted_radiation(Temperature, model = emission_model, conversion_from_sec_to_year = num_sec_in_a_year):
     """
     This function computes the emitted radiation based on the selected model.
     """
@@ -50,7 +52,7 @@ def F(Temperature,
       surface_heat_capacity = C_years,
       relaxation_time = tau,
       stable_solution_1 = T1, unstable_solution = T2, stable_solution_2 = T3,
-      model='linear',
+      model=emission_model,
       mu=1):
 
     """
@@ -82,9 +84,10 @@ def emission_models_comparison(*temperatures):
 
     return T, emitted_radiation_values, F_values
 
-def simulate_ito(T_start, t_start,
+def simulate_ito(T_start,
+		 t_start = 0,
 		 noise_variance = 0,
-		 dt = 1,
+		 dt = time_step_default,
 		 num_steps = num_steps_default,
 		 num_simulations = num_simulations_default,
 		 surface_heat_capacity = C_years,
@@ -92,7 +95,7 @@ def simulate_ito(T_start, t_start,
                  stable_solution_1 = T1, unstable_solution = T2, stable_solution_2 = T3,
                  forcing_amplitude = A, forcing_angular_frequency = omega,
                  noise = True,
-                 model = 'linear',
+                 model = emission_model,
                  forcing = 'varying'):
 
     seed_value = 42
@@ -181,7 +184,7 @@ def simulate_ito_combinations_and_collect_results(initial_temperature, noise_var
     temperatures = []
 
     for noise_status, forcing_type in [(False, 'constant'), (True, 'constant'), (False, 'varying'), (True, 'varying')]:
-        time, temperature = simulate_ito(T_start= initial_temperature, t_start=0,
+        time, temperature = simulate_ito(T_start= initial_temperature,
 					 noise_variance=noise_variance if noise_status else 0, num_simulations=1,
 					 noise=noise_status, forcing=forcing_type)
         times.append(time)

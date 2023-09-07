@@ -1,39 +1,42 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter
-import os
+from os import makedirs
 import configparser
 
 config = configparser.ConfigParser()
 config.read('configuration.txt')
 
-models_comparison_temperatures_path = config['paths'].get('models_comparison_temperatures_destination')
-emitted_radiation_values_path = config['paths'].get('emitted_radiation_values_destination')
-F_values_path = config['paths'].get('F_values_destination')
-evolution_towards_steady_states_time_path = config['paths'].get('evolution_towards_steady_states_time_destination')
-evolution_towards_steady_states_temperature_path = config['paths'].get('evolution_towards_steady_states_temperature_destination')
-frequencies_path = config['paths'].get('simulated_frequencies')
-PSD_mean_path = config['paths'].get('simulated_PSD')
+temperatures_for_emission_models_comparison_path = config['data_paths'].get('temperatures_for_emission_models_comparison')
+emitted_radiation_for_emission_models_comparison_path = config['data_paths'].get('emitted_radiation_for_emission_models_comparison')
+F_for_emission_models_comparison_path = config['data_paths'].get('F_for_emission_models_comparison')
 
-peak_height_data = config['paths'].get('simulated_peak_height')
+times_for_evolution_towards_steady_states_path = config['data_paths'].get('times_for_evolution_towards_steady_states')
+temperatures_for_evolution_towards_steady_states_path = config['data_paths'].get('temperatures_for_evolution_towards_steady_states')
 
-os.makedirs('images', exist_ok = True)
+frequencies_path = config['data_paths'].get('frequencies')
+averaged_PSD_path = config['data_paths'].get('averaged_PSD')
 
-emission_models_comparison_plots_destination = config['paths'].get('emission_models_comparison_plots')
-evolution_towards_steady_states_destination = config['paths'].get('evolution_towards_steady_states')
-temperature_evolution_plot_destination = config['paths'].get('temperature_evolution_plot')
-peak_height_destination = config['paths'].get('peak_height_plot')
-power_spectra_plots_destination = config['paths'].get('power_spectra_plots')
-time_combinations = config['paths'].get('time_combinations')
-temperatures_combinations = config['paths'].get('temperatures_combinations')
+peak_heights_in_PSD_path = config['data_paths'].get('peak_heights_in_PSD')
+
+times_combinations_path = config['data_paths'].get('times_combinations')
+temperatures_combinations_path = config['data_paths'].get('temperatures_combinations')
+
+makedirs('images', exist_ok = True)
+
+emission_models_comparison_plots_destination = config['image_paths'].get('emission_models_comparison_plots')
+temperatures_towards_steady_states_plot_destination = config['image_paths'].get('temperatures_towards_steady_states_plot')
+power_spectra_plots_destination = config['image_paths'].get('power_spectra_plots')
+peak_heights_plot_destination = config['image_paths'].get('peak_heights_plot')
+temperature_combinations_plots_destination = config['image_paths'].get('temperature_combinations_plots')
 
 def emission_models_comparison_plots():
     fig, axes = plt.subplots(1, 2, figsize = (20, 10))
 
-    T = np.load(models_comparison_temperatures_path)
+    T = np.load(temperatures_for_emission_models_comparison_path)
 
     #First plot
-    emitted_radiation_values = np.load(emitted_radiation_values_path)
+    emitted_radiation_values = np.load(emitted_radiation_for_emission_models_comparison_path)
     emitted_radiation_linear_values = emitted_radiation_values[0]
     emitted_radiation_black_body_values = emitted_radiation_values[1]
 
@@ -50,7 +53,7 @@ def emission_models_comparison_plots():
     axes[0].yaxis.set_major_formatter(ScalarFormatter(useMathText=True, useOffset=True))
 
     # Second plot
-    F_values = np.load(F_values_path)
+    F_values = np.load(F_for_emission_models_comparison_path)
     F_linear_values = F_values[0]
     F_black_body_values = F_values[1]
 
@@ -82,8 +85,8 @@ def evolution_towards_steady_states_plot():
     """
     This function plots the evolution of the temperature towards the steady states
     """
-    time = np.load(evolution_towards_steady_states_time_path)
-    simulated_temperature = np.load(evolution_towards_steady_states_temperature_path)
+    time = np.load(times_for_evolution_towards_steady_states_path)
+    simulated_temperature = np.load(temperatures_for_evolution_towards_steady_states_path)
 
     f = plt.figure(figsize=(15, 10))
     for i in range(len(simulated_temperature)):
@@ -99,12 +102,12 @@ def evolution_towards_steady_states_plot():
 
     plt.figtext(0.5, 0.01, caption, horizontalalignment = 'center', fontsize = 10, linespacing = 0.8, style = 'italic')
 
-    plt.savefig(evolution_towards_steady_states_destination)
+    plt.savefig(temperatures_towards_steady_states_plot_destination)
 
 def power_spectra_plots():
 
     frequencies = np.load(frequencies_path)
-    PSD_mean = np.load(PSD_mean_path)
+    PSD_mean = np.load(averaged_PSD_path)
 
     variance_start = config['settings'].getfloat('variance_start')
     variance_end = config['settings'].getfloat('variance_end')
@@ -145,44 +148,6 @@ def power_spectra_plots():
 
     plt.savefig(power_spectra_plots_destination)
 
-def plot_simulate_ito_combinations():
-    """
-    This function plots the evolution of the temperature w.r.t. the time with and without noise and periodic forcing
-    """
-
-    fig, axs = plt.subplots(2, 2, figsize = (40, 30))
-    axs = axs.ravel()
-
-    stable_solution_1 = config['settings'].getfloat('T1')
-    stable_solution_2 = config['settings'].getfloat('T3')
-
-    times = np.load(time_combinations)
-    temperatures = np.load(temperatures_combinations)
-
-    titles = ['without noise and without periodic forcing',
-	      'with noise and without periodic forcing',
-              'without noise and with periodic forcing',
-              'with noise and with periodic forcing']
-
-    for i, (ax, time, temperature, title) in enumerate(zip(axs, times, temperatures, titles)):
-        temperature_mean = np.mean(temperature, axis = 0)
-        ax.plot(time, temperature_mean)
-        ax.grid(True, linestyle = '--', linewidth = 0.5, color = 'gray', alpha = 0.7)
-        ax.set_xlabel(r'time $ \left[ \dot 10^{6} year \right] $', fontsize = 30)
-        ax.set_ylabel(r'Temperature $ \left[ K \right] $', fontsize = 30)
-        ax.set_ylim(stable_solution_1 - 5, stable_solution_2 + 5)
-        ax.tick_params(axis='both', which='both', labelsize=22)
-        ax.set_title(title, fontsize = 35, fontweight = 'bold')
-
-        ax.xaxis.get_offset_text().set_visible(False)
-
-    plt.tight_layout(pad = 4.0)
-    fig.suptitle('Temperature evolution', fontsize = 50, fontweight = 'bold')
-    plt.subplots_adjust(top=0.92)
-
-    plt.savefig(temperature_evolution_plot_destination)
-
-
 def peak_height_plot():
     """
     This function plots the height of the peak as a function of the noise variance.
@@ -192,7 +157,7 @@ def peak_height_plot():
     num_variances = config['settings'].getint('num_variances')
 
     V = np.linspace(variance_start, variance_end, num = num_variances)
-    peaks_height = np.load(peak_height_data)
+    peaks_height = np.load(peak_heights_in_PSD_path)
 
     f = plt.figure(figsize = (15, 10))
     plt.scatter(V, peaks_height)
@@ -205,11 +170,48 @@ def peak_height_plot():
 
     plt.gca().get_yaxis().get_offset_text().set_visible(False)
     plt.figtext(0.5, 0.01, caption, horizontalalignment = 'center', fontsize = 10, linespacing = 0.8, style = 'italic')
-    plt.savefig(peak_height_destination)
+    plt.savefig(peak_heights_plot_destination)
+
+
+def plot_simulate_ito_combinations():
+    """
+    This function plots the evolution of the temperature w.r.t. the time with and without noise and periodic forcing.
+    """
+    fig, axs = plt.subplots(2, 2, figsize=(40, 30))
+    axs = axs.ravel()
+
+    stable_solution_1 = config['settings'].getfloat('stable_temperature_solution_1')
+    stable_solution_2 = config['settings'].getfloat('stable_temperature_solution_2')
+
+    times = np.load(times_combinations_path)
+    temperatures = np.load(temperatures_combinations_path)
+
+    titles = [
+        'without noise and without periodic forcing',
+        'with noise and without periodic forcing',
+        'without noise and with periodic forcing',
+        'with noise and with periodic forcing'
+    ]
+
+    for i, (ax, time, temperature, title) in enumerate(zip(axs, times, temperatures, titles)):
+        temperature_mean = np.mean(temperature, axis=0)
+        ax.plot(time, temperature_mean)
+        ax.grid(True, linestyle='--', linewidth=0.5, color='gray', alpha=0.7)
+        ax.set_xlabel(r'time $ \left[ \dot 10^{6} year \right] $', fontsize=30)
+        ax.set_ylabel(r'Temperature $ \left[ K \right] $', fontsize=30)
+        ax.set_ylim(stable_solution_1 - 5, stable_solution_2 + 5)
+        ax.tick_params(axis='both', which='both', labelsize=22)
+        ax.set_title(title, fontsize=35, fontweight='bold')
+        ax.xaxis.get_offset_text().set_visible(False)
+
+    plt.tight_layout(pad=4.0)
+    fig.suptitle('Temperature evolution', fontsize=50, fontweight='bold')
+    plt.subplots_adjust(top=0.92)
+    plt.savefig(temperature_combinations_plots_destination)
 
 
 emission_models_comparison_plots()
 evolution_towards_steady_states_plot()
-plot_simulate_ito_combinations()
-peak_height_plot()
 power_spectra_plots()
+peak_height_plot()
+plot_simulate_ito_combinations()

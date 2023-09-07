@@ -1,43 +1,46 @@
 [settings]
 
-T1 = 280
-T2 = 285
-T3 = 290
+stable_temperature_solution_1 = 280
+unstable_temperature_solution = 285
+stable_temperature_solution_2 = 290
 
-C = 0.31e9
-tau = 13
-A = 0.0005
-period = 1e5
+surface_earth_thermal_capacity = 0.31e9
+relaxation_time = 13
+emission_model = linear
+forcing_amplitude = 0.0005
+forcing_period = 1e5
 
 num_steps = 1000000
 num_simulations = 10
 time_step = 1
 
 variance_start = 0.01
-variance_end = 0.4
-num_variances = 30
+variance_end = 0.3
+num_variances = 26
 
-[paths]
+[data_paths]
 
-models_comparison_temperatures_destination = ./data/models_comparison_temperatures.npy
-emitted_radiation_values_destination = ./data/emitted_radiation_values.npy
-F_values_destination = ./data/F_values.npy
-evolution_towards_steady_states_time_destination = ./data/evolution_towards_steady_states_time.npy
-evolution_towards_steady_states_temperature_destination = ./data/evolution_towards_steady_states_temperature.npy
+temperatures_for_emission_models_comparison = ./data/temperatures_values_for_models_comparison.npy
+emitted_radiation_for_emission_models_comparison = ./data/emitted_radiation_values_for_models_comparison.npy
+F_for_emission_models_comparison = ./data/F_values_for_models_comparison.npy
 
-simulated_time = ./data/simulated_time.npy
-simulated_temperature = ./data/simulated_temperature.npy
+times_for_evolution_towards_steady_states = ./data/times_values_for_evolution_towards_steady_states.npy
+temperatures_for_evolution_towards_steady_states = ./data/temperatures_values_for_evolution_towards_steady_states.npy
 
-simulated_frequencies = ./data/simulated_frequencies.npy
-simulated_PSD = ./data/simulated_PSD.npy
+times = ./data/times_values.npy
+temperatures = ./data/temperatures_values.npy
+frequencies = ./data/frequencies_values.npy
+averaged_PSD = ./data/averaged_PSD_values.npy
 
-simulated_peak_height = ./data/simulated_peak_height.npy
+peak_heights_in_PSD = ./data/peak_heights_values_in_PSD.npy
 
-time_combinations = ./data/time_combinations.npy
-temperatures_combinations = ./data/temperatures_combinations.npy
+times_combinations = ./data/times_values_combinations.npy
+temperatures_combinations = ./data/temperatures_values_combinations.npy
+
+[image_paths]
 
 emission_models_comparison_plots = ./images/emission_models_comparison_plots.png
-evolution_towards_steady_states = ./images/evolution_of_temperature_towards_steady_states.png
-temperature_evolution_plot = ./images/temperature_evolution_plot.png
-peak_height_plot = ./images/peak_height.png
+temperatures_towards_steady_states_plot = ./images/temperatures_towards_steady_states_plot.png
 power_spectra_plots = ./images/power_spectra_plots.png
+peak_heights_plot = ./images/peak_heights_plot.png
+temperature_combinations_plots = ./images/temperature_combinations_plots.png
