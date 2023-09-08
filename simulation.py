@@ -10,7 +10,13 @@ import aesthetics as aes
 #---------------------------------------------------------------------
 
 config = configparser.ConfigParser()
-config.read(sys.argv[1])
+
+try:
+    config.read(sys.argv[1])
+except IndexError:
+    with aes.red_text():
+        print('Error: You must specify a configuration file as an argument!')
+        sys.exit()
 
 stable_temperature_solution_1 = config['settings'].getfloat('stable_temperature_solution_1')
 unstable_temperature_solution = config['settings'].getfloat('unstable_temperature_solution')
