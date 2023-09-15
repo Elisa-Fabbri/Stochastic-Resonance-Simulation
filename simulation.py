@@ -22,13 +22,24 @@ stable_temperature_solution_1 = config['settings'].getfloat('stable_temperature_
 unstable_temperature_solution = config['settings'].getfloat('unstable_temperature_solution')
 stable_temperature_solution_2 = config['settings'].getfloat('stable_temperature_solution_2')
 
-temperature_solutions = [stable_temperature_solution_1, unstable_temperature_solution, stable_temperature_solution_2]
+surface_heat_capacity_j_per_m2_K = config['settings'].getfloat('surface_earth_thermal_capacity')
 
+relaxation_time = config['settings'].getfloat('relaxation_time')
+emission_model = config['settings'].get('emission_model')
+
+num_sec_in_a_year = 365.25*24*60*60
+
+C_years = surface_heat_capacity_j_per_m2_K * (num_sec_in_a_year ** 2)
+
+forcing_amplitude = config['settings'].getfloat('forcing_amplitude')
 forcing_period = config['settings'].getfloat('forcing_period')
+
+forcing_angular_frequency = (2 * np.pi)/ forcing_period
+
 
 num_steps = config['settings'].getint('num_steps')
 num_simulations = config['settings'].getint('num_simulations')
-dt = config['settings'].getfloat('time_step')
+time_step = config['settings'].getfloat('time_step')
 
 variance_start = config['settings'].getfloat('variance_start')
 variance_end = config['settings'].getfloat('variance_end')
@@ -57,7 +68,11 @@ temperatures_combinations_destination = config['data_paths'].get('temperatures_c
 
 print('Calculating times and temperature values for comparing emission models...')
 
-temperatures_values, emitted_radiation_values, F_values = sr.emission_models_comparison(*temperature_solutions)
+temperatures_values, emitted_radiation_values, F_values = sr.emission_models_comparison(surface_thermal_capacity = C_years,
+											relaxation_time = relaxation_time,
+											stable_temperature_solution_1 = stable_temperature_solution_1,
+											unstable_temperature_solution = unstable_temperature_solution,
+											stable_temperature_solution_2 = stable_temperature_solution_2)
 
 np.save(temperatures_for_emission_models_comparison_destination, temperatures_values)
 np.save(emitted_radiation_for_emission_models_comparison_destination, emitted_radiation_values)
@@ -69,7 +84,14 @@ with aes.green_text():
 #----Generation of data for showing the evolution of temperature towards steady states----------
 
 print('Calculating temperature evolution data without noise or periodic forcing...')
-evolution_towards_steady_states_time, evolution_towards_steady_states_temperature = sr.calculate_evolution_towards_steady_states(temperature_solutions)
+evolution_towards_steady_states_time, evolution_towards_steady_states_temperature = sr.calculate_evolution_towards_steady_states(surface_thermal_capacity = C_years,
+																 relaxation_time = relaxation_time,
+																 stable_temperature_solution_1 = stable_temperature_solution_1,
+																 unstable_temperature_solution = unstable_temperature_solution,
+																 stable_temperature_solution_2 = stable_temperature_solution_2,
+																 forcing_amplitude = forcing_amplitude,
+																 forcing_angular_frequency = forcing_angular_frequency,
+																 emission_model = emission_model)
 
 np.save(times_for_evolution_towards_steady_states_destination, evolution_towards_steady_states_time)
 np.save(temperatures_for_evolution_towards_steady_states_destination, evolution_towards_steady_states_temperature)
@@ -88,7 +110,19 @@ Temperature = np.zeros((len(V), num_simulations, num_steps))
 for i, v in enumerate(V):
     print(f'Simulation {i + 1}/{len(V)}, Noise: {v:.3f}...')
     time, temperature = sr.simulate_ito(T_start = stable_temperature_solution_2,
-					noise_variance = v)
+					noise_variance = v,
+					dt = time_step,
+					num_steps = num_steps,
+					num_simulations = num_simulations,
+					surface_thermal_capacity = C_years,
+					relaxation_time = relaxation_time,
+					stable_temperature_solution_1 = stable_temperature_solution_1,
+					unstable_temperature_solution = unstable_temperature_solution,
+					stable_temperature_solution_2 = stable_temperature_solution_2,
+					forcing_amplitude = forcing_amplitude,
+					forcing_angular_frequency = forcing_angular_frequency,
+					noise = True,
+					emission_model = emission_model)
     Temperature[i, :, :] = temperature
     Time[i, :] = time
 
@@ -115,7 +149,7 @@ print('Computing power spectra...')
 for i in aes.progress(range(len(V))):
     psd = np.zeros((num_simulations, np.floor_divide(num_steps, 2) + 1))
     for j in range(num_simulations):
-        frequencies, power_spectrum = signal.periodogram(Temperature[i, j, :], 1/dt)
+        frequencies, power_spectrum = signal.periodogram(Temperature[i, j, :], 1/time_step)
         psd[j, :] = power_spectrum
     PSD_mean[i, :] = np.mean(psd, axis = 0)
     Frequencies[i, :] = frequencies
@@ -156,7 +190,16 @@ print(f'Stochastic resonance mechanism found at variance value: {V_SR:.3f}')
 
 print('Simulating Temperature Combinations: Periodic Forcing, No Forcing, Noise, and No Noise...')
 
-time_combinations, temperatures_combinations = sr.simulate_ito_combinations_and_collect_results(initial_temperature = stable_temperature_solution_2, noise_variance = V_SR)
+time_combinations, temperatures_combinations = sr.simulate_ito_combinations_and_collect_results(T_start = stable_temperature_solution_2,
+												noise_variance = V_SR,
+												dt = time_step,
+												num_steps = num_steps,
+												stable_temperature_solution_1 = stable_temperature_solution_1,
+												unstable_temperature_solution = unstable_temperature_solution,
+												stable_temperature_solution_2 = stable_temperature_solution_2,
+												forcing_amplitude = forcing_amplitude,
+												forcing_angular_frequency = forcing_angular_frequency,
+												emission_model = emission_model)
 
 np.save(times_combinations_destination, time_combinations)
 np.save(temperatures_combinations_destination, temperatures_combinations)
