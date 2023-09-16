@@ -400,6 +400,7 @@ def calculate_peaks_base(PSD_mean, peaks_indices, num_neighbors=2):
     for i in range(PSD_mean.shape[0]):
         current_indices = peaks_indices[i]
         neighbor_indices = np.arange(current_indices - num_neighbors, current_indices + num_neighbors + 1)
+        neighbor_indices = neighbor_indices[neighbor_indices != current_indices]
         valid_indices = np.clip(neighbor_indices, 0, PSD_mean.shape[1] - 1)
         neighbor_values = PSD_mean[i, valid_indices]
         peaks_base[i] = np.mean(neighbor_values)
