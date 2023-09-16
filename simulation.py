@@ -172,8 +172,8 @@ with aes.green_text():
 print('Calculating peak heights in the power spectral density...')
 
 peaks_indices = sr.find_peak_indices(Frequencies, forcing_period)
-peaks = sr.calculate_peaks(Frequencies, PSD_mean, peaks_indices)
-peaks_bases = sr.calculate_peaks_base(Frequencies, PSD_mean, peaks_indices)
+peaks = sr.calculate_peaks(PSD_mean, peaks_indices)
+peaks_bases = sr.calculate_peaks_base(PSD_mean, peaks_indices)
 peaks_heights = sr.calculate_peak_height(peaks, peaks_bases)
 
 np.save(peak_heights_in_PSD_destination, peaks_heights)

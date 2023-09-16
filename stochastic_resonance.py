@@ -360,15 +360,14 @@ def find_peak_indices(frequencies, period = forcing_period_default):
     peaks_indices = np.abs(frequencies - (1/period)).argmin(axis = 1)
     return peaks_indices
 
-def calculate_peaks(frequencies, PSD_mean, peaks_indices):
+def calculate_peaks(PSD_mean, peaks_indices):
     """
     Calculate the values of peaks in a power spectral density.
 
-    This function calculates the values of peaks in a power spectral density (PSD) based on the provided frequencies,
-    PSD_mean, and peak indices.
+    This function calculates the values of peaks in a power spectral density (PSD) based on the provided PSD_mean and
+    peak indices.
 
     Parameters:
-    - frequencies (array-like): An array of frequencies.
     - PSD_mean (array-like): An array of mean power spectral density values.
     - peaks_indices (array-like): An array of indices representing the positions of the peaks.
 
@@ -376,18 +375,17 @@ def calculate_peaks(frequencies, PSD_mean, peaks_indices):
     - peaks (array): An array of peak values corresponding to the provided peak indices.
     """
 
-    peaks = PSD_mean[np.arange(frequencies.shape[0]), peaks_indices]
+    peaks = PSD_mean[np.arange(PSD_mean.shape[0]), peaks_indices]
     return peaks
 
-def calculate_peaks_base(frequencies, PSD_mean, peaks_indices, num_neighbors = 2):
+def calculate_peaks_base(PSD_mean, peaks_indices, num_neighbors=2):
     """
     Calculate the values of the base of the peaks in a power spectral density.
 
     This function calculates the values of the base of the peaks in a power spectral density (PSD) based on the provided
-    frequencies, PSD_mean, peak indices, and the number of neighboring points to consider for the base calculation.
+    PSD_mean, peak indices, and the number of neighboring points to consider for the base calculation.
 
     Parameters:
-    - frequencies (array-like): An array of frequencies.
     - PSD_mean (array-like): An array of mean power spectral density values.
     - peaks_indices (array-like): An array of indices representing the positions of the peaks.
     - num_neighbors (int, optional): The number of neighboring points on each side of a peak to consider for calculating
@@ -397,16 +395,17 @@ def calculate_peaks_base(frequencies, PSD_mean, peaks_indices, num_neighbors = 2
     - peaks_base (array): An array of base values corresponding to the provided peak indices.
     """
 
-    peaks_base = np.empty_like(peaks_indices, dtype = float)
+    peaks_base = np.empty_like(peaks_indices, dtype=float)
 
-    for i in range(frequencies.shape[0]):
+    for i in range(PSD_mean.shape[0]):
         current_indices = peaks_indices[i]
         neighbor_indices = np.arange(current_indices - num_neighbors, current_indices + num_neighbors + 1)
-        valid_indices = np.clip(neighbor_indices, 0, PSD_mean.shape[1]-1)
+        valid_indices = np.clip(neighbor_indices, 0, PSD_mean.shape[1] - 1)
         neighbor_values = PSD_mean[i, valid_indices]
         peaks_base[i] = np.mean(neighbor_values)
 
     return peaks_base
+
 
 def calculate_peak_height(peaks, peaks_base):
     """
