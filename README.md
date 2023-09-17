@@ -101,6 +101,104 @@ Here's how the forward Euler numerical integration works:
 
 The Forward Euler discretization method allows us to simulate temperature evolution over time, considering both deterministic changes as per the energy balance equation and stochastic fluctuations captured by random numbers from the Wiener process.
 
+### Parametrization of the Deterministic Rate of Temperature Change
+
+An important step in constructing the model is the parametrization of $F(T)$. The derivation of this function is detailed in the article by Benzi et al. [^2^], which is a complex process that goes beyond the scope of this repository. For a comprehensive understanding of the derivation, please refer to the aforementioned article or the review [^3^] listed in the *References* section.
+
+The final result for $F(T)$ is given by the equation:
+
+$$
+F(T) = \frac{\epsilon(T)}{C} \left( \frac{\mu(t)}{1 + \beta \left(1 - \frac{T}{T_1}\right)\left(1 - \frac{T}{T_2}\right)\left(1 - \frac{T}{T_3}\right)} - 1 \right)
+$$
+
+Here are the key components of the equation:
+
+- $\epsilon(T)$: Represents the infrared radiation emitted by Earth.
+- $C$: Denotes the average thermal capacity of Earth.
+- $\mu(t)$: An adimensional periodic function used to model variations in incident solar radiation on Earth.
+- $T_1$, $T_2$, and $T_3$: Correspond to different temperature values within the Earth's climate system. 
+  - $T_1$: The average Earth temperature during the glacial period (stable solution).
+  - $T_2$: An unstable temperature of the system (not observable).
+  - $T_3$: The average Earth temperature during the interglacial period (stable solution).
+
+The constant $\beta$ can be determined using the following equation:
+
+$$
+\beta = -\frac{C}{\tau \epsilon(T_3)}\frac{T_1 T_2 T_3}{(T_1 - T_3)(T_2 - T_3)}
+$$
+
+Here, $\tau$ represents the relaxation time of the system.
+
+### Additional Model Details
+
+This section provides further insights into modeling Earth's emitted radiation ($\epsilon(T)$) and the periodic modulation of solar radiation ($\mu(t)$) within the context of the model.
+
+- Emitted Radiation ($\epsilon(T)$)
+
+The radiation emitted from Earth's surface per unit time and area, denoted as $\epsilon(T)$, has been modeled in two distinct ways:
+
+1. **Stefan-Boltzmann's Law for Blackbody Radiation:** This model employs the fundamental equation of blackbody radiation:
+$$
+\epsilon(T) = \sigma_{SB} T^{4}
+$$
+Where, $\sigma_{SB}$ represents the Stefan-Boltzmann constant.
+
+2. **Linear Approximation:** In this approach, $\epsilon(T)$ is linearly approximated to better fit empirical data observed within the range of temperatures of interest (see the article [^4^]) :
+$$
+\epsilon(T) = A + B \cdot T
+$$
+
+In this equation, $A = -339.647 W \cdot m^{-2}$ and $B = 2.218 W \cdot m^{-2} K^{-1}$ are parameters estimated based on empirical data [^4^].
+
+The function responsible for calculating Earth's emitted radiation, depending on the selected model, is implemented in the 'stochastic_resonance.py' module and is named 'emitted_radiation'. This function takes as input the 'emission_model' parameter, which can take values 'linear' or 'black body' to specify the chosen model for simulations. It's important to note that the choice between these two models does not significantly impact the final results. A comparison between the two models is available in the 'emission_models_comparison_plots.png' graph within the 'images' folder. Additionally, to adapt to the extended time scales considered in the analysis, parameters A and B, as well as the Stefan-Boltzmann constant in the black body model, have been converted so that years serve as the unit of time rather than seconds.
+
+- Periodic Modulation of Solar Radiation ($\mu(t)$)
+
+To model the variation in solar radiation incident on Earth's surface (remembering that $R_{in} = Q \mu(t)$) due to changes in Earth's orbital eccentricity, the periodic function $\mu(t)$ was utilized. This function has been parameterized as follows:
+$$
+\mu(t) = 1 + A \cdot \cos(\omega t)
+$$
+
+Here, $\omega$ represents the angular frequency of the oscillation, and $A$ is the amplitude of the oscillation. Since the period of this oscillation corresponds to the longest Milankovitch cycle (refer to the section *Observations of Past Climate and the Milankovitch Cycles*), the angular frequency is defined as $\omega = \frac{2 \pi}{10^{5}}$. Furthermore, the amplitude A is a small parameter, with an estimated value of approximately $A = 0.0005$.
+
+The function responsible for calculating this modulation is implemented in the 'stochastic_resonance.py' module and is named 'periodic_forcing'.
+
+
+### Simulation Parameters and Configuration File
+
+The project includes a configuration file named 'configuration.txt,' divided into three distinct sections. In the [settings] section, various simulation parameters are specified. Here, we explain each parameter in detail:
+
+- `stable_temperature_solution_1`: This represents the stable lower temperature solution, denoted as $T_1$ in the model. It corresponds to the average Earth temperature during the glacial era and should be specified in Kelvin. The suggested value in the 'configuration.txt' file is 280 K.
+
+- `unstable_temperature_solution`: This parameter represents the unstable temperature solution, denoted as $T_2$ in the model (it is unobserved). It should be specified in Kelvin and, for simplicity, is typically set halfway between the first and second stable solutions. In the 'configuration.txt' file, its value is 285 K.
+
+- `stable_temperature_solution_2`: This corresponds to the stable higher temperature solution, denoted as $T_3$ in the model. It represents the average Earth temperature during the interglacial era and should be specified in Kelvin. The suggested value in the 'configuration.txt' file is 290 K. Note that the observed temperature difference between the glacial and interglacial epochs is approximately 10K.
+
+- `surface_earth_thermal_capacity`: This parameter signifies the thermal capacity of the Earth's surface per unit area ($C$). It should be specified in J/m²K. The suggested value in the 'configuration.txt' file is $0.31 \cdot 10^{9} J/m^2 K$.
+
+- `relaxation_time`: This represents the system's relaxation time in years ($\tau$ in the model). In the 'configuration.txt' file, its value is set to 13 years. In the article by Benzi et al. [^2^], its value is reported as 8 years.
+
+- `emission_model`: This parameter denotes the model used for simulating Earth's emitted radiation. The possible values are 'linear' and 'black body.' In the 'configuration.txt' file, its value is 'linear.'
+
+- `forcing_amplitude`: This is the amplitude $A$ of the periodic modulation of incident solar radiation. Its value in the 'configuration.txt' file is 0.0005.
+
+- `forcing_period`: This signifies the period of the periodic modulation of incident solar radiation. Its value corresponds to the longest Milankovitch cycle, which is $10^5$ years, as specified in the 'configuration.txt' file.
+
+Additionally, there are some more general parameters related to the simulation of temperature evolution (refer to the section "Forward Euler Discretization"). These include:
+
+- `num_steps`: The number of time steps in the simulation. The value in the 'configuration.txt' file is 1,000,000.
+
+- `num_simulations`: The number of simulations to run for each noise intensity level. In the 'configuration.txt' file, its value is 10.
+
+- `time_step`: The time step for each simulation in years. In the 'configuration.txt' file, its value is 1 year.
+
+Lastly, the temperature evolution is simulated for various noise intensities. The 'configuration.txt' file specifies the starting noise variance, ending noise variance, and the number of equispaced variance levels to simulate the temperature evolution.
+
+- `variance_start`: Starting variance for noise intensity. In the 'configuration.txt' file, it is set to 0.01 [K^2/year].
+
+- `variance_end`: Ending variance for noise intensity. In the 'configuration.txt' file, it is set to 0.3 [K^2/year].
+
+- `num_variances`: Number of variance levels to simulate.
 
 
 ## Structure of the Project
@@ -129,26 +227,7 @@ To create a new configuration file for the simulation, follow these guidelines:
 
 2. **`settings` Section:**
 
-   In the `settings` section, specify the constants and simulation parameters:
-
-   - `stable_temperature_solution_1`: The first stable temperature solution in Kelvin (average earth temperature during an ice age).
-   - `unstable_temperature_solution`: The unstable temperature solution in Kelvin.
-   - `stable_temperature_solution_2`: The second stable temperature solution in Kelvin (average earth temperature during an interglacial age).
-   - `surface_earth_thermal_capacity`: Surface thermal capacity of the Earth in J/m²K.
-   - `relaxation_time`: Relaxation time of the system in years.
-   - `emission_model`: Emission model, choose between 'linear' and 'black body'.
-   - `forcing_amplitude`: Amplitude of the applied periodic forcing.
-   - `forcing_period`: Period of the applied periodic forcing.
-
-   For stable temperature solutions, ensure that `stable_temperature_solution_1` < `unstable_temperature_solution` < `stable_temperature_solution_2`.
-
-   Configure the simulation parameters:
-   - `num_steps`: Number of time steps in the simulation.
-   - `num_simulations`: Number of simulations for each noise intensity level.
-   - `time_step`: Time step for each simulation in years.
-   - `variance_start`: Starting variance for noise intensity.
-   - `variance_end`: Ending variance for noise intensity.
-   - `num_variances`: Number of variance levels to simulate.
+   In the `settings` section, specify the constants and simulation parameters (see the section *Simulation Parameters and Configuration File*).
 
 3. **`data_paths` Section:**
 
@@ -196,4 +275,18 @@ The project consists of the following key files:
 
 ## References
 
-[^1]: R. Benzi, A. Sutera e A. Vulpiani, "The mechanism of stochastic resonance," J. Phys. A 14, L453 (1981).
+[^1]: R. Benzi, A. Sutera, and A. Vulpiani, "The mechanism of stochastic resonance," J. Phys. A 14, L453 (1981).
+
+[^2]: "A Theory of Stochastic Resonance in Climatic Change"
+   - Authors: Roberto Benzi, Giorgio Parisi, Alfonso Sutera, Angelo Vulpiani
+   - Source: [SIAM Journal on Applied Mathematics](https://www.jstor.org/stable/2101326)
+
+[^3]: "A Study of Stochastic Resonance in a Climate Model"
+   - Authors: Agnes Olsson, Ebba Jernmark Burrows
+   - Level: First cycle, 15 credits
+   - Source: [Degree Project in Technology](http://www.diva-portal.org/smash/get/diva2:1680240/FULLTEXT01.pdf)
+
+[^4]: "Earth’s outgoing longwave radiation linear due to H2O greenhouse effect"
+   - Authors: Daniel D. B. Koll, Timothy W. Cronin
+   - Source: [Proceedings of the National Academy of Sciences](https://www.pnas.org/doi/10.1073/pnas.1809868115)
+
