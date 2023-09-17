@@ -27,7 +27,6 @@ time_step_default = 1 # year
 num_steps_default = 1000000 # years
 num_simulations_default = 10
 
-
 def emitted_radiation(temperature,
                       emission_model=emission_model_default,
                       conversion_factor=num_sec_in_a_year):
@@ -39,7 +38,7 @@ def emitted_radiation(temperature,
     temperature and conversion factor.
 
     Parameters:
-    - temperature (float): The temperature of the Earth's surface in Kelvin.
+    - temperature (float): The temperature of the Earth's surface in Kelvin. It must be a non-negative value.
     - emission_model (str, optional): The emission model to use, which can be 'linear' or 'black body'.
       Default is 'linear'.
     - conversion_factor (float, optional): The conversion factor for time units to calculate the emitted radiation,
@@ -50,7 +49,11 @@ def emitted_radiation(temperature,
 
     Raises:
     - ValueError: If an invalid emission model is selected. Valid options are 'linear' or 'black body'.
+    - ValueError: If the temperature is not a non-negative value.
     """
+    if temperature < 0:
+        raise ValueError('Temperature in Kelvin must be non-negative.')
+    
     if emission_model == 'linear':
         A = -339.647 * (conversion_factor ** 3)  # converts from W/(m^2 K) to kg/year^3 K
         B = 2.218 * (conversion_factor ** 3)  # converts from W/(m^2 K) to kg/year^3 K
