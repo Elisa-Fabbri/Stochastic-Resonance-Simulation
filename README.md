@@ -13,11 +13,11 @@ The goal of this repository is to use numerical simulations to investigate the s
 
 ## The stochastic resonance mechanism in climate change
 
-### Observations of Past Climate and the Milankovitch Cycles
+### Observations of Past Climate and the Milanković Cycles
 
-Over the past 800,000 years, Earth's climate has undergone cyclical shifts between glacial and interglacial periods, occurring approximately every 100,000 years. These climatic cycles follow a characteristic sawtooth pattern, featuring a rapid warming during transitions to interglacial periods, lasting about 10,000 years, followed by a gradual return to glacial conditions. This process leads to an average Earth temperature variation of approximately 10 degrees Celsius. In addition to this primary periodicity, two minor cyclic fluctuations with periods of about 41,000 and 26,000 years have been observed. Collectively, these three cycles are known as the "Milankovitch cycles," named in honor of the Serbian scientist who, as early as 1941, successfully explained their regularity using Earth's orbital parameters. Specifically, the 100,000-year cycle is associated with variations in Earth's orbital eccentricity (how much the orbit deviates from a perfect circle), the 41,000-year cycle relates to changes in the tilt of Earth's axis, and the 26,000-year cycle is influenced by the precession of the equinoxes.
+Over the past 800,000 years, Earth's climate has undergone cyclical shifts between glacial and interglacial periods, occurring approximately every 100,000 years. These climatic cycles follow a characteristic sawtooth pattern, featuring a rapid warming during transitions to interglacial periods, lasting about 10,000 years, followed by a gradual return to glacial conditions. This process leads to an average Earth temperature variation of approximately 10 degrees Celsius. In addition to this primary periodicity, two minor cyclic fluctuations with periods of about 41,000 and 26,000 years have been observed. Collectively, these three cycles are known as the "Milanković cycles," named in honor of the Serbian scientist who, as early as 1941, successfully explained their regularity using Earth's orbital parameters. Specifically, the 100,000-year cycle is associated with variations in Earth's orbital eccentricity (how much the orbit deviates from a perfect circle), the 41,000-year cycle relates to changes in the tilt of Earth's axis, and the 26,000-year cycle is influenced by the precession of the equinoxes.
 
-These variations in orbital parameters, driven by the gravitational influence of other planets in our solar system, are responsible for fluctuations in the average solar radiation reaching our planet. It has been hypothesized that these Milankovitch cycles may have played a crucial role in initiating and concluding Earth's glacial epochs.
+These variations in orbital parameters, driven by the gravitational influence of other planets in our solar system, are responsible for fluctuations in the average solar radiation reaching our planet. It has been hypothesized that these Milanković cycles may have played a crucial role in initiating and concluding Earth's glacial epochs.
 
 However, when considering the global scale, variations in solar irradiance are relatively limited and cannot, by themselves, account for the observed drastic temperature change of 10 degrees Celsius. Therefore, there is a need to identify an amplification mechanism capable of translating these modest solar variations into significant climatic shifts. This project focuses on the proposal put forth by Italian researchers Benzi, Parisi, Sutera, and Vulpiani in the early 1980s, introducing the concept of stochastic resonance as a potential amplification mechanism.
 
@@ -36,10 +36,10 @@ $$
 Here, $C$ represents the thermal capacity of Earth [J/m² K]. The incoming radiation can be modeled as:
 
 $$
-R_{in}(T) = Q\mu
+R_{in}(T) = Q\mu (t)
 $$
 
-Where $Q$ is a long-term average of incoming solar radiation, and the dimensionless parameter $\mu$ accounts for the small periodic variation in $Q$ caused by changes in Earth's orbital eccentricity (with a period of 100,000 years).
+Where $Q$ is a long-term average of incoming solar radiation, and the dimensionless parameter $\mu(t)$ accounts for the small periodic variation in $Q$ caused by changes in Earth's orbital eccentricity (with a period of 100,000 years).
 
 The outgoing radiation can be described as:
 
@@ -47,19 +47,19 @@ $$
 R_{out}(T) = \alpha(T)R_{in}(T) + \epsilon(T)
 $$
 
-Here, $\alpha(T)$ represents the global average albedo, which is the fraction of incoming radiation directly reflected by Earth's surface. $\epsilon(T)$ denotes the infrared radiation emitted by Earth. This emitted radiation can be modeled using either Stefan-Boltzmann's law for a blackbody or a linear approximation.
+Here, $\alpha(T)$ represents the global average albedo, which is the fraction of incoming radiation directly reflected by Earth's surface; while $\epsilon(T)$ denotes the infrared radiation emitted by Earth. This emitted radiation can be modeled using either Stefan-Boltzmann's law for a blackbody or a linear approximation.
 
 Neglecting the role of albedo and the periodic modulation of incoming radiation, the system has a stable solution where $\frac{dT}{dt} = 0$, resulting in $Q = \epsilon(T)$. The temperature solution, denoted as $T^*$, is a mathematical fixed point. In other words, the system self-regulates to attain this temperature.
 
 However, albedo is not constant; it varies between 0 and 1 and depends on Earth's temperature, mainly influenced by factors like ice cover and cloudiness. Both these factors contribute to an increase in the reflected radiation, i.e., an increase in albedo.
 
-Qualitatively, the temperature dependence of albedo introduces feedback mechanisms in the system, leading to multiple fixed points at different temperatures. Within the temperature range of interest, feedback from ice and clouds results in the presence of two stable fixed points ($T1$ and $T3$) and an unstable fixed point ($T2$).
+The temperature dependence of albedo introduces feedback mechanisms in the system, leading to multiple fixed points at different temperatures. Within the temperature range of interest, feedback from ice and clouds results in the presence of two stable fixed points ($T_1$ and $T_3$) and an unstable fixed point ($T_2$).
 
-From a physical standpoint, only the stable fixed points are significant, as the system naturally moves away from an unstable fixed point, making it unobservable. The stable fixed points correspond to Earth's temperatures during glacial and interglacial states, and we assume $T3-T1 = 10 K$.
+From a physical standpoint, only the stable fixed points are significant, as the system naturally moves away from an unstable fixed point, making it unobservable. The stable fixed points correspond to Earth's temperatures during glacial and interglacial states, and we assume $T_3-T_1 = 10 K$.
 
-Now, consider the astronomical modulation of incoming radiation. If the incoming radiation were greatly reduced, there would be a single stable fixed point corresponding to the glacial state ($T1$). Conversely, if incoming radiation were significantly higher, there would be a single fixed point corresponding to the interglacial temperature ($T3$).
+Now, consider the astronomical modulation of incoming radiation. If the incoming radiation were greatly reduced, there would be a single stable fixed point corresponding to the glacial state ($T_1$). Conversely, if incoming radiation were significantly higher, there would be a single fixed point corresponding to the interglacial temperature ($T_3$).
 
-However, as mentioned earlier, the astronomical modulation is very small and alone insufficient to eliminate one of the two stable fixed points. The system maintains both stable fixed points but varies the degree of stability between them. The mechanism that allows the system to transition from one stable fixed point to the other, which is more stable, is the stochastic resonance.
+However, as mentioned earlier, the astronomical modulation is very small and alone insufficient to eliminate one of the two stable fixed points. The system maintains both stable fixed points but varies the degree of stability between them. The mechanism that enables the system to transition from one stable fixed point to the other, which is more stable, is stochastic resonance.
 
 ### Introducing Meteorological Climate Variability and the Stochastic Resonance Mechanism
 
@@ -93,7 +93,7 @@ Here's how the forward Euler numerical integration works:
 
 - **Temperature Update**:
   - To account for the stochastic temperature variability (from the Wiener process), random numbers following a normal distribution (zero mean, variance equal to $\Delta t$) are generated at each time step.
-  - The temperature change $dT$ is then found by adding the deterministic temperature change, $F(T)$, and the stochastic temperature change, $\sigma * W$.
+  - The temperature change $dT$ is then found by adding the deterministic temperature change, $F(T)$, and the stochastic temperature change, $\sigma \cdot W$.
   - The new temperature value $T(t_n)$ is then found by adding to the previuos temperature value $T(t_{n-1})$ che computed temperature change $dT$. 
   - The results is the new temperature value for the next time step.
 
@@ -103,7 +103,7 @@ The Forward Euler discretization method allows us to simulate temperature evolut
 
 ### Parametrization of the Deterministic Rate of Temperature Change
 
-An important step in constructing the model is the parametrization of $F(T)$. The derivation of this function is detailed in the article by Benzi et al. [^2^], which is a complex process that goes beyond the scope of this repository. For a comprehensive understanding of the derivation, please refer to the aforementioned article or the review [^3^] listed in the *References* section.
+An important step in constructing the model is the parametrization of $F(T)$. The derivation of this function is detailed in the article by Benzi et al. [^2], which is a complex process that goes beyond the scope of this repository. For a comprehensive understanding of the derivation, please refer to the aforementioned article or the review [^3] listed in the *References* section.
 
 The final result for $F(T)$ is given by the equation:
 
@@ -143,12 +143,12 @@ $$
 $$
 Where, $\sigma_{SB}$ represents the Stefan-Boltzmann constant.
 
-2. **Linear Approximation:** In this approach, $\epsilon(T)$ is linearly approximated to better fit empirical data observed within the range of temperatures of interest (see the article [^4^]) :
+2. **Linear Approximation:** In this approach, $\epsilon(T)$ is linearly approximated to better fit empirical data observed within the range of temperatures of interest (see the article [^4]) :
 $$
 \epsilon(T) = A + B \cdot T
 $$
 
-In this equation, $A = -339.647 W \cdot m^{-2}$ and $B = 2.218 W \cdot m^{-2} K^{-1}$ are parameters estimated based on empirical data [^4^].
+In this equation, $A = -339.647 W \cdot m^{-2}$ and $B = 2.218 W \cdot m^{-2} K^{-1}$ are parameters estimated based on empirical data [^4].
 
 The function responsible for calculating Earth's emitted radiation, depending on the selected model, is implemented in the 'stochastic_resonance.py' module and is named 'emitted_radiation'. This function takes as input the 'emission_model' parameter, which can take values 'linear' or 'black body' to specify the chosen model for simulations. It's important to note that the choice between these two models does not significantly impact the final results. A comparison between the two models is available in the 'emission_models_comparison_plots.png' graph within the 'images' folder. Additionally, to adapt to the extended time scales considered in the analysis, parameters A and B, as well as the Stefan-Boltzmann constant in the black body model, have been converted so that years serve as the unit of time rather than seconds.
 
@@ -176,7 +176,7 @@ The project includes a configuration file named 'configuration.txt,' divided int
 
 - `surface_earth_thermal_capacity`: This parameter signifies the thermal capacity of the Earth's surface per unit area ($C$). It should be specified in J/m²K. The suggested value in the 'configuration.txt' file is $0.31 \cdot 10^{9} J/m^2 K$.
 
-- `relaxation_time`: This represents the system's relaxation time in years ($\tau$ in the model). In the 'configuration.txt' file, its value is set to 13 years. In the article by Benzi et al. [^2^], its value is reported as 8 years.
+- `relaxation_time`: This represents the system's relaxation time in years ($\tau$ in the model). In the 'configuration.txt' file, its value is set to 13 years. In the article by Benzi et al. [^2], its value is reported as 8 years.
 
 - `emission_model`: This parameter denotes the model used for simulating Earth's emitted radiation. The possible values are 'linear' and 'black body.' In the 'configuration.txt' file, its value is 'linear.'
 
@@ -275,18 +275,11 @@ The project consists of the following key files:
 
 ## References
 
-[^1]: R. Benzi, A. Sutera, and A. Vulpiani, "The mechanism of stochastic resonance," J. Phys. A 14, L453 (1981).
+[^1]: R. Benzi, A. Sutera, and A. Vulpiani, "The mechanism of stochastic resonance", J. Phys. A 14, L453 (1981).
 
-[^2]: "A Theory of Stochastic Resonance in Climatic Change"
-   - Authors: Roberto Benzi, Giorgio Parisi, Alfonso Sutera, Angelo Vulpiani
-   - Source: [SIAM Journal on Applied Mathematics](https://www.jstor.org/stable/2101326)
+[^2]: R. Benzi, G. Parisi, A. Sutera, and A. Vulpiani, ["A Theory of Stochastic Resonance in Climatic Change"](https://www.jstor.org/stable/2101326), SIAM Journal on Applied Mathematics, Vol. 43, No. 3 (Jun., 1983).
 
-[^3]: "A Study of Stochastic Resonance in a Climate Model"
-   - Authors: Agnes Olsson, Ebba Jernmark Burrows
-   - Level: First cycle, 15 credits
-   - Source: [Degree Project in Technology](http://www.diva-portal.org/smash/get/diva2:1680240/FULLTEXT01.pdf)
+[^3]: Agnes Olsson, Ebba Jernmark Burrows, ["A Study of Stochastic Resonance in a Climate Model"](http://www.diva-portal.org/smash/get/diva2:1680240/FULLTEXT01.pdf), Degree Project in Technology.
 
-[^4]: "Earth’s outgoing longwave radiation linear due to H2O greenhouse effect"
-   - Authors: Daniel D. B. Koll, Timothy W. Cronin
-   - Source: [Proceedings of the National Academy of Sciences](https://www.pnas.org/doi/10.1073/pnas.1809868115)
+[^4]: Daniel D. B. Koll, Timothy W. Cronin, ["Earth’s outgoing longwave radiation linear due to H2O greenhouse effect"](https://www.pnas.org/doi/10.1073/pnas.1809868115)(2018).
 
