@@ -51,7 +51,7 @@ def emitted_radiation(temperature,
     - ValueError: If an invalid emission model is selected. Valid options are 'linear' or 'black body'.
     - ValueError: If the temperature is not a non-negative value.
     """
-    if temperature < 0:
+    if np.any(temperature < 0):
         raise ValueError('Temperature in Kelvin must be non-negative.')
     
     if emission_model == 'linear':
@@ -82,8 +82,15 @@ def periodic_forcing(time,
 
     Returns:
     - periodic_forcing (float or array-like): The calculated periodic forcing values corresponding to the input time(s).
+
+    Raises:
+    - ValueError: If the time is a negative value.
     """
-    return 1 + amplitude * np.cos(angular_frequency * time)
+    if np.any(np.array(time) < 0):
+        raise ValueError('Time must be non-negative.')
+    
+    periodic_forcing = np.array(amplitude) * np.cos(np.array(angular_frequency) * time)
+    return 1 + periodic_forcing
 
 def calculate_rate_of_temperature_change(temperature,
       					 surface_thermal_capacity = surface_earth_thermal_capacity_in_years,
