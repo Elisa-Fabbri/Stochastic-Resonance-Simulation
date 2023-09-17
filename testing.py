@@ -1,35 +1,121 @@
 import numpy as np
 import stochastic_resonance as sr
+import pytest
 
 # Test the functions in stochastic_resonance.py
 
-#Test the emitted_radiation function
+#Test emitted_radiation_function in the linear case 
 
-def test_linear_emitted_radiation_model():
-    """Test the emitted_radiation function for a linear model."""
-    emission_model = 'linear'
-    assert sr.emitted_radiation(0, emission_model, conversion_factor=1) == -339.647
-    assert sr.emitted_radiation(1, emission_model, conversion_factor=1) == -339.647 + 2.218
-    assert sr.emitted_radiation(2, emission_model, conversion_factor=1) == -339.647 + 2.218*2
+steady_temperature_solutions_default_linear_test = [
+    (280, -339.647 + 2.218*280), # glacial temperature
+    (285, -339.647 + 2.218*285), # ustable temperature solution
+    (290, -339.647 + 2.218*290), # interglacial temperature
+]
 
-def test_black_body_emitted_radiation_model():
-    """Test the emitted_radiation function for a black body model."""
-    emission_model = 'black body'
-    assert sr.emitted_radiation(0, emission_model, conversion_factor=1) == 0
-    assert sr.emitted_radiation(1, emission_model, conversion_factor=1) == 5.67e-8
-    assert sr.emitted_radiation(2, emission_model, conversion_factor=1) == 5.67e-8*(2**4)
+@pytest.mark.parametrize("steady_temperature, expected_radiation", steady_temperature_solutions_default_linear_test)
+def test_emitted_radiation_linear(steady_temperature, expected_radiation):
+    """
+    Test the linear emitted radiation in W/m^2 for temperature solutions default parameters.
+
+    GIVEN: a steady temperature and the expected emitted radiation in K
+    WHEN: the emitted_radiation function is called with conversion_factor = 1
+    THEN: the result should be the expected emitted radiation in W/m^2
+    """
+    
+    expected_value = expected_radiation
+    calculated_value = sr.emitted_radiation(steady_temperature, emission_model='linear', conversion_factor=1)
+    
+    assert calculated_value == pytest.approx(expected_value, rel=1e-6)
+
+@pytest.mark.parametrize("steady_temperature, expected_radiation_W_m2", steady_temperature_solutions_default_linear_test)
+def test_emitted_radiation_conversion(steady_temperature, expected_radiation_W_m2):
+    """
+    Test the linear emitted radiation in kg/m^3 for temperature solutions default parameters.
+
+    GIVEN: a steady temperature and the expected emitted radiation in K
+    WHEN: the emitted_radiation function is called with conversion_factor = num_sec_in_a_year
+    THEN: the result should be the expected emitted radiation in kg/year^3
+    """
+    
+    expected_value = expected_radiation_W_m2*(sr.num_sec_in_a_year**3)
+    calculated_value = sr.emitted_radiation(steady_temperature, emission_model='linear', conversion_factor=sr.num_sec_in_a_year)
+    
+    assert calculated_value == pytest.approx(expected_value, rel=1)
+
+#Test emitted_radiation_function in the black body case
+
+steady_temperature_solutions_default_black_body_test = [
+    (280, 5.67e-8*280**4), # glacial temperature
+    (285, 5.67e-8*285**4), # ustable temperature solution
+    (290, 5.67e-8*290**4), # interglacial temperature
+]
+
+@pytest.mark.parametrize("steady_temperature, expected_radiation", steady_temperature_solutions_default_black_body_test)
+def test_emitted_radiation_black_body(steady_temperature, expected_radiation):
+    """
+    Test the black body emitted radiation in W/m^2 for temperature solutions default parameters.
+
+    GIVEN: a steady temperature and the expected emitted radiation in K
+    WHEN: the emitted_radiation function is called with conversion_factor = 1
+    THEN: the result should be the expected emitted radiation in W/m^2
+    """
+    
+    expected_value = expected_radiation
+    calculated_value = sr.emitted_radiation(steady_temperature, emission_model='black body', conversion_factor=1)
+    
+    assert calculated_value == pytest.approx(expected_value, rel=1e-6)
+
+@pytest.mark.parametrize("steady_temperature, expected_radiation_W_m2", steady_temperature_solutions_default_black_body_test)
+def test_emitted_radiation_conversion_black_body(steady_temperature, expected_radiation_W_m2):
+    """
+    Test the black body emitted radiation in kg/m^3 for temperature solutions default parameters.
+
+    GIVEN: a steady temperature and the expected emitted radiation in K
+    WHEN: the emitted_radiation function is called with conversion_factor = num_sec_in_a_year
+    THEN: the result should be the expected emitted radiation in kg/year^3
+    """
+    
+    expected_value = expected_radiation_W_m2*(sr.num_sec_in_a_year**3)
+    calculated_value = sr.emitted_radiation(steady_temperature, emission_model='black body', conversion_factor=sr.num_sec_in_a_year)
+    
+    assert calculated_value == pytest.approx(expected_value, rel=1)
+
+# Test the emitted_radiation function for invalid emission_model selection
 
 def test_invalid_emitted_radiation_model():
-    """Test the emitted_radiation function for an invalid model."""
-    emission_model = 'invalid'
+    """Test the emitted_radiation function for an invalid emission model selection.
     
-    try:
-        sr.emitted_radiation(0, emission_model, conversion_factor=1)
-        # If no exception is raised, the test should fail
-        assert False, "Expected a ValueError, but no exception was raised."
-    except ValueError as e:
-        # Check if the exception message is as expected
-        assert str(e) == 'Invalid emission model selection. Choose "linear" or "black body".'
+    GIVEN: an invalid emission model selection
+    WHEN: the emitted_radiation function is called
+    THEN: a ValueError should be raised
+    """
+    with pytest.raises(ValueError, match='Invalid emission model selection. Choose "linear" or "black body".'):
+        sr.emitted_radiation(0, emission_model='invalid', conversion_factor=1)
+
+    with pytest.raises(ValueError, match='Invalid emission model selection. Choose "linear" or "black body".'):
+        sr.emitted_radiation(0, emission_model='invalid', conversion_factor=sr.num_sec_in_a_year)
+
+#Test the emitted_radiation for negative negative temperature value
+
+def test_invalid_emitted_radiation_temperature():
+    """Test the emitted_radiation function for a negative temperature value.
+    
+    GIVEN: a negative temperature value
+    WHEN: the emitted_radiation function is called
+    THEN: a ValueError should be raised
+    """
+    with pytest.raises(ValueError, match='Temperature in Kelvin must be non-negative.'):
+        sr.emitted_radiation(-1, emission_model='linear', conversion_factor=1)
+
+    with pytest.raises(ValueError, match='Temperature in Kelvin must be non-negative.'):
+        sr.emitted_radiation(-1, emission_model='linear', conversion_factor=sr.num_sec_in_a_year)
+
+    with pytest.raises(ValueError, match='Temperature in Kelvin must be non-negative.'):
+        sr.emitted_radiation(-1, emission_model='black body', conversion_factor=1)
+
+    with pytest.raises(ValueError, match='Temperature in Kelvin must be non-negative.'):
+        sr.emitted_radiation(-1, emission_model='black body', conversion_factor=sr.num_sec_in_a_year)
+
 
 # Test periodic_forcing function
 
