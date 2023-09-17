@@ -131,19 +131,22 @@ Here, $\tau$ represents the relaxation time of the system.
 
 ### Additional Model Details
 
-This section provides further insights into modeling Earth's emitted radiation ($\epsilon(T)$) and the periodic modulation of solar radiation ($\mu(t)$) within the context of the model.
+This section provides further insights into modeling Earth's emitted radiation ( $\epsilon(T)$ ) and the periodic modulation of solar radiation ( $\mu(t)$ ) within the context of the model.
 
-- Emitted Radiation ($\epsilon(T)$)
+- **Emitted Radiation** ( $\epsilon(T)$ )
 
 The radiation emitted from Earth's surface per unit time and area, denoted as $\epsilon(T)$, has been modeled in two distinct ways:
 
-1. **Stefan-Boltzmann's Law for Blackbody Radiation:** This model employs the fundamental equation of blackbody radiation:
+1. *Stefan-Boltzmann's Law for Blackbody Radiation:* This model employs the fundamental equation of blackbody radiation:
+
 $$
 \epsilon(T) = \sigma_{SB} T^{4}
 $$
+
 Where, $\sigma_{SB}$ represents the Stefan-Boltzmann constant.
 
 2. **Linear Approximation:** In this approach, $\epsilon(T)$ is linearly approximated to better fit empirical data observed within the range of temperatures of interest (see the article [^4]) :
+
 $$
 \epsilon(T) = A + B \cdot T
 $$
@@ -152,9 +155,10 @@ In this equation, $A = -339.647 W \cdot m^{-2}$ and $B = 2.218 W \cdot m^{-2} K^
 
 The function responsible for calculating Earth's emitted radiation, depending on the selected model, is implemented in the 'stochastic_resonance.py' module and is named 'emitted_radiation'. This function takes as input the 'emission_model' parameter, which can take values 'linear' or 'black body' to specify the chosen model for simulations. It's important to note that the choice between these two models does not significantly impact the final results. A comparison between the two models is available in the 'emission_models_comparison_plots.png' graph within the 'images' folder. Additionally, to adapt to the extended time scales considered in the analysis, parameters A and B, as well as the Stefan-Boltzmann constant in the black body model, have been converted so that years serve as the unit of time rather than seconds.
 
-- Periodic Modulation of Solar Radiation ($\mu(t)$)
+- **Periodic Modulation of Solar Radiation** ( $\mu(t)$ )
 
-To model the variation in solar radiation incident on Earth's surface (remembering that $R_{in} = Q \mu(t)$) due to changes in Earth's orbital eccentricity, the periodic function $\mu(t)$ was utilized. This function has been parameterized as follows:
+To model the variation in solar radiation incident on Earth's surface (remembering that $R_{in} = Q \mu(t)$ ) due to changes in Earth's orbital eccentricity, the periodic function $\mu(t)$ was utilized. This function has been parameterized as follows:
+
 $$
 \mu(t) = 1 + A \cdot \cos(\omega t)
 $$
