@@ -7,9 +7,9 @@ import pytest
 #Test emitted_radiation_function in the linear case 
 
 steady_temperature_solutions_default_linear_test = [
-    (280, -339.647 + 2.218*280), # glacial temperature
-    (285, -339.647 + 2.218*285), # ustable temperature solution
-    (290, -339.647 + 2.218*290), # interglacial temperature
+    (sr.stable_temperature_solution_1_default, -339.647 + 2.218*280), # glacial temperature
+    (sr.unstable_temperature_solution_default, -339.647 + 2.218*sr.unstable_temperature_solution_default), # ustable temperature solution
+    (sr.stable_temperature_solution_2_default, -339.647 + 2.218*sr.stable_temperature_solution_2_default), # interglacial temperature
 ]
 
 @pytest.mark.parametrize("steady_temperature, expected_radiation", steady_temperature_solutions_default_linear_test)
@@ -45,9 +45,9 @@ def test_emitted_radiation_conversion(steady_temperature, expected_radiation_W_m
 #Test emitted_radiation_function in the black body case
 
 steady_temperature_solutions_default_black_body_test = [
-    (280, 5.67e-8*280**4), # glacial temperature
-    (285, 5.67e-8*285**4), # ustable temperature solution
-    (290, 5.67e-8*290**4), # interglacial temperature
+    (sr.stable_temperature_solution_1_default, 5.67e-8*sr.stable_temperature_solution_1_default**4), # glacial temperature
+    (sr.unstable_temperature_solution_default, 5.67e-8*sr.unstable_temperature_solution_default**4), # ustable temperature solution
+    (sr.stable_temperature_solution_2_default, 5.67e-8*sr.stable_temperature_solution_2_default**4), # interglacial temperature
 ]
 
 @pytest.mark.parametrize("steady_temperature, expected_radiation", steady_temperature_solutions_default_black_body_test)
@@ -119,15 +119,71 @@ def test_invalid_emitted_radiation_temperature():
 
 # Test periodic_forcing function
 
-def test_periodic_forcing_no_amplitude():
-    """ Test the periodic forcing function when the amplitude is zero. """
-    amplitude = 0
-    assert sr.periodic_forcing(1, amplitude) == 1
+def test_periodic_forcing_max():
+    """
+    Test that the periodic forcing function returns the maximum value of the forcing amplitude 
+    plus one when the time is equal to the forcing period.
 
-def test_periodic_forcing_for_time_0():
-    """ Test the periodic forcing function for time = 0. """
-    assert sr.periodic_forcing(time = 0, amplitude = 1) == 2
-    assert sr.periodic_forcing(time = 0) == 1 + sr.forcing_amplitude_default
+    GIVEN: time equal to the forcing period and the forcing amplitude
+    WHEN: the periodic_forcing function is called
+    THEN: the result should be the maximum value of the forcing amplitude plus one
+    """
+    expected_value = 1 + sr.forcing_amplitude_default
+    calculated_value = sr.periodic_forcing(sr.forcing_period_default, sr.forcing_amplitude_default)
+    assert calculated_value == pytest.approx(expected_value, rel=1e-6)
+
+def test_periodic_forcing_min():
+    """
+    Test that the periodic forcing function returns one minus the value of the forcing amplitude 
+    when the time is equal to the forcing period divided by two.
+
+    GIVEN: time equal to the forcing period and the forcing amplitude
+    WHEN: the periodic_forcing function is called
+    THEN: the result should be one minus the value of the forcing amplitude
+    """
+    expected_value = 1 - sr.forcing_amplitude_default
+    calculated_value = sr.periodic_forcing(sr.forcing_period_default/2, sr.forcing_amplitude_default)
+    assert calculated_value == pytest.approx(expected_value, rel=1e-6)
+
+def test_periodic_forcing_is_one():
+    """
+    Test that the periodic forcing function returns one when the time is equal to the forcing period divided by four.
+
+    GIVEN: time equal to the forcing period divided by four and the forcing amplitude
+    WHEN: the periodic_forcing function is called
+    THEN: the result should be one
+    """
+    expected_value = 1
+    calculated_value = sr.periodic_forcing(sr.forcing_period_default/4, sr.forcing_amplitude_default)
+    assert sr.periodic_forcing(sr.forcing_period_default/4, sr.forcing_amplitude_default) == expected_value
+    
+def test_periodic_forcing_for_list():
+    """
+    Test that the periodic forcing function returns a list of values when the time is a list of values.
+
+    GIVEN: time is a list of values and the forcing amplitude
+    WHEN: the periodic_forcing function is called
+    THEN: the result should be a list of values containig the ordered periodic forcing values
+    """
+    expected_value = [1 - sr.forcing_amplitude_default, 1, 1 + sr.forcing_amplitude_default]
+    calculated_value = sr.periodic_forcing([sr.forcing_period_default/2, 
+                                            sr.forcing_period_default/4, 
+                                            sr.forcing_period_default], 
+                                            sr.forcing_amplitude_default)
+    assert np.array_equal(calculated_value, expected_value)
+
+def test_periodic_forcing_no_amplitude():
+    """ 
+    Test that the periodic forcing function returns one when the forcing amplitude is zero.
+
+    GIVEN: a list of values for the time and a forcing amplitude of zero
+    WHEN: the periodic_forcing function is called
+    THEN: the result should be a list of ones
+    """
+    expected_value = [1, 1, 1]
+    calculated_value = sr.periodic_forcing([0, sr.forcing_period_default, 2], 0)
+    assert np.array_equal(calculated_value, expected_value)
+
 
 # Test calculate_rate_of_temperature_change function
 
