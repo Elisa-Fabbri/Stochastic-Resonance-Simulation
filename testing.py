@@ -187,24 +187,66 @@ def test_periodic_forcing_no_amplitude():
 
 # Test calculate_rate_of_temperature_change function
 
-def test_calculate_rate_of_temperature_change_for_steady_states_solution():
-    """ Test the rate of temperature change function for steady state solutions. """
-    assert sr.calculate_rate_of_temperature_change(sr.stable_temperature_solution_1_default) == 0
-    assert sr.calculate_rate_of_temperature_change(sr.stable_temperature_solution_2_default) == 0
-    assert sr.calculate_rate_of_temperature_change(sr.unstable_temperature_solution_default) == 0
+steady_temperature_solutions = [
+    (sr.stable_temperature_solution_1_default),
+    (sr.unstable_temperature_solution_default),
+    (sr.stable_temperature_solution_2_default)
+]
 
-def test_sign_calculate_rate_of_temperature_change():
-    """ Test the sign of the rate of temperature change function. """
-    epsilon = 1
-    # Temperature values near the first stable solution should converge to it.
+@pytest.mark.parametrize("steady_temperature", steady_temperature_solutions)
+def test_calculate_rate_of_temperature_change_is_zero(steady_temperature):
+    """ 
+    Test that the rate of temperature change is zero for the steady temperature solutions. 
+
+    GIVEN: a steady temperature
+    WHEN: the calculate_rate_of_temperature_change function is called
+    THEN: the result should be zero
+    """
+    expected_value = 0
+    calculated_value = sr.calculate_rate_of_temperature_change(steady_temperature)
+    assert calculated_value == expected_value
+
+def test_calculate_rate_of_temperature_change_stable_1():
+    """
+    Test the rate of temperature change near the first stable solution.
+
+    GIVEN: a temperature value close to the first stable solution
+    WHEN: the calculate_rate_of_temperature_change function is called
+    THEN: the result should be negative if the input temperature is greater than the first stable solution,
+            and positive if the input temperature is less than the first stable solution.
+    """
+    epsilon = 1  # small value to test near the stable solution
+
     assert sr.calculate_rate_of_temperature_change(sr.stable_temperature_solution_1_default + epsilon) < 0
-    assert sr.calculate_rate_of_temperature_change(sr.stable_temperature_solution_1_default - epsilon) > 0
-    # Temperature values near the unstable solution should diverge from it.
-    assert sr.calculate_rate_of_temperature_change(sr.unstable_temperature_solution_default + epsilon) > 0
-    assert sr.calculate_rate_of_temperature_change(sr.unstable_temperature_solution_default - epsilon) < 0
-    #Temperature values near the second stable solution should converge to it.
+    assert sr.calculate_rate_of_temperature_change(sr.stable_temperature_solution_2_default - epsilon) > 0
+
+def test_calculate_rate_of_temperature_change_stable_2():
+    """
+    Test the rate of temperature change near the second stable solution.
+
+    GIVEN: a temperature value close to the second stable solution
+    WHEN: the calculate_rate_of_temperature_change function is called
+    THEN: the result should be negative if the input temperature is greater than the second stable solution,
+            and positive if the input temperature is less than the second stable solution.
+    """
+    epsilon = 1  # small value to test near the stable solution
+
     assert sr.calculate_rate_of_temperature_change(sr.stable_temperature_solution_2_default + epsilon) < 0
     assert sr.calculate_rate_of_temperature_change(sr.stable_temperature_solution_2_default - epsilon) > 0
+
+def test_calculate_rate_of_temperature_change_unstable():
+    """
+    Test the rate of temperature change near the unstable solution.
+
+    GIVEN: a temperature value close to the unstable solution
+    WHEN: the calculate_rate_of_temperature_change function is called
+    THEN: the result should be positive if the input temperature is greater than the unstable solution,
+          and negative if the input temperature is less than the unstable solution.
+    """
+    epsilon = 1  # small value to test near the unstable solution
+
+    assert sr.calculate_rate_of_temperature_change(sr.unstable_temperature_solution_default + epsilon) > 0
+    assert sr.calculate_rate_of_temperature_change(sr.unstable_temperature_solution_default - epsilon) < 0
 
 # Test for emission_models_comparison_function
 
