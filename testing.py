@@ -547,25 +547,59 @@ def test_calculate_evolution_towards_steady_states_temperature_convergence():
 
 # Test find_peak_indices function
 
-def test_find_peak_indices():
-    """This function tests the find_peak_indices function."""
+def test_find_peak_indices_same_peak_index():
+    """
+    This function tests the find_peak_indices function when the peak index is the same for all simulations (rows).
+    
+    GIVEN: a frequency array with equal rows and a period
+    WHEN: the find_peak_indices function is called
+    THEN: the result should be an array of the same peak index for all simulations"""
 
     frequency = np.array([[1, 2, 3, 4, 5, 6, 7, 8, 9], [1, 2, 3, 4, 5, 6, 7, 8, 9]])
     period = 1.0
-    peak_indices = sr.find_peak_indices(frequency, period)
-    assert np.array_equal(peak_indices, np.array([0, 0]))
+    calculated_values = sr.find_peak_indices(frequency, period)
+    assert np.array_equal(calculated_values, np.array([0, 0]))
 
-    frequencies = np.array([[0.1, 0.2, 0.3, 0.4, 0.5], [0.2, 0.3, 0.4, 0.5, 0.6]])
-    peak_indices = sr.find_peak_indices(frequencies, period)
-    assert np.array_equal(peak_indices, np.array([4, 4]))
+def test_find_peak_indices_different_peak_index():
+    """
+    This function tests the find_peak_indices function when the peak index is different for all simulations (rows).
+    
+    GIVEN: a frequency array with different rows and a period
+    WHEN: the find_peak_indices function is called
+    THEN: the result should be an array of different peak indices for all simulations"""
 
-    period = 2.0
-    peak_indices = sr.find_peak_indices(frequencies, period)
-    assert np.array_equal(peak_indices, np.array([4, 3]))
+    frequency = np.array([[1, 2, 3, 4, 5, 6, 7, 8, 9], [2, 3, 4, 5, 6, 7, 8, 9, 10]])
+    period = 0.5
+    calculated_values = sr.find_peak_indices(frequency, period)
+    assert np.array_equal(calculated_values, np.array([1, 0]))
 
-    frequencies = np.array([[0.5, 0.1, 0.5],[0.5, 0.5, 0.5]])
-    peak_indices = sr.find_peak_indices(frequencies, period)
-    assert np.array_equal(peak_indices, np.array([0, 0]))
+def test_find_peak_indices_approximate_peak_index():
+    """
+    This function tests the find_peak_indices function when the peak index is not exact.
+
+    GIVEN: a period and a frequency array in which the value 1/period is not contained
+    WHEN: the find_peak_indices function is called
+    THEN: the result should be an array of approximate peak indices for all simulations
+    """
+    
+    frequencies = np.array([[3, 4], [0, 1]])
+    period = 0.5
+    calculated_values = sr.find_peak_indices(frequencies, period)
+    assert np.array_equal(calculated_values, np.array([0, 1]))
+
+def test_find_peak_indices_multiple():
+    """
+    This function tests the find_peak_indices function when the desired frequency is contained more that once.
+
+    GIVEN: a period and a frequency array in which the value 1/period is contained more than once
+    WHEN: the find_peak_indices function is called
+    THEN: the result should be an array containing just the first occurrence of 1/period for each row.
+    """
+
+    frequencies = np.array([[1,1,1], [1, 1, 1]])
+    period = 1
+    calculated_values = sr.find_peak_indices(frequencies, period)
+    assert np.array_equal(calculated_values, np.array([0, 0]))
 
 # Test for calculate_peaks function
 
