@@ -1,4 +1,4 @@
-# Stochastic-Resonance-Simulation
+# Stochastic Resonance Simulation for a Climate Model
 
 ## General Introduction and Objective of the Repository
 
@@ -33,15 +33,15 @@ $$
 
 Where:
 
-- \(T\) represents Earth's temperature [K].
-- \(C\) represents the surface thermal capacity of the Earth [J/m² K].
-- \(F(T)\) is the deterministic part of the equation that accounts for the Milanković cycles and stable and unstable temperature solutions. Stable temperatures are values to which the system converges, such as the average glacial and interglacial temperatures on Earth. The unstable solution is an unobservable solution located midway between these two extremes.
-- \(W\) is a one-dimensional Wiener process that models the random variability of temperature on much shorter timescales than those considered in the deterministic model.
-- \(\sigma^2 [K^2/year]\) represents the variance of this noise and can be adjusted to study how different levels of variability can affect temperature behavior under various conditions.
+- $T$ represents Earth's temperature [K].
+- $C$ represents the surface thermal capacity of the Earth [J/m² K].
+- $F(T)$ is the deterministic part of the equation that accounts for the Milanković cycles and stable and unstable temperature solutions. Stable temperatures are values to which the system converges, such as the average glacial and interglacial temperatures on Earth. The unstable solution is an unobservable solution located midway between these two extremes.
+- $W$ is a one-dimensional Wiener process that models the random variability of temperature on much shorter timescales than those considered in the deterministic model.
+- $\sigma^2$ [K^2/year] represents the variance of this noise and can be adjusted to study how different levels of variability can affect temperature behavior under various conditions.
 
 In essence, the true innovation of the proposed model is the introduction of the stochastic term in the equation.
 
-This new term allows us to explore how climatic variability, can influence the evolution of Earth's temperature. In particular, researchers have found that for a certain value of the noise variance $ \sigma^2 $, there is an amplification of the periodic signal in the power spectrum, leading to an amplification of the Milanković Cycles.
+This new term allows us to explore how climatic variability, can influence the evolution of Earth's temperature. In particular, researchers have found that for a certain value of the noise variance $\sigma^2$, there is an amplification of the periodic signal in the power spectrum, leading to an amplification of the Milanković Cycles.
 
 The equation can be numerically solved in various ways, but in this project, the Forward Euler method was used, which is explained in more detail below.
 
@@ -69,17 +69,17 @@ The Forward Euler discretization method allows us to simulate temperature evolut
 
 To execute the simulation and visualize the results, follow these steps:
 
-1. **Download the Repository:** Begin by downloading the project repository to your local machine. You can do this by using the `git clone` command in your terminal or command prompt: ' git clone <repository_url>'
+1. **Download the Repository:** Begin by downloading the project repository to your local machine. You can do this by using the `git clone` command in your terminal or command prompt: `git clone <repository_url>`
 
-2. **Running the Simulation:** After cloning the repository, execute the simulation by running `simulation.py` from the command line and specifying the desired configuration file: 'python simulation.py configuration.txt'.
+2. **Running the Simulation:** After cloning the repository, execute the simulation by running `simulation.py` from the command line and specifying the desired configuration file: `python simulation.py configuration.txt`.
 
-This step generates data files and saves them in the `data` folder.
+This step generates data files and saves them in the *data* folder.
 
-3. **Generating Plots:** After running the simulation, create plots to visualize the results using `plots.py` with the chosen configuration file: 'python plots.py configuration.txt'.
+3. **Generating Plots:** After running the simulation, create plots to visualize the results using `plots.py` with the chosen configuration file: `python plots.py configuration.txt`.
 
-The plots are saved in the `images` folder.
+The plots are saved in the *images* folder.
 
-5. **Running Tests:** To run tests and ensure the correctness of the project, use `pytest` to execute the testing file `testing.py`.
+5. **Running Tests:** To run tests and ensure the correctness of the project, use `pytest` to execute the testing file `testing.py`. From the command line run `pytest testing.py`. Make sure you have pytest installed in your Python environment.
 
 ### Creating a New Configuration File
 
@@ -87,43 +87,43 @@ To create a new configuration file for the simulation, follow these guidelines:
 
 1. **Configuration Sections:**
 
-   The configuration file should have three sections: `settings`, `data_paths`, and `image_paths`.
+   The configuration file should have three sections: named *settings*, *data_paths*, and *image_paths*.
 
-2. **`settings` Section:**
+2. **settings Section:**
 
-   In the `settings` section, specify the constants and simulation parameters (see the section *Simulation Parameters and Configuration File*).
+   In the *settings* section, specify the constants and simulation parameters (see the section *Simulation Parameters and Configuration File*).
 
-3. **`data_paths` Section:**
+3. **data_paths Section:**
 
-   In the `data_paths` section of the configuration file, specify the file paths for data storage as follows:
+   In the *data_paths* section of the configuration file, specify the file paths for data storage as follows:
 
-   - `temperatures_for_emission_models_comparison`: Path to store temperature data used for emission models comparison.
-   - `emitted_radiation_for_emission_models_comparison`: Path to store emitted radiation data used for emission models comparison.
-   - `F_for_emission_models_comparison`: Path to store rate of temperature change used for emission models comparison.
-   - `times_for_evolution_towards_steady_states`: Path to store time data for evolution towards steady states.
-   - `temperatures_for_evolution_towards_steady_states`: Path to store temperature data for evolution towards steady states.
-   - `times`: Path to store time values.
-   - `temperatures`: Path to store temperature values.
-   - `frequencies`: Path to store frequency data used for power spectra plots.
-   - `averaged_PSD`: Path to store averaged power spectral density data.
-   - `peak_heights_in_PSD`: Path to store peak heights data in power spectral density.
-   - `times_combinations`: Path to store time data for combinations data.
-   - `temperatures_combinations`: Path to store temperature data for combinations data.
+   - *temperatures_for_emission_models_comparison*: Path to store temperature data used for emission models comparison.
+   - *emitted_radiation_for_emission_models_comparison*: Path to store emitted radiation data used for emission models comparison.
+   - *F_for_emission_models_comparison*: Path to store rate of temperature change used for emission models comparison.
+   - *times_for_evolution_towards_steady_states*: Path to store time data for evolution towards steady states.
+   - *temperatures_for_evolution_towards_steady_states*: Path to store temperature data for evolution towards steady states.
+   - *times*: Path to store time values.
+   - *temperatures*: Path to store temperature values.
+   - *frequencies*: Path to store frequency data used for power spectra plots.
+   - *averaged_PSD*: Path to store averaged power spectral density data.
+   - *peak_heights_in_PSD*: Path to store peak heights data in power spectral density.
+   - *times_combinations*: Path to store time data for combinations data.
+   - *temperatures_combinations*: Path to store temperature data for combinations data.
 
-4. **`image_paths` Section:**
+4. **image_paths Section:**
 
-   In the `image_paths` section of the configuration file, specify paths for storing generated images as follows:
+   In the *image_paths* section of the configuration file, specify paths for storing generated images as follows:
 
-   - `emission_models_comparison_plots`: Path to save plots for emission models comparison.
-   - `temperatures_towards_steady_states_plot`: Path to save the plot showing temperature convergence towards stable solutions.
-   - `power_spectra_plots`: Path to save power spectra plots.
-   - `peak_heights_plot`: Path to save the plot displaying peak heights in power spectral density.
-   - `temperature_combinations_plots`: Path to save plots showing temperature evolution for specific noise variance combinations.
+   - *emission_models_comparison_plots*: Path to save plots for emission models comparison.
+   - *temperatures_towards_steady_states_plot*: Path to save the plot showing temperature convergence towards stable solutions.
+   - *power_spectra_plots*: Path to save power spectra plots.
+   - *peak_heights_plot*: Path to save the plot displaying peak heights in power spectral density.
+   - *temperature_combinations_plots*: Path to save plots showing temperature evolution for specific noise variance combinations.
 
 
 Now you can create a custom configuration file by specifying values for these parameters and paths.
 
-To run the simulation with your custom configuration file, follow the same steps described in the "Running the Simulation and Plotting Results" section, but replace 'configuration.txt' with the name of your custom configuration file.
+To run the simulation with your custom configuration file, follow the same steps described in the *Running the Simulation and Plotting Results* section, but replace *configuration.txt* with the name of your custom configuration file.
 
 ### Project Files
 
@@ -131,25 +131,27 @@ The project consists of the following key files:
 
 - **`configuration.txt`**: The configuration file where simulation parameters and file paths are specified.
 - **`stochastic_resonance.py`**: Contains function definitions required for the simulation.
-- **`testing.py`**: Contains unit tests for functions in `stochastic_resonance.py`.
-- **`simulation.py`**: The main script for running simulations, reading parameters from the configuration file, and saving data to the `data` folder.
-- **`plots.py`**: Contains functions for generating plots based on the data generated by `simulation.py`.
+- **`testing.py`**: Contains unit tests for functions in *stochastic_resonance.py*.
+- **`simulation.py`**: The main script for running simulations, reading parameters from the configuration file, and saving data to the *data* folder.
+- **`plots.py`**: Contains functions for generating plots based on the data generated by *simulation.py*.
 - **`aesthetics.py`**: Provides functions for enhancing user interaction, including a progress bar and text formatting.
 
 ### Meaning of the obtained plots and examples
 
-The 'images' folder contains 5 different graphs. Below, I will explain how they were obtained and display the results when the simulation is run with the 'configuration.txt' configuration file.
+The *images* folder contains 5 different graphs. Below, I will explain how they were obtained and display the results.
 
 1. **emission_models_comparison_plots.png**:
+
 In the *Additional Model Details* section, two different approaches for calculating emitted radiation as a function of temperature are discussed. The first model employs the Stefan-Boltzmann law for a black body, while the second model utilizes a linear approximation (as described in [^4]).
-The 'emission_models_comparison_plots' graph aims to compare these two models. It consists of two subplots:
+The *emission_models_comparison_plots* graph aims to compare these two models. It consists of two subplots:
 - *Emitted radiation comparison*: The first subplot displays the emitted radiation as a function of temperature, computed using both models. This allows us to visually compare how these models estimate radiation emissions across the temperature range of interest. The temperatures considered for this comparison are those relevant to the model, spanning from 10 degrees Kelvin below the first stable temperature to 10 Kelvin above the second stable temperature.
 - *Deterministic Term Comparison*:  The second subplot demonstrates the deterministic term of the temperature evolution equation, denoted as $F(T)$, calculated for both models. Similar to the first subplot, this provides a comparative view of how the deterministic terms differ between the two models over the specified temperature range.
 
 ![This graph compares the linear emission model and the black body emission model](./images/emission_models_comparison_plots.png)
 
 2.**temperatures_towards_steady_states_plot.png**:
-The graph **temperatures_towards_steady_states_plot.png** illustrates the temperature evolution over time when neither the noise term nor the periodic forcing are considered. It represents the solution to the temperature equation:
+
+The graph *temperatures_towards_steady_states_plot.png* illustrates the temperature evolution over time when neither the noise term nor the periodic forcing are considered. It represents the solution to the temperature equation:
 
 $$
 \frac{dT}{dt} = F(T)
@@ -164,24 +166,26 @@ The graph is generated by plotting the temperature's evolution for various initi
 The graph displays various power spectra for different noise intensities. Please note that the vertical axis is presented in a logarithmic scale. 
 These graphs were obtained through the following steps:
 
-- For each noise variance value (you can specify these values in the configuration file, including the minimum variance (variance_start), maximum variance (variance_end), and the number of evenly distributed variance values to analyze within this range (num_variances)), a specific number of temperature evolution simulations are conducted. To be precise, for each variance value, the number of simulations matches the value specified in the configuration file (num_simulations).
+- For each noise variance value (*you can specify these values in the configuration file, including the minimum variance (variance_start), maximum variance (variance_end), and the number of evenly distributed variance values to analyze within this range (num_variances)*), a specific number of temperature evolution simulations are conducted. To be precise, for each variance value, the number of simulations matches the value specified in the configuration file (*num_simulations*).
 
-- The power spectrum of each simulation (total number: num_simulations*num_variances) is then calculated.
+- The power spectrum of each simulation (total number is *num_simulations*$\cdot$*num_variances*) is then calculated.
 
 - The power spectra calculated for each noise value in then found by averaging the simulations done for that specific noise value.
 
-The resulting graphs represent the averaged simulations for each noise value. It's worth noting that the peak of interest is located at the frequency of 1/forcing_period, where forcing_period is specified in the configuration file and should correspond to the period of the longest Milankovitch cycle ($10^{5}$ years).
+The resulting graphs represent the averaged simulations for each noise value. It's worth noting that the peak of interest is located at the frequency of $\frac{1}{p}$, where p is the forcing_period specified in the configuration file. This forcing_period corresponds to the period of the longest Milankovitch cycle ($10^{5}$ years).
 
 ![This graph shows the power spectrum for each noise intensity value](./images/power_spectra_plots.png)
 
 4. **peak_heights_plot.png**:
+
 This graph displays the calculated peak height in the power spectrum for each noise intensity.
 
-For each averaged power spectrum shown in the power_spectra_plots.png graph, the peak height corresponding to the frequency 1/forcing_period is computed. This value is then adjusted by subtracting the peak's baseline, which is calculated as an average of nearby values. The graph illustrates how the peak height varies across different noise intensities. The maximum peak height occurs at the variance value corresponding to the phenomenon of stochastic resonance.
+For each averaged power spectrum shown in the *power_spectra_plots.png* graph, the peak height corresponding to the forcing frequency (inverse of the forcing_period) is computed. This value is then adjusted by subtracting the peak's baseline, which is calculated as an average of nearby values. The graph illustrates how the peak height varies across different noise intensities. The maximum peak height occurs at the variance value corresponding to the phenomenon of stochastic resonance.
 
 ![This graph shows the peak height as a function of the noise intensity value](./images/peak_heights_plot.png)
 
-5. **temperature_combinations_plots.png**
+5. **temperature_combinations_plots.png**:
+
 This graph illustrates the temperature evolution in four different scenarios:
 - When neither periodic forcing nor noise is introduced into the system.
 - When the system includes periodic forcing but not noise.
@@ -298,7 +302,7 @@ $$
 
 Where, $\sigma_{SB}$ represents the Stefan-Boltzmann constant.
 
-2. **Linear Approximation:** In this approach, $\epsilon(T)$ is linearly approximated to better fit empirical data observed within the range of temperatures of interest (see the article [^4]) :
+2. *Linear Approximation:* In this approach, $\epsilon(T)$ is linearly approximated to better fit empirical data observed within the range of temperatures of interest (see the article [^4]) :
 
 $$
 \epsilon(T) = A + B \cdot T
@@ -306,7 +310,7 @@ $$
 
 In this equation, $A = -339.647 W \cdot m^{-2}$ and $B = 2.218 W \cdot m^{-2} K^{-1}$ are parameters estimated based on empirical data [^4].
 
-The function responsible for calculating Earth's emitted radiation, depending on the selected model, is implemented in the 'stochastic_resonance.py' module and is named 'emitted_radiation'. This function takes as input the 'emission_model' parameter, which can take values 'linear' or 'black body' to specify the chosen model for simulations. It's important to note that the choice between these two models does not significantly impact the final results. A comparison between the two models is available in the 'emission_models_comparison_plots.png' graph within the 'images' folder. Additionally, to adapt to the extended time scales considered in the analysis, parameters A and B, as well as the Stefan-Boltzmann constant in the black body model, have been converted so that years serve as the unit of time rather than seconds.
+The function responsible for calculating Earth's emitted radiation, depending on the selected model, is implemented in the *stochastic_resonance.py* module and is named *emitted_radiation*. This function takes as input the *emission_model* parameter, which can take values *linear* or *black body* to specify the chosen model for simulations. It's important to note that the choice between these two models does not significantly impact the final results. A comparison between the two models is available in the *emission_models_comparison_plots.png* graph within the *images* folder. Additionally, to adapt to the extended time scales considered in the analysis, parameters A and B, as well as the Stefan-Boltzmann constant in the black body model, have been converted so that years serve as the unit of time rather than seconds.
 
 - **Periodic Modulation of Solar Radiation** ( $\mu(t)$ )
 
@@ -318,44 +322,44 @@ $$
 
 Here, $\omega$ represents the angular frequency of the oscillation, and $A$ is the amplitude of the oscillation. Since the period of this oscillation corresponds to the longest Milankovitch cycle (refer to the section *Observations of Past Climate and the Milankovitch Cycles*), the angular frequency is defined as $\omega = \frac{2 \pi}{10^{5}}$. Furthermore, the amplitude A is a small parameter, with an estimated value of approximately $A = 0.0005$.
 
-The function responsible for calculating this modulation is implemented in the 'stochastic_resonance.py' module and is named 'periodic_forcing'.
+The function responsible for calculating this modulation is implemented in the *stochastic_resonance.py* module and is named *periodic_forcing*.
 
 
 ### Simulation Parameters and Configuration File
 
-The project includes a configuration file named 'configuration.txt,' divided into three distinct sections. In the [settings] section, various simulation parameters are specified. Here, we explain each parameter in detail:
+The project includes a configuration file named *configuration.txt*, divided into three distinct sections. In the settings section, various simulation parameters are specified. Here, we explain each parameter in detail:
 
-- `stable_temperature_solution_1`: This represents the stable lower temperature solution, denoted as $T_1$ in the model. It corresponds to the average Earth temperature during the glacial era and should be specified in Kelvin. The suggested value in the 'configuration.txt' file is 280 K.
+- **stable_temperature_solution_1**: This represents the stable lower temperature solution, denoted as $T_1$ in the model. It corresponds to the average Earth temperature during the glacial era and should be specified in Kelvin. The suggested value in the *configuration.txt* file is 280 K.
 
-- `unstable_temperature_solution`: This parameter represents the unstable temperature solution, denoted as $T_2$ in the model (it is unobserved). It should be specified in Kelvin and, for simplicity, is typically set halfway between the first and second stable solutions. In the 'configuration.txt' file, its value is 285 K.
+- **unstable_temperature_solution**: This parameter represents the unstable temperature solution, denoted as $T_2$ in the model (it is unobserved). It should be specified in Kelvin and, for simplicity, is typically set halfway between the first and second stable solutions. In the *configuration.txt* file, its value is 285 K.
 
-- `stable_temperature_solution_2`: This corresponds to the stable higher temperature solution, denoted as $T_3$ in the model. It represents the average Earth temperature during the interglacial era and should be specified in Kelvin. The suggested value in the 'configuration.txt' file is 290 K. Note that the observed temperature difference between the glacial and interglacial epochs is approximately 10K.
+- **stable_temperature_solution_2**: This corresponds to the stable higher temperature solution, denoted as $T_3$ in the model. It represents the average Earth temperature during the interglacial era and should be specified in Kelvin. The suggested value in the *configuration.txt* file is 290 K. Note that the observed temperature difference between the glacial and interglacial epochs is approximately 10K.
 
-- `surface_earth_thermal_capacity`: This parameter signifies the thermal capacity of the Earth's surface per unit area ($C$). It should be specified in J/m²K. The suggested value in the 'configuration.txt' file is $0.31 \cdot 10^{9} J/m^2 K$.
+- **surface_earth_thermal_capacity**: This parameter signifies the thermal capacity of the Earth's surface per unit area ($C$). It should be specified in J/m²K. The suggested value in the *configuration.txt* file is $0.31 \cdot 10^{9} J/m^2 K$.
 
-- `relaxation_time`: This represents the system's relaxation time in years ($\tau$ in the model). In the 'configuration.txt' file, its value is set to 13 years. In the article by Benzi et al. [^2], its value is reported as 8 years.
+- **relaxation_time**: This represents the system's relaxation time in years ($\tau$ in the model). In the *configuration.txt* file, its value is set to 13 years. In the article by Benzi et al. [^2], its value is reported as 8 years.
 
-- `emission_model`: This parameter denotes the model used for simulating Earth's emitted radiation. The possible values are 'linear' and 'black body.' In the 'configuration.txt' file, its value is 'linear.'
+- **emission_model**: This parameter denotes the model used for simulating Earth's emitted radiation. The possible values are *linear* and *black body*. In the *configuration.txt* file, its value is *linear*.
 
-- `forcing_amplitude`: This is the amplitude $A$ of the periodic modulation of incident solar radiation. Its value in the 'configuration.txt' file is 0.0005.
+- **forcing_amplitude**: This is the amplitude $A$ of the periodic modulation of incident solar radiation. Its value in the *configuration.txt* file is 0.0005.
 
-- `forcing_period`: This signifies the period of the periodic modulation of incident solar radiation. Its value corresponds to the longest Milankovitch cycle, which is $10^5$ years, as specified in the 'configuration.txt' file.
+- **forcing_period**: This signifies the period of the periodic modulation of incident solar radiation. Its value corresponds to the longest Milankovitch cycle, which is $10^5$ years, as specified in the *configuration.txt* file.
 
-Additionally, there are some more general parameters related to the simulation of temperature evolution (refer to the section "Forward Euler Discretization"). These include:
+Additionally, there are some more general parameters related to the simulation of temperature evolution (refer to the section *Forward Euler Discretization*). These include:
 
-- `num_steps`: The number of time steps in the simulation. The value in the 'configuration.txt' file is 1,000,000.
+- **num_steps**: The number of time steps in the simulation. The value in the *configuration.txt* file is 1,000,000.
 
-- `num_simulations`: The number of simulations to run for each noise intensity level. In the 'configuration.txt' file, its value is 10.
+- **num_simulations**: The number of simulations to run for each noise intensity level. In the *configuration.txt* file, its value is 10.
 
-- `time_step`: The time step for each simulation in years. In the 'configuration.txt' file, its value is 1 year.
+- **time_step**: The time step for each simulation in years. In the *configuration.txt* file, its value is 1 year.
 
-Lastly, the temperature evolution is simulated for various noise intensities. The 'configuration.txt' file specifies the starting noise variance, ending noise variance, and the number of equispaced variance levels to simulate the temperature evolution.
+Lastly, the temperature evolution is simulated for various noise intensities. The *configuration.txt* file specifies the starting noise variance, ending noise variance, and the number of equispaced variance levels to simulate the temperature evolution.
 
-- `variance_start`: Starting variance for noise intensity. In the 'configuration.txt' file, it is set to 0.01 [K^2/year].
+- **variance_start**: Starting variance for noise intensity. In the *configuration.txt* file, it is set to 0.01 [K^2/year].
 
-- `variance_end`: Ending variance for noise intensity. In the 'configuration.txt' file, it is set to 0.3 [K^2/year].
+- **variance_end**: Ending variance for noise intensity. In the *configuration.txt* file, it is set to 0.3 [K^2/year].
 
-- `num_variances`: Number of variance levels to simulate.
+- **num_variances**: Number of variance levels to simulate.
 
 
 ## References
