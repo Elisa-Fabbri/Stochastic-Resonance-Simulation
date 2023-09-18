@@ -717,3 +717,93 @@ def test_calculate_peak_height_zero():
     assert np.array_equal(peak_height, np.array([0.0, 0.0, 0.0]))
 
 # Test for simulate_ito_combinations_and_collect_results function
+
+def test_simulate_ito_combinations_and_collect_results_time_length():
+    """
+    Test if the time returned by the simulate_ito_combinations_and_collect_results function is of length 4.
+
+    GIVEN: the default parameters with reduced number of steps (num_steps = 100)
+    WHEN: the simulate_ito_combinations_and_collect_results function is called
+    THEN: the time returned should have the correct length (4)
+    """
+    rn.seed(42)
+    calculated_values = sr.simulate_ito_combinations_and_collect_results(
+        num_steps=100,
+        )
+    expected_value = 4
+    assert len(calculated_values[0]) == expected_value
+
+def test_simulate_ito_combinations_and_collect_results_temperature_length():
+    """
+    Test if the temperature returned by the simulate_ito_combinations_and_collect_results function is of length 4.
+
+    GIVEN: the default parameters with reduced number of steps (num_steps = 100)
+    WHEN: the simulate_ito_combinations_and_collect_results function is called
+    THEN: the temperature returned should have the correct length (4)
+    """
+    rn.seed(42)
+    calculated_values = sr.simulate_ito_combinations_and_collect_results(
+        num_steps=100,
+        )
+    expected_value = 4
+    assert len(calculated_values[1]) == expected_value
+
+def test_simulate_ito_combinations_and_collect_results_time_type():
+    """
+    Test if the time returned by the simulate_ito_combinations_and_collect_results function is of type list.
+
+    GIVEN: the default parameters with reduced number of steps (num_steps = 100)
+    WHEN: the simulate_ito_combinations_and_collect_results function is called
+    THEN: the time returned should be of type list
+    """
+    rn.seed(42)
+    calculated_values = sr.simulate_ito_combinations_and_collect_results(
+        num_steps=100,
+        )
+    assert isinstance(calculated_values[0], list)
+
+def test_simulate_ito_combinations_and_collect_results_temperature_type():
+    """
+    Test if the temperature returned by the simulate_ito_combinations_and_collect_results function is of type list.
+
+    GIVEN: the default parameters with reduced number of steps (num_steps = 100)
+    WHEN: the simulate_ito_combinations_and_collect_results function is called
+    THEN: the temperature returned should be of type list
+    """
+    rn.seed(42)
+    calculated_values = sr.simulate_ito_combinations_and_collect_results(
+        num_steps=100,
+        )
+    assert isinstance(calculated_values[1], list)
+
+def test_simulate_ito_combinations_and_collect_results_time_sequences_length():
+    """
+    Test if the time sequences returned by the simulate_ito_combinations_and_collect_results function have the correct length.
+
+    GIVEN: the default parameters with reduced number of steps (num_steps = 100)
+    WHEN: the simulate_ito_combinations_and_collect_results function is called
+    THEN: the time sequences returned should have the correct length (num_steps = 100)
+    """
+    rn.seed(42)
+    calculated_values = sr.simulate_ito_combinations_and_collect_results(
+        num_steps=100,
+        )
+    expected_value = 100
+    for time_sequence in calculated_values[0]:
+        assert len(time_sequence) == expected_value
+
+def test_simulate_ito_combinations_and_collect_results_temperature_sequences_shape():
+    """
+    Test if the temperature sequences returned by the simulate_ito_combinations_and_collect_results function have the correct shape
+
+    GIVEN: the default parameters with reduced number of steps (num_steps = 100)
+    WHEN: the simulate_ito_combinations_and_collect_results function is called
+    THEN: the temperature sequences returned should have the correct shape (num_simulations = 1, num_steps = 100)
+    """
+    rn.seed(42)
+    calculated_values = sr.simulate_ito_combinations_and_collect_results(
+        num_steps=100,
+        )
+    expected_value = (1, 100)
+    for temperature_sequence in calculated_values[1]:
+        assert temperature_sequence.shape == expected_value
