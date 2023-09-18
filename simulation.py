@@ -1,3 +1,12 @@
+"""
+This module contains the main script for the simulation of the stochastic resonance mechanism for the
+Earth's climate model.
+
+The script reads a configuration file for the simulation parameters and saves the results in the
+specified paths (all this files are contained in the data folder).
+
+"""
+
 import configparser
 import sys
 from os import makedirs
@@ -64,16 +73,18 @@ peak_heights_in_PSD_destination = config['data_paths'].get('peak_heights_in_PSD'
 times_combinations_destination = config['data_paths'].get('times_combinations')
 temperatures_combinations_destination = config['data_paths'].get('temperatures_combinations')
 
-#------Generation of data for the emission models comparison----------------------------------
+#------Generation of data for the emission models comparison--------------
 
 print('Calculating times and temperature values for comparing emission models...')
 
-temperatures_values, emitted_radiation_values, F_values = sr.emission_models_comparison(surface_thermal_capacity = C_years,
+temperatures_values, emitted_radiation_values, F_values = sr.emission_models_comparison(
+    										surface_thermal_capacity = C_years,
 											relaxation_time = relaxation_time,
 											stable_temperature_solution_1 = stable_temperature_solution_1,
 											unstable_temperature_solution = unstable_temperature_solution,
 											stable_temperature_solution_2 = stable_temperature_solution_2)
 
+#Saving data
 np.save(temperatures_for_emission_models_comparison_destination, temperatures_values)
 np.save(emitted_radiation_for_emission_models_comparison_destination, emitted_radiation_values)
 np.save(F_for_emission_models_comparison_destination, F_values)
@@ -81,20 +92,27 @@ np.save(F_for_emission_models_comparison_destination, F_values)
 with aes.green_text():
     print('Results saved!')
 
-#----Generation of data for showing the evolution of temperature towards steady states----------
+#----Generation of data for showing the evolution of temperature towards steady states---------
 
 print('Calculating temperature evolution data without noise or periodic forcing...')
-evolution_towards_steady_states_time, evolution_towards_steady_states_temperature = sr.calculate_evolution_towards_steady_states(surface_thermal_capacity = C_years,
-																 relaxation_time = relaxation_time,
-																 stable_temperature_solution_1 = stable_temperature_solution_1,
-																 unstable_temperature_solution = unstable_temperature_solution,
-																 stable_temperature_solution_2 = stable_temperature_solution_2,
-																 forcing_amplitude = forcing_amplitude,
-																 forcing_angular_frequency = forcing_angular_frequency,
-																 emission_model = emission_model)
+evolution_towards_steady_states_time, evolution_towards_steady_states_temperature = \
+    sr.calculate_evolution_towards_steady_states(
+        surface_thermal_capacity=C_years,
+        relaxation_time=relaxation_time,
+        stable_temperature_solution_1=stable_temperature_solution_1,
+        unstable_temperature_solution=unstable_temperature_solution,
+        stable_temperature_solution_2=stable_temperature_solution_2,
+        forcing_amplitude=forcing_amplitude,
+        forcing_angular_frequency=forcing_angular_frequency,
+        emission_model=emission_model
+    )
 
-np.save(times_for_evolution_towards_steady_states_destination, evolution_towards_steady_states_time)
-np.save(temperatures_for_evolution_towards_steady_states_destination, evolution_towards_steady_states_temperature)
+#Saving data
+
+np.save(times_for_evolution_towards_steady_states_destination, 
+        evolution_towards_steady_states_time)
+np.save(temperatures_for_evolution_towards_steady_states_destination, 
+        evolution_towards_steady_states_temperature)
 
 with aes.green_text():
     print('Results saved!')
@@ -190,7 +208,8 @@ print(f'Stochastic resonance mechanism found at variance value: {V_SR:.3f}')
 
 print('Simulating Temperature Combinations: Periodic Forcing, No Forcing, Noise, and No Noise...')
 
-time_combinations, temperatures_combinations = sr.simulate_ito_combinations_and_collect_results(T_start = stable_temperature_solution_2,
+time_combinations, temperatures_combinations = sr.simulate_ito_combinations_and_collect_results(
+    											T_start = stable_temperature_solution_2,
 												noise_variance = V_SR,
 												dt = time_step,
 												num_steps = num_steps,

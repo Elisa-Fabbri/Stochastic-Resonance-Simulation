@@ -1,3 +1,25 @@
+"""
+This module contains the definition of the functions used in the stochastic resonance project.
+
+In particular, it contains the following functions:
+- emitted_radiation: Calculate the emitted radiation from the Earth's surface based on the 
+  chosen emission model.
+- periodic_forcing: Calculate the periodic forcing applied to the system.
+- calculate_rate_of_temperature_change: Calculate the rate of temperature change (dT/dt) 
+  given a certain temperature (T)
+  using a specified emission model for the computation of the constant beta.
+- emission_models_comparison: Compare emitted radiation and rate of temperature change for 'linear' and 'black body'
+  emission models.
+- simulate_ito: Simulate temperature using the Itô stochastic differential equation.
+- calculate_evolution_towards_steady_states: Calculate temperature evolution towards steady states.
+- find_peak_indices: Find indices of theoretically predicted peaks in a frequency spectrum.
+- calculate_peaks: Calculate the values of peaks in a power spectral density.
+- calculate_peaks_base: Calculate the values of the base of the peaks in a power spectral density.
+- calculate_peak_height: Calculate the heights of peaks in a power spectral density.
+- simulate_ito_combinations_and_collect_results: Simulate temperature with various combinations of 
+  noise and forcing.
+"""
+
 import numpy as np
 import aesthetics as aes
 
@@ -16,11 +38,12 @@ emission_model_default = 'linear'
 #periodic forcing constants:
 forcing_amplitude_default = 0.0005
 forcing_period_default = 1e5
-forcing_angular_frequency_default = (2*np.pi)/forcing_period_default #computes the angular frequency of the periodic forcing
+forcing_angular_frequency_default = (2*np.pi)/forcing_period_default #computes the angular frequency 
+                                                                     #of the periodic forcing
 
 num_sec_in_a_year = 365.25*24*60*60
 #the following line of code converts the earth thermal capacity from J/(m^2 K) to kg/(year^2 K)
-surface_earth_thermal_capacity_in_years = surface_earth_thermal_capacity_j_per_m2_K*np.power(num_sec_in_a_year,2)
+surface_earth_thermal_capacity_in_years = surface_earth_thermal_capacity_j_per_m2_K*(num_sec_in_a_year**2)
 
 #parameters for the simulation (used in the simulate ito function):
 time_step_default = 1 # year
@@ -33,16 +56,18 @@ def emitted_radiation(temperature,
     """
     Calculate the emitted radiation from the Earth's surface based on the chosen emission model.
 
-    This function calculates the radiation emitted from the Earth's surface based on the specified emission model.
-    The emission model can be either 'linear' or 'black body'. The emitted radiation is computed using the given
-    temperature and conversion factor.
+    This function calculates the radiation emitted from the Earth's surface based on the 
+    specified emission model.
+    The emission model can be either 'linear' or 'black body'. 
+    The emitted radiation is computed using the given temperature and conversion factor.
 
     Parameters:
     - temperature (float): The temperature of the Earth's surface in Kelvin. It must be a non-negative value.
     - emission_model (str, optional): The emission model to use, which can be 'linear' or 'black body'.
       Default is 'linear'.
-    - conversion_factor (float, optional): The conversion factor for time units to calculate the emitted radiation,
-      measured in kg/year^3. The default is set to the number of seconds in a year.
+    - conversion_factor (float, optional): The conversion factor for time units to calculate the 
+      emitted radiation, measured in kg/year^3. 
+      The default is set to the number of seconds in a year.
 
     Returns:
     - emitted_radiation (float): The calculated emitted radiation in kg/year^3.
@@ -50,7 +75,12 @@ def emitted_radiation(temperature,
     Raises:
     - ValueError: If an invalid emission model is selected. Valid options are 'linear' or 'black body'.
     - ValueError: If the temperature is not a non-negative value.
+
+    Notes:
+    For an explanation on the linear model and on the values of the parameters A and B,
+    see `<https://www.pnas.org/doi/10.1073/pnas.1809868115>`.
     """
+
     if np.any(temperature < 0):
         raise ValueError('Temperature in Kelvin must be non-negative.')
     
@@ -72,16 +102,18 @@ def periodic_forcing(time,
     """
     Calculate the periodic forcing applied to the system.
 
-    This function calculates the periodic forcing applied to a system at a given time or times. The periodic forcing is
-    modeled as an oscillatory function of time.
+    This function calculates the periodic forcing applied to a system at a given time or times. 
+    The periodic forcing is modeled as an oscillatory function of time.
 
     Parameters:
     - time (float or array-like): The time or times at which to calculate the periodic forcing.
     - amplitude (float, optional): The amplitude of the periodic forcing. Default is 0.0005.
-    - angular_frequency (float, optional): The angular frequency of the periodic forcing. Default is (2 * pi) / 1e5.
+    - angular_frequency (float, optional): The angular frequency of the periodic forcing. 
+      Default is (2 * pi) / 1e5.
 
     Returns:
-    - periodic_forcing (float or array-like): The calculated periodic forcing values corresponding to the input time(s).
+    - periodic_forcing (float or array-like): The calculated periodic forcing values corresponding to 
+      the input time(s).
 
     Raises:
     - ValueError: If the time is a negative value.
@@ -102,37 +134,48 @@ def calculate_rate_of_temperature_change(temperature,
       					 periodic_forcing_value = 1):
 
     """
-    Calculate the rate of temperature change (dT/dt) given a certain temperature (T) using a specified emission model
-    for the computation of the constant beta.
+    Calculate the rate of temperature change (dT/dt) given a certain temperature (T) using a 
+    specified emission model for the computation of the constant beta.
 
-    This function calculates the rate of temperature change (dT/dt) at a specified temperature (T) using a specified emission
-    model for the computation of the constant beta.
+    This function calculates the rate of temperature change (dT/dt) at a specified temperature (T) 
+    using a specified emission model for the computation of the constant beta.
 
     Parameters:
-    - temperature (float): The temperature in Kelvin at which to calculate the rate of temperature change (dT/dt).
-    - surface_thermal_capacity (float, optional): The surface thermal capacity in kg per square year per Kelvin. Default
-    corresponds to 0.31e9 joules per square meter per Kelvin.
+    - temperature (float): The temperature in Kelvin at which to calculate the rate of 
+      temperature change (dT/dt).
+    - surface_thermal_capacity (float, optional): The surface thermal capacity in kg per square year per Kelvin. 
+      Default corresponds to 0.31e9 joules per square meter per Kelvin.
     - relaxation_time (float, optional): The relaxation time in years. Default is 13.
-    - stable_temperature_solution_1 (float, optional): The first stable temperature solution in Kelvin. Default is 280.
-    - unstable_temperature_solution (float, optional): The unstable temperature solution in Kelvin. Default is 285.
-    - stable_temperature_solution_2 (float, optional): The second stable temperature solution in Kelvin. Default is 290.
-    - emission_model (str, optional): The emission model to use for beta computation. Default is 'linear'.
-    - periodic_forcing_value (float, optional): The amplitude of the periodic forcing in the equation. Default is 1.
+    - stable_temperature_solution_1 (float, optional): The first stable temperature solution in Kelvin. 
+      Default is 280.
+    - unstable_temperature_solution (float, optional): The unstable temperature solution in Kelvin. 
+      Default is 285.
+    - stable_temperature_solution_2 (float, optional): The second stable temperature solution in Kelvin. 
+      Default is 290.
+    - emission_model (str, optional): The emission model to use for beta computation. 
+      Default is 'linear'.
+    - periodic_forcing_value (float, optional): The amplitude of the periodic forcing in the equation. 
+      Default is 1.
 
     Returns:
     - dT/dt (float): The calculated rate of temperature change (dT/dt) at the specified temperature (T).
     """
 
 
-    beta = -((surface_thermal_capacity / (relaxation_time * emitted_radiation(temperature = stable_temperature_solution_2,
-									      emission_model = emission_model))) *
-         ((stable_temperature_solution_1 * unstable_temperature_solution * stable_temperature_solution_2) /
-          ((stable_temperature_solution_1 - stable_temperature_solution_2) * (unstable_temperature_solution - stable_temperature_solution_2))))
+    beta = -((surface_thermal_capacity / (relaxation_time * emitted_radiation(
+        temperature=stable_temperature_solution_2,
+        emission_model=emission_model))) *
+        ((stable_temperature_solution_1 * unstable_temperature_solution * stable_temperature_solution_2) /
+        ((stable_temperature_solution_1 - stable_temperature_solution_2) *
+         (unstable_temperature_solution - stable_temperature_solution_2))))
 
-    dT_dt = (emitted_radiation(temperature = temperature, emission_model = emission_model) / surface_thermal_capacity) * (
-        (periodic_forcing_value / (1 + beta * (1 - (temperature / stable_temperature_solution_1)) *
-        (1 - (temperature / unstable_temperature_solution)) * (1 - (temperature / stable_temperature_solution_2)))) - 1)
-
+    dT_dt = (emitted_radiation(temperature=temperature, emission_model=emission_model) /
+        surface_thermal_capacity) * (
+       (periodic_forcing_value /
+        (1 + beta * (1 - (temperature / stable_temperature_solution_1)) *
+         (1 - (temperature / unstable_temperature_solution)) *
+         (1 - (temperature / stable_temperature_solution_2)))) - 1)
+    
     return dT_dt
 
 
@@ -146,13 +189,14 @@ def emission_models_comparison(surface_thermal_capacity = surface_earth_thermal_
     Compare emitted radiation and rate of temperature change for 'linear' and 'black body' emission models.
 
     This function calculates and compares the emitted radiation and the rates of temperature change (dT_dt)
-    for both the 'linear' and 'black body' emission models over a temperature range that spans 10 degrees below
-    the minimum temperature (stable_temperature_solution_1) and 10 degrees above the maximum temperature
+    for both the 'linear' and 'black body' emission models over a temperature range that spans 10 degrees 
+    below the minimum temperature (stable_temperature_solution_1) and 10 degrees above the maximum temperature
     (stable_temperature_solution_2).
 
     Parameters:
     - surface_thermal_capacity (float): The thermal capacity of the Earth's surface in kg/(year^2 K).
-    Default is the average Earth surface thermal capacity in kg/(years^2 K), which corresponds to 0.31e9 J/(m^2 K).
+    Default is the average Earth surface thermal capacity in kg/(years^2 K), 
+    which corresponds to 0.31e9 J/(m^2 K).
     - relaxation_time (int): The relaxation time in years. Default is 13 years.
     - stable_temperature_solution_1 (float): The stable temperature solution 1 in Kelvin.
     Default is 280 K.
@@ -175,10 +219,13 @@ def emission_models_comparison(surface_thermal_capacity = surface_earth_thermal_
     num_points = int((T_end - T_start))*10
 
     T = np.linspace(T_start, T_end, num = num_points)
-    emitted_radiation_linear_values = [emitted_radiation(temperature = Ti, emission_model = 'linear') for Ti in T]
-    emitted_radiation_black_body_values = [emitted_radiation(temperature = Ti, emission_model = 'black body') for Ti in T]
+    emitted_radiation_linear_values = [emitted_radiation(temperature = Ti, 
+                                                         emission_model = 'linear') for Ti in T]
+    emitted_radiation_black_body_values = [emitted_radiation(temperature = Ti, 
+                                                             emission_model = 'black body') for Ti in T]
 
-    emitted_radiation_values = np.array([emitted_radiation_linear_values, emitted_radiation_black_body_values])
+    emitted_radiation_values = np.array([emitted_radiation_linear_values, 
+                                         emitted_radiation_black_body_values])
 
     dT_dt_linear_values = [calculate_rate_of_temperature_change(temperature = Ti,
 			 				    surface_thermal_capacity = surface_thermal_capacity,
@@ -234,7 +281,8 @@ def simulate_ito(
     - num_steps (int): The number of time steps in the simulation. Default is 1000000.
     - num_simulations (int): The number of simulation runs. Default is 10.
     - surface_thermal_capacity (float): The thermal capacity of the Earth's surface in kg/(year^2 K).
-    Default is the average Earth surface thermal capacity in kg/(year^2 K), which corresponds to 0.31e9 J/(m^2 K).
+    Default is the average Earth surface thermal capacity in kg/(year^2 K), 
+    which corresponds to 0.31e9 J/(m^2 K).
     - relaxation_time (int): The relaxation time in years. Default is 13 years.
     - stable_temperature_solution_1 (float): The stable temperature solution 1 in Kelvin.
     Default is 280 K.
@@ -269,7 +317,8 @@ def simulate_ito(
     if forcing == "constant":
         forcing_values = np.ones(num_steps)
     elif forcing == "varying":
-        forcing_values = periodic_forcing(time = t, amplitude = forcing_amplitude, angular_frequency = forcing_angular_frequency)
+        forcing_values = periodic_forcing(time = t, amplitude = forcing_amplitude, 
+                                          angular_frequency = forcing_angular_frequency)
     else:
         raise ValueError("Invalid value for 'forcing'. Please use 'constant' or 'varying'")
     for i in aes.progress(range(num_steps - 1)):
@@ -289,14 +338,16 @@ def simulate_ito(
         print('finished!')
     return t, T
 
-def calculate_evolution_towards_steady_states(surface_thermal_capacity = surface_earth_thermal_capacity_in_years,
+def calculate_evolution_towards_steady_states(
+                          surface_thermal_capacity = surface_earth_thermal_capacity_in_years,
 					      relaxation_time = relaxation_time_default,
 					      stable_temperature_solution_1 = stable_temperature_solution_1_default,
 					      unstable_temperature_solution = unstable_temperature_solution_default,
 					      stable_temperature_solution_2 = stable_temperature_solution_2_default,
 					      forcing_amplitude = forcing_amplitude_default,
 					      forcing_angular_frequency = forcing_angular_frequency_default,
-					      emission_model = emission_model_default):
+					      emission_model = emission_model_default
+                          ):
     """
     Calculate temperature evolution towards steady states.
 
@@ -306,7 +357,8 @@ def calculate_evolution_towards_steady_states(surface_thermal_capacity = surface
 
     Parameters:
     - surface_thermal_capacity (float): The thermal capacity of the Earth's surface in kg/(year^2 K).
-    Default is the average Earth surface thermal capacity in kg/(year^2 K), which corresponds to 0.31e9 J/(m^2 K).
+    Default is the average Earth surface thermal capacity in kg/(year^2 K), 
+    which corresponds to 0.31e9 J/(m^2 K).
     - relaxation_time (int): The relaxation time in years. Default is 13 years.
     - stable_temperature_solution_1 (float): The stable temperature solution 1 in Kelvin.
     Default is 280 K.
@@ -329,10 +381,13 @@ def calculate_evolution_towards_steady_states(surface_thermal_capacity = surface
     simulation, and a constant forcing is applied.
     """
 
-    temperatures = [stable_temperature_solution_1, unstable_temperature_solution, stable_temperature_solution_2]
+    temperatures = [stable_temperature_solution_1, 
+                    unstable_temperature_solution, 
+                    stable_temperature_solution_2]
 
     epsilon = 1.75
-    T_start = np.array([temp - epsilon for temp in temperatures] + temperatures + [temp + epsilon for temp in temperatures])
+    T_start = np.array([temp - epsilon for temp in temperatures] + 
+                       temperatures + [temp + epsilon for temp in temperatures])
 
     time, temperature = simulate_ito(T_start = T_start,
 				     num_steps = 100,
@@ -354,17 +409,17 @@ def find_peak_indices(frequencies, period = forcing_period_default):
     """
     Find indices of theoretically predicted peaks in a frequency spectrum.
 
-    This function calculates the indices of the theoretically predicted peaks in a frequency spectrum based on the
-    specified period.
+    This function calculates the indices of the theoretically predicted peaks in a frequency 
+    spectrum based on the specified period.
 
     Parameters:
     - frequencies (array-like): An array of frequencies.
-    - period (float): The period used for peak prediction which should be the period of the periodic forcing applied
-    to the system. Default is 1e5.
+    - period (float): The period used for peak prediction which should be the period of the periodic 
+    forcing applied to the system. Default is 1e5.
 
     Returns:
-    - peaks_indices (array): An array of indices corresponding to the closest frequencies to the predicted peak
-      frequencies based on the given period.
+    - peaks_indices (array): An array of indices corresponding to the closest frequencies to the 
+      predicted peak frequencies based on the given period.
     """
     peaks_indices = np.abs(frequencies - (1/period)).argmin(axis = 1)
     return peaks_indices
@@ -373,8 +428,8 @@ def calculate_peaks(PSD_mean, peaks_indices):
     """
     Calculate the values of peaks in a power spectral density.
 
-    This function calculates the values of peaks in a power spectral density (PSD) based on the provided PSD_mean and
-    peak indices.
+    This function calculates the values of peaks in a power spectral density (PSD) based on the 
+    provided PSD_mean and peak indices.
 
     Parameters:
     - PSD_mean (array-like): An array of mean power spectral density values.
@@ -391,14 +446,15 @@ def calculate_peaks_base(PSD_mean, peaks_indices, num_neighbors=2):
     """
     Calculate the values of the base of the peaks in a power spectral density.
 
-    This function calculates the values of the base of the peaks in a power spectral density (PSD) based on the provided
-    PSD_mean, peak indices, and the number of neighboring points to consider for the base calculation.
+    This function calculates the values of the base of the peaks in a power spectral density (PSD) based on 
+    the provided PSD_mean, peak indices, and the number of neighboring points to consider for 
+    the base calculation.
 
     Parameters:
     - PSD_mean (array-like): An array of mean power spectral density values.
     - peaks_indices (array-like): An array of indices representing the positions of the peaks.
-    - num_neighbors (int, optional): The number of neighboring points on each side of a peak to consider for calculating
-      the peak's base. Default is 2.
+    - num_neighbors (int, optional): The number of neighboring points on each side of a peak to consider 
+      for calculating the peak's base. Default is 2.
 
     Returns:
     - peaks_base (array): An array of base values corresponding to the provided peak indices.
@@ -408,7 +464,8 @@ def calculate_peaks_base(PSD_mean, peaks_indices, num_neighbors=2):
 
     for i in range(PSD_mean.shape[0]):
         current_indices = peaks_indices[i]
-        neighbor_indices = np.arange(current_indices - num_neighbors, current_indices + num_neighbors + 1)
+        neighbor_indices = np.arange(current_indices - num_neighbors, 
+                                     current_indices + num_neighbors + 1)
         valid_indices = np.clip(neighbor_indices, 0, PSD_mean.shape[1] - 1)
         valid_indices = valid_indices[valid_indices != current_indices]
         valid_indices = np.unique(valid_indices)
@@ -421,16 +478,16 @@ def calculate_peak_height(peaks, peaks_base):
     """
     Calculate the heights of peaks in a power spectral density.
 
-    This function calculates the heights of peaks in a power spectral density (PSD) based on the provided peak values and
-    peak base values.
+    This function calculates the heights of peaks in a power spectral density (PSD) based on the provided 
+    peak values and peak base values.
 
     Parameters:
     - peaks (array-like): An array of peak values.
     - peaks_base (array-like): An array of base values corresponding to the peaks.
 
     Returns:
-    - peak_height (array): An array of peak heights calculated as the difference between peak values and peak base
-      values.
+    - peak_height (array): An array of peak heights calculated as the difference between peak values and 
+    peak base values.
     """
     peak_height = peaks - peaks_base
     return peak_height
@@ -460,7 +517,8 @@ def simulate_ito_combinations_and_collect_results(T_start = stable_temperature_s
     - dt (float): The time step size for the simulation in years. Default is 1 year.
     - num_steps (int): The number of time steps in the simulation. Default is 1000000.
     - surface_thermal_capacity (float): The thermal capacity of the Earth's surface in kg/(year^2 K).
-    Default is the average Earth surface thermal capacity in kg/(m^2 K), which corresponds to 0.31e9 J/(m^2 K).
+    Default is the average Earth surface thermal capacity in kg/(m^2 K), 
+    which corresponds to 0.31e9 J/(m^2 K).
     - relaxation_time (int): The relaxation time in years. Default is 13 years.
     - stable_temperature_solution_1 (float): The stable temperature solution 1 in Kelvin.
     Default is 280 K.
@@ -486,7 +544,8 @@ def simulate_ito_combinations_and_collect_results(T_start = stable_temperature_s
     times = []
     temperatures = []
 
-    for noise_status, forcing_type in [(False, 'constant'), (True, 'constant'), (False, 'varying'), (True, 'varying')]:
+    for noise_status, forcing_type in [(False, 'constant'), (True, 'constant'), 
+                                       (False, 'varying'), (True, 'varying')]:
         time, temperature = simulate_ito(T_start= T_start,
 					 noise_variance=noise_variance if noise_status else 0,
 					 dt = dt,

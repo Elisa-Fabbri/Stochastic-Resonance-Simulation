@@ -1,3 +1,6 @@
+"""
+This module contains the functions for the aesthetics of the simulation.
+"""
 import sys
 from contextlib import contextmanager
 

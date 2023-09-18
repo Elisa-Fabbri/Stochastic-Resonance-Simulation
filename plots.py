@@ -1,3 +1,8 @@
+"""
+This module contains the functions for plotting the results of the simulation.
+
+It reads the data from the data folder and generates plots in the images folder.
+"""
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter
@@ -151,8 +156,10 @@ def evolution_towards_steady_states_plot():
     """
     Plot the evolution of temperature towards steady states.
 
-    This function generates a plot illustrating the temporal evolution of temperature without periodic forcing and noise.
-    Different curves represent temperature trends for various initial values as they converge towards the stable solutions.
+    This function generates a plot illustrating the temporal evolution of temperature 
+    without periodic forcing and noise.
+    Different curves represent temperature trends for various initial values as they converge towards 
+    the stable solutions.
 
     """
     try:
@@ -204,8 +211,8 @@ def power_spectra_plots():
     """
     Plot power spectral density as a function of frequency for different noise variance values.
 
-    This function generates a set of plots, each showing the computed power spectral density (PSD) as a function of frequency
-    for different values of the noise variance.
+    This function generates a set of plots, each showing the computed power spectral density (PSD) 
+    as a function of frequency for different values of the noise variance.
 
     """
 
@@ -280,9 +287,9 @@ def peak_height_plot():
     """
     Plot the height of the peak as a function of the noise variance.
 
-    This function generates a scatter plot illustrating the height of the peak in the power spectrum computed for various
-    noise variance values. The peak height is determined by measuring the peak height in the power spectrum and subtracting
-    the baseline height.
+    This function generates a scatter plot illustrating the height of the peak in the power spectrum 
+    computed for various noise variance values. The peak height is determined by measuring the peak 
+    height in the power spectrum and subtracting the baseline height.
 
     """
 

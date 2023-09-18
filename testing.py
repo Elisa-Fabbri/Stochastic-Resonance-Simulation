@@ -1,19 +1,27 @@
+"""
+This module contains the tests for the functions in the stochastic_resonance module.
+
+The tests are organized into sections with comments, each focusing on a specific function within the 
+stochastic_resonance module.
+"""
+
 import numpy as np
 import stochastic_resonance as sr
 import pytest
 import random as rn
 
-# Test the functions in stochastic_resonance.py
-
 #Test emitted_radiation_function in the linear case 
 
 steady_temperature_solutions_default_linear_test = [
     (sr.stable_temperature_solution_1_default, -339.647 + 2.218*280), # glacial temperature
-    (sr.unstable_temperature_solution_default, -339.647 + 2.218*sr.unstable_temperature_solution_default), # ustable temperature solution
-    (sr.stable_temperature_solution_2_default, -339.647 + 2.218*sr.stable_temperature_solution_2_default), # interglacial temperature
+    (sr.unstable_temperature_solution_default, 
+     -339.647 + 2.218*sr.unstable_temperature_solution_default), # ustable temperature solution
+    (sr.stable_temperature_solution_2_default, 
+     -339.647 + 2.218*sr.stable_temperature_solution_2_default), # interglacial temperature
 ]
 
-@pytest.mark.parametrize("steady_temperature, expected_radiation", steady_temperature_solutions_default_linear_test)
+@pytest.mark.parametrize("steady_temperature, expected_radiation", 
+                         steady_temperature_solutions_default_linear_test)
 def test_emitted_radiation_linear(steady_temperature, expected_radiation):
     """
     Test the linear emitted radiation in W/m^2 for temperature solutions default parameters.
@@ -24,11 +32,13 @@ def test_emitted_radiation_linear(steady_temperature, expected_radiation):
     """
     
     expected_value = expected_radiation
-    calculated_value = sr.emitted_radiation(steady_temperature, emission_model='linear', conversion_factor=1)
+    calculated_value = sr.emitted_radiation(steady_temperature, 
+                                            emission_model='linear', conversion_factor=1)
     
     assert calculated_value == pytest.approx(expected_value, rel=1e-6)
 
-@pytest.mark.parametrize("steady_temperature, expected_radiation_W_m2", steady_temperature_solutions_default_linear_test)
+@pytest.mark.parametrize("steady_temperature, expected_radiation_W_m2", 
+                         steady_temperature_solutions_default_linear_test)
 def test_emitted_radiation_conversion(steady_temperature, expected_radiation_W_m2):
     """
     Test the linear emitted radiation in kg/m^3 for temperature solutions default parameters.
@@ -39,19 +49,24 @@ def test_emitted_radiation_conversion(steady_temperature, expected_radiation_W_m
     """
     
     expected_value = expected_radiation_W_m2*(sr.num_sec_in_a_year**3)
-    calculated_value = sr.emitted_radiation(steady_temperature, emission_model='linear', conversion_factor=sr.num_sec_in_a_year)
+    calculated_value = sr.emitted_radiation(steady_temperature, emission_model='linear', 
+                                            conversion_factor=sr.num_sec_in_a_year)
     
     assert calculated_value == pytest.approx(expected_value, rel=1)
 
 #Test emitted_radiation_function in the black body case
 
 steady_temperature_solutions_default_black_body_test = [
-    (sr.stable_temperature_solution_1_default, 5.67e-8*sr.stable_temperature_solution_1_default**4), # glacial temperature
-    (sr.unstable_temperature_solution_default, 5.67e-8*sr.unstable_temperature_solution_default**4), # ustable temperature solution
-    (sr.stable_temperature_solution_2_default, 5.67e-8*sr.stable_temperature_solution_2_default**4), # interglacial temperature
+    (sr.stable_temperature_solution_1_default, 
+     5.67e-8*sr.stable_temperature_solution_1_default**4), # glacial temperature
+    (sr.unstable_temperature_solution_default, 
+     5.67e-8*sr.unstable_temperature_solution_default**4), # ustable temperature solution
+    (sr.stable_temperature_solution_2_default, 
+     5.67e-8*sr.stable_temperature_solution_2_default**4), # interglacial temperature
 ]
 
-@pytest.mark.parametrize("steady_temperature, expected_radiation", steady_temperature_solutions_default_black_body_test)
+@pytest.mark.parametrize("steady_temperature, expected_radiation", 
+                         steady_temperature_solutions_default_black_body_test)
 def test_emitted_radiation_black_body(steady_temperature, expected_radiation):
     """
     Test the black body emitted radiation in W/m^2 for temperature solutions default parameters.
@@ -62,11 +77,14 @@ def test_emitted_radiation_black_body(steady_temperature, expected_radiation):
     """
     
     expected_value = expected_radiation
-    calculated_value = sr.emitted_radiation(steady_temperature, emission_model='black body', conversion_factor=1)
+    calculated_value = sr.emitted_radiation(steady_temperature, 
+                                            emission_model='black body', 
+                                            conversion_factor=1)
     
     assert calculated_value == pytest.approx(expected_value, rel=1e-6)
 
-@pytest.mark.parametrize("steady_temperature, expected_radiation_W_m2", steady_temperature_solutions_default_black_body_test)
+@pytest.mark.parametrize("steady_temperature, expected_radiation_W_m2", 
+                         steady_temperature_solutions_default_black_body_test)
 def test_emitted_radiation_conversion_black_body(steady_temperature, expected_radiation_W_m2):
     """
     Test the black body emitted radiation in kg/m^3 for temperature solutions default parameters.
@@ -77,7 +95,9 @@ def test_emitted_radiation_conversion_black_body(steady_temperature, expected_ra
     """
     
     expected_value = expected_radiation_W_m2*(sr.num_sec_in_a_year**3)
-    calculated_value = sr.emitted_radiation(steady_temperature, emission_model='black body', conversion_factor=sr.num_sec_in_a_year)
+    calculated_value = sr.emitted_radiation(steady_temperature, 
+                                            emission_model='black body', 
+                                            conversion_factor=sr.num_sec_in_a_year)
     
     assert calculated_value == pytest.approx(expected_value, rel=1)
 
@@ -90,10 +110,12 @@ def test_invalid_emitted_radiation_model():
     WHEN: the emitted_radiation function is called
     THEN: a ValueError should be raised
     """
-    with pytest.raises(ValueError, match='Invalid emission model selection. Choose "linear" or "black body".'):
+    with pytest.raises(ValueError, 
+                       match='Invalid emission model selection. Choose "linear" or "black body".'):
         sr.emitted_radiation(0, emission_model='invalid', conversion_factor=1)
 
-    with pytest.raises(ValueError, match='Invalid emission model selection. Choose "linear" or "black body".'):
+    with pytest.raises(ValueError, 
+                       match='Invalid emission model selection. Choose "linear" or "black body".'):
         sr.emitted_radiation(0, emission_model='invalid', conversion_factor=sr.num_sec_in_a_year)
 
 #Test the emitted_radiation for negative negative temperature value
@@ -148,7 +170,8 @@ def test_periodic_forcing_min():
 
 def test_periodic_forcing_is_one():
     """
-    Test that the periodic forcing function returns one when the time is equal to the forcing period divided by four.
+    Test that the periodic forcing function returns one when the time is equal to the forcing period 
+    divided by four.
 
     GIVEN: time equal to the forcing period divided by four and the forcing amplitude
     WHEN: the periodic_forcing function is called
@@ -267,8 +290,8 @@ def test_emission_models_comparison_temperature_range():
 
 def test_emission_models_comparison_temperature_length():
     """
-    Test that the temperature values returned by the emission_models_comparison function have the correct length
-    when the default parameters are used.
+    Test that the temperature values returned by the emission_models_comparison function have the 
+    correct length when the default parameters are used.
 
     GIVEN: the default parameters
     WHEN: the emission_models_comparison function is called
@@ -283,8 +306,8 @@ def test_emission_models_comparison_temperature_length():
 
 def test_emission_models_comparison_emitted_radiation_shape():
     """
-    Test that the emitted radiation values returned by the emission_models_comparison function have the correct shape
-    when the default parameters are used.
+    Test that the emitted radiation values returned by the emission_models_comparison function have 
+    the correct shape when the default parameters are used.
 
     GIVEN: the default parameters
     WHEN: the emission_models_comparison function is called
@@ -299,8 +322,8 @@ def test_emission_models_comparison_emitted_radiation_shape():
 
 def test_emission_models_comparison_dT_dt_shape():
     """
-    Test that the dT_dt values returned by the emission_models_comparison function have the correct shape
-    when the default parameters are used.
+    Test that the dT_dt values returned by the emission_models_comparison function have the 
+    correct shape when the default parameters are used.
 
     GIVEN: the default parameters
     WHEN: the emission_models_comparison function is called
@@ -315,8 +338,8 @@ def test_emission_models_comparison_dT_dt_shape():
 
 def test_emission_models_comparison_temperature_type():
     """
-    Test that the temperature values returned by the emission_models_comparison function are of type numpy.ndarray
-    when the default parameters are used.
+    Test that the temperature values returned by the emission_models_comparison function are of type 
+    numpy.ndarray when the default parameters are used.
 
     GIVEN: the default parameters
     WHEN: the emission_models_comparison function is called
@@ -327,8 +350,8 @@ def test_emission_models_comparison_temperature_type():
 
 def test_emission_models_comparison_emitted_radiation_type():
     """
-    Test that the emitted radiation values returned by the emission_models_comparison function are of type numpy.ndarray
-    when the default parameters are used.
+    Test that the emitted radiation values returned by the emission_models_comparison function are of 
+    type numpy.ndarray when the default parameters are used.
 
     GIVEN: the default parameters
     WHEN: the emission_models_comparison function is called
@@ -339,8 +362,8 @@ def test_emission_models_comparison_emitted_radiation_type():
 
 def test_emission_models_comparison_dT_dt_type():
     """
-    Test that the dT_dt values returned by the emission_models_comparison function are of type numpy.ndarray
-    when the default parameters are used.
+    Test that the dT_dt values returned by the emission_models_comparison function are of type 
+    numpy.ndarray when the default parameters are used.
 
     GIVEN: the default parameters
     WHEN: the emission_models_comparison function is called
@@ -477,7 +500,8 @@ def test_simulate_ito_no_forcing_no_noise(T_start):
 
 def calculate_evolution_towards_steady_states_time_length():
     """
-    Test if the time returned by the calculate_evolution_towards_steady_states function have the correct length.
+    Test if the time returned by the calculate_evolution_towards_steady_states function have the 
+    correct length.
 
     GIVEN: the default parameters
     WHEN: the calculate_evolution_towards_steady_states function is called
@@ -490,7 +514,8 @@ def calculate_evolution_towards_steady_states_time_length():
 
 def calculate_evolution_towards_steady_states_temperature_shape():
     """
-    Test if the temperature returned by the calculate_evolution_towards_steady_states function have the correct shape.
+    Test if the temperature returned by the calculate_evolution_towards_steady_states function have the 
+    correct shape.
 
     GIVEN: the default parameters
     WHEN: the calculate_evolution_towards_steady_states function is called
@@ -506,7 +531,8 @@ def calculate_evolution_towards_steady_states_temperature_shape():
 
 def calculate_evolution_towards_steady_states_time_type():
     """
-    Test if the time returned by the calculate_evolution_towards_steady_states function is of type numpy.ndarray.
+    Test if the time returned by the calculate_evolution_towards_steady_states function is of 
+    type numpy.ndarray.
 
     GIVEN: the default parameters
     WHEN: the calculate_evolution_towards_steady_states function is called
@@ -517,7 +543,8 @@ def calculate_evolution_towards_steady_states_time_type():
 
 def calculate_evolution_towards_steady_states_temperature_type():
     """
-    Test if the temperature returned by the calculate_evolution_towards_steady_states function is of type numpy.ndarray.
+    Test if the temperature returned by the calculate_evolution_towards_steady_states function is of 
+    type numpy.ndarray.
 
     GIVEN: the default parameters
     WHEN: the calculate_evolution_towards_steady_states function is called
@@ -528,8 +555,8 @@ def calculate_evolution_towards_steady_states_temperature_type():
 
 def test_calculate_evolution_towards_steady_states_temperature_convergence():
     """
-    Test if the temperature returned by the calculate_evolution_towards_steady_states function converges to the
-    correct steady state values.
+    Test if the temperature returned by the calculate_evolution_towards_steady_states function converges 
+    to the correct steady state values.
 
     GIVEN: the default parameters
     WHEN: the calculate_evolution_towards_steady_states function is called
@@ -549,7 +576,8 @@ def test_calculate_evolution_towards_steady_states_temperature_convergence():
 
 def test_find_peak_indices_same_peak_index():
     """
-    This function tests the find_peak_indices function when the peak index is the same for all simulations (rows).
+    This function tests the find_peak_indices function when the peak index is the same for 
+    all simulations (rows).
     
     GIVEN: a frequency array with equal rows and a period
     WHEN: the find_peak_indices function is called
@@ -562,7 +590,8 @@ def test_find_peak_indices_same_peak_index():
 
 def test_find_peak_indices_different_peak_index():
     """
-    This function tests the find_peak_indices function when the peak index is different for all simulations (rows).
+    This function tests the find_peak_indices function when the peak index is different for 
+    all simulations (rows).
     
     GIVEN: a frequency array with different rows and a period
     WHEN: the find_peak_indices function is called
@@ -589,7 +618,8 @@ def test_find_peak_indices_approximate_peak_index():
 
 def test_find_peak_indices_multiple():
     """
-    This function tests the find_peak_indices function when the desired frequency is contained more that once.
+    This function tests the find_peak_indices function when the desired frequency is 
+    contained more that once.
 
     GIVEN: a period and a frequency array in which the value 1/period is contained more than once
     WHEN: the find_peak_indices function is called
@@ -618,13 +648,13 @@ def test_calculate_peaks():
 
 def calculate_peaks_base_normal_behaviour():
     """
-    This function tests the calculate_peaks_base function when the peaks are not at the beginning or at the end of the
-    frequency array and the number of neighbours is 2.
+    This function tests the calculate_peaks_base function when the peaks are not at the
+    beginning or at the end of the frequency array and the number of neighbours is 2.
 
     GIVEN: a PSD_mean array, a peaks_indices array and a number of neighbours
     WHEN: the calculate_peaks_base function is called
-    THEN: the result should be an array containing the mean of the values of the four neighbours of the peaks
-        (two on the right side and two on the left side).
+    THEN: the result should be an array containing the mean of the values of the four neighbours 
+        of the peaks (two on the right side and two on the left side).
     """
     
     PSD_mean = np.array([[1, 2, 3, 4, 5, 6, 7, 8, 9],
@@ -639,12 +669,13 @@ def calculate_peaks_base_normal_behaviour():
 
 def test_calculate_peaks_base_near_borders():
     """
-    This function tests the calculate_peaks_base function when the peaks are at the beginning or at the end of the
-    frequency array and the number of neighbours is 2.
+    This function tests the calculate_peaks_base function when the peaks are at the beginning or 
+    at the end of the frequency array and the number of neighbours is 2.
 
     GIVEN: a PSD_mean array, a peaks_indices array and a number of neighbours
     WHEN: the calculate_peaks_base function is called
-    THEN: the result should be an array containing the mean of the values of the existing neighbours of the peaks.
+    THEN: the result should be an array containing the mean of the values of the existing neighbours 
+          of the peaks.
     """
     
     PSD_mean = np.array([[1, 2, 3, 4, 5, 6, 7, 8, 9],
@@ -662,7 +693,8 @@ def test_calculate_peaks_base_near_borders():
 
 def test_calculate_peak_height_empty():
     """
-    This function tests the calculate_peak_height function when the peaks and the base values are empty arrays.
+    This function tests the calculate_peak_height function when the peaks and the base values are 
+    empty arrays.
 
     GIVEN: empty arrays for peaks and base values
     WHEN: the calculate_peak_height function is called
@@ -677,7 +709,8 @@ def test_calculate_peak_height_empty():
 
 def test_calculate_peak_height_one_element():
     """
-    This function tests the calculate_peak_height function when the peaks and the base values have one element.
+    This function tests the calculate_peak_height function when the peaks and the base values 
+    have one element.
 
     GIVEN: peaks and base values with one element
     WHEN: the calculate_peak_height function is called
@@ -691,7 +724,8 @@ def test_calculate_peak_height_one_element():
 
 def test_calculate_peak_height_multiple_elements():
     """
-    This function tests the calculate_peak_height function when the peaks and the base values have multiple elements.
+    This function tests the calculate_peak_height function when the peaks and the base values 
+    have multiple elements.
 
     GIVEN: peaks and base values with multiple elements
     WHEN: the calculate_peak_height function is called
@@ -735,7 +769,8 @@ def test_simulate_ito_combinations_and_collect_results_time_length():
 
 def test_simulate_ito_combinations_and_collect_results_temperature_length():
     """
-    Test if the temperature returned by the simulate_ito_combinations_and_collect_results function is of length 4.
+    Test if the temperature returned by the simulate_ito_combinations_and_collect_results 
+    function is of length 4.
 
     GIVEN: the default parameters with reduced number of steps (num_steps = 100)
     WHEN: the simulate_ito_combinations_and_collect_results function is called
@@ -764,7 +799,8 @@ def test_simulate_ito_combinations_and_collect_results_time_type():
 
 def test_simulate_ito_combinations_and_collect_results_temperature_type():
     """
-    Test if the temperature returned by the simulate_ito_combinations_and_collect_results function is of type list.
+    Test if the temperature returned by the simulate_ito_combinations_and_collect_results function is 
+    of type list.
 
     GIVEN: the default parameters with reduced number of steps (num_steps = 100)
     WHEN: the simulate_ito_combinations_and_collect_results function is called
@@ -778,7 +814,8 @@ def test_simulate_ito_combinations_and_collect_results_temperature_type():
 
 def test_simulate_ito_combinations_and_collect_results_time_sequences_length():
     """
-    Test if the time sequences returned by the simulate_ito_combinations_and_collect_results function have the correct length.
+    Test if the time sequences returned by the simulate_ito_combinations_and_collect_results 
+    function have the correct length.
 
     GIVEN: the default parameters with reduced number of steps (num_steps = 100)
     WHEN: the simulate_ito_combinations_and_collect_results function is called
@@ -794,11 +831,13 @@ def test_simulate_ito_combinations_and_collect_results_time_sequences_length():
 
 def test_simulate_ito_combinations_and_collect_results_temperature_sequences_shape():
     """
-    Test if the temperature sequences returned by the simulate_ito_combinations_and_collect_results function have the correct shape
+    Test if the temperature sequences returned by the simulate_ito_combinations_and_collect_results 
+    function have the correct shape
 
     GIVEN: the default parameters with reduced number of steps (num_steps = 100)
     WHEN: the simulate_ito_combinations_and_collect_results function is called
-    THEN: the temperature sequences returned should have the correct shape (num_simulations = 1, num_steps = 100)
+    THEN: the temperature sequences returned should have the correct shape (num_simulations = 1, 
+                                                                            num_steps = 100)
     """
     rn.seed(42)
     calculated_values = sr.simulate_ito_combinations_and_collect_results(
