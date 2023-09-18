@@ -21,6 +21,177 @@ These variations in orbital parameters, driven by the gravitational influence of
 
 However, when considering the global scale, variations in solar irradiance are relatively limited and cannot, by themselves, account for the observed drastic temperature change of 10 degrees Celsius. Therefore, there is a need to identify an amplification mechanism capable of translating these modest solar variations into significant climatic shifts. This project focuses on the proposal put forth by Italian researchers Benzi, Parisi, Sutera, and Vulpiani in the early 1980s, introducing the concept of stochastic resonance as a potential amplification mechanism.
 
+### The Stochastic Resonance Model: Amplifying the Milanković Cycles
+
+In the work by Benzi, Parisi, Sutera, and Vulpiani, a model for the Earth's temperature evolution over time is introduced. This work is quite extensive and requires time for a detailed explanation. Therefore, in this section, I will provide commentary only on the final result, while referring the derivation to the *Explanation of the Model* section.
+
+The proposed stochastic differential equation (SDE) to describe the evolution of Earth's temperature over time is as follows:
+
+$$
+\frac{dT}{dt} = F(T) + \sigma \frac{dW}{dt}
+$$
+
+Where:
+
+- \(T\) represents Earth's temperature [K].
+- \(C\) represents the surface thermal capacity of the Earth [J/m² K].
+- \(F(T)\) is the deterministic part of the equation that accounts for the Milanković cycles and stable and unstable temperature solutions. Stable temperatures are values to which the system converges, such as the average glacial and interglacial temperatures on Earth. The unstable solution is an unobservable solution located midway between these two extremes.
+- \(W\) is a one-dimensional Wiener process that models the random variability of temperature on much shorter timescales than those considered in the deterministic model.
+- \(\sigma^2 [K^2/year]\) represents the variance of this noise and can be adjusted to study how different levels of variability can affect temperature behavior under various conditions.
+
+In essence, the true innovation of the proposed model is the introduction of the stochastic term in the equation.
+
+This new term allows us to explore how climatic variability, can influence the evolution of Earth's temperature. In particular, researchers have found that for a certain value of the noise variance $ \sigma^2 $, there is an amplification of the periodic signal in the power spectrum, leading to an amplification of the Milanković Cycles.
+
+The equation can be numerically solved in various ways, but in this project, the Forward Euler method was used, which is explained in more detail below.
+
+#### Forward Euler Discretization
+
+Here's how the forward Euler numerical integration works:
+
+- **Discretization**: The Forward Euler method approximates solutions of differential equations by breaking the continuous-time domain into discrete time steps ($\Delta t$).
+
+- **Iterative Process**: It starts from an initial condition and iteratively updates the system's state at each time step.
+
+- **Temperature Update**:
+  - To account for the stochastic temperature variability (from the Wiener process), random numbers following a normal distribution (zero mean, variance equal to $\Delta t$) are generated at each time step.
+  - The temperature change $dT$ is then found by adding the deterministic temperature change, $F(T)$, and the stochastic temperature change, $\sigma \cdot W$.
+  - The new temperature value $T(t_n)$ is then found by adding to the previuos temperature value $T(t_{n-1})$ che computed temperature change $dT$. 
+  - The results is the new temperature value for the next time step.
+
+- **Repeat**: The process repeats for the specified number of time steps, allowing us to simulate temperature evolution over time.
+
+The Forward Euler discretization method allows us to simulate temperature evolution over time, considering both deterministic changes as per the energy balance equation and stochastic fluctuations captured by random numbers from the Wiener process.
+
+## Structure of the Project
+
+### Running the Simulation and Plotting Results
+
+To execute the simulation and visualize the results, follow these steps:
+
+1. **Download the Repository:** Begin by downloading the project repository to your local machine. You can do this by using the `git clone` command in your terminal or command prompt: ' git clone <repository_url>'
+
+2. **Running the Simulation:** After cloning the repository, execute the simulation by running `simulation.py` from the command line and specifying the desired configuration file: 'python simulation.py configuration.txt'.
+
+This step generates data files and saves them in the `data` folder.
+
+3. **Generating Plots:** After running the simulation, create plots to visualize the results using `plots.py` with the chosen configuration file: 'python plots.py configuration.txt'.
+
+The plots are saved in the `images` folder.
+
+5. **Running Tests:** To run tests and ensure the correctness of the project, use `pytest` to execute the testing file `testing.py`.
+
+### Creating a New Configuration File
+
+To create a new configuration file for the simulation, follow these guidelines:
+
+1. **Configuration Sections:**
+
+   The configuration file should have three sections: `settings`, `data_paths`, and `image_paths`.
+
+2. **`settings` Section:**
+
+   In the `settings` section, specify the constants and simulation parameters (see the section *Simulation Parameters and Configuration File*).
+
+3. **`data_paths` Section:**
+
+   In the `data_paths` section of the configuration file, specify the file paths for data storage as follows:
+
+   - `temperatures_for_emission_models_comparison`: Path to store temperature data used for emission models comparison.
+   - `emitted_radiation_for_emission_models_comparison`: Path to store emitted radiation data used for emission models comparison.
+   - `F_for_emission_models_comparison`: Path to store rate of temperature change used for emission models comparison.
+   - `times_for_evolution_towards_steady_states`: Path to store time data for evolution towards steady states.
+   - `temperatures_for_evolution_towards_steady_states`: Path to store temperature data for evolution towards steady states.
+   - `times`: Path to store time values.
+   - `temperatures`: Path to store temperature values.
+   - `frequencies`: Path to store frequency data used for power spectra plots.
+   - `averaged_PSD`: Path to store averaged power spectral density data.
+   - `peak_heights_in_PSD`: Path to store peak heights data in power spectral density.
+   - `times_combinations`: Path to store time data for combinations data.
+   - `temperatures_combinations`: Path to store temperature data for combinations data.
+
+4. **`image_paths` Section:**
+
+   In the `image_paths` section of the configuration file, specify paths for storing generated images as follows:
+
+   - `emission_models_comparison_plots`: Path to save plots for emission models comparison.
+   - `temperatures_towards_steady_states_plot`: Path to save the plot showing temperature convergence towards stable solutions.
+   - `power_spectra_plots`: Path to save power spectra plots.
+   - `peak_heights_plot`: Path to save the plot displaying peak heights in power spectral density.
+   - `temperature_combinations_plots`: Path to save plots showing temperature evolution for specific noise variance combinations.
+
+
+Now you can create a custom configuration file by specifying values for these parameters and paths.
+
+To run the simulation with your custom configuration file, follow the same steps described in the "Running the Simulation and Plotting Results" section, but replace 'configuration.txt' with the name of your custom configuration file.
+
+### Project Files
+
+The project consists of the following key files:
+
+- **`configuration.txt`**: The configuration file where simulation parameters and file paths are specified.
+- **`stochastic_resonance.py`**: Contains function definitions required for the simulation.
+- **`testing.py`**: Contains unit tests for functions in `stochastic_resonance.py`.
+- **`simulation.py`**: The main script for running simulations, reading parameters from the configuration file, and saving data to the `data` folder.
+- **`plots.py`**: Contains functions for generating plots based on the data generated by `simulation.py`.
+- **`aesthetics.py`**: Provides functions for enhancing user interaction, including a progress bar and text formatting.
+
+### Meaning of the obtained plots and examples
+
+The 'images' folder contains 5 different graphs. Below, I will explain how they were obtained and display the results when the simulation is run with the 'configuration.txt' configuration file.
+
+1. **emission_models_comparison_plots.png**:
+In the *Additional Model Details* section, two different approaches for calculating emitted radiation as a function of temperature are discussed. The first model employs the Stefan-Boltzmann law for a black body, while the second model utilizes a linear approximation (as described in [^4]).
+The 'emission_models_comparison_plots' graph aims to compare these two models. It consists of two subplots:
+- *Emitted radiation comparison*: The first subplot displays the emitted radiation as a function of temperature, computed using both models. This allows us to visually compare how these models estimate radiation emissions across the temperature range of interest. The temperatures considered for this comparison are those relevant to the model, spanning from 10 degrees Kelvin below the first stable temperature to 10 Kelvin above the second stable temperature.
+- *Deterministic Term Comparison*:  The second subplot demonstrates the deterministic term of the temperature evolution equation, denoted as $F(T)$, calculated for both models. Similar to the first subplot, this provides a comparative view of how the deterministic terms differ between the two models over the specified temperature range.
+
+![This graph compares the linear emission model and the black body emission model](./images/emission_models_comparison_plots.png)
+
+2.**temperatures_towards_steady_states_plot.png**:
+The graph **temperatures_towards_steady_states_plot.png** illustrates the temperature evolution over time when neither the noise term nor the periodic forcing are considered. It represents the solution to the temperature equation:
+
+$$
+\frac{dT}{dt} = F(T)
+$$
+
+The graph is generated by plotting the temperature's evolution for various initial temperatures, including the three temperature solutions (two stable and one unstable) and temperatures in their vicinity. It demonstrates that if the temperature is precisely equal to one of these solutions, the system will remain at that temperature throughout. Conversely, if the temperatures deviate from one of these three values, they will tend to converge towards the nearest stable temperature solution and diverge from the unstable one.
+
+![This graph shows the evolution of temperature towards steady states](./images/temperatures_towards_steady_states_plot.png)
+
+3.**power_spectra_plots.png**:
+
+The graph displays various power spectra for different noise intensities. Please note that the vertical axis is presented in a logarithmic scale. 
+These graphs were obtained through the following steps:
+
+- For each noise variance value (you can specify these values in the configuration file, including the minimum variance (variance_start), maximum variance (variance_end), and the number of evenly distributed variance values to analyze within this range (num_variances)), a specific number of temperature evolution simulations are conducted. To be precise, for each variance value, the number of simulations matches the value specified in the configuration file (num_simulations).
+
+- The power spectrum of each simulation (total number: num_simulations*num_variances) is then calculated.
+
+- The power spectra calculated for each noise value in then found by averaging the simulations done for that specific noise value.
+
+The resulting graphs represent the averaged simulations for each noise value. It's worth noting that the peak of interest is located at the frequency of 1/forcing_period, where forcing_period is specified in the configuration file and should correspond to the period of the longest Milankovitch cycle ($10^{5}$ years).
+
+![This graph shows the power spectrum for each noise intensity value](./images/power_spectra_plots.png)
+
+4. **peak_heights_plot.png**:
+This graph displays the calculated peak height in the power spectrum for each noise intensity.
+
+For each averaged power spectrum shown in the power_spectra_plots.png graph, the peak height corresponding to the frequency 1/forcing_period is computed. This value is then adjusted by subtracting the peak's baseline, which is calculated as an average of nearby values. The graph illustrates how the peak height varies across different noise intensities. The maximum peak height occurs at the variance value corresponding to the phenomenon of stochastic resonance.
+
+![This graph shows the peak height as a function of the noise intensity value](./images/peak_heights_plot.png)
+
+5. **temperature_combinations_plots.png**
+This graph illustrates the temperature evolution in four different scenarios:
+- When neither periodic forcing nor noise is introduced into the system.
+- When the system includes periodic forcing but not noise.
+- When the system lacks periodic forcing but includes noise with an intensity corresponding to the occurrence of stochastic resonance.
+- When both periodic forcing and noise are present in the system, with the noise intensity matching the level at which stochastic resonance occurs.
+
+![This graph shows the temperature evolution with and without periodic forcing and noise](./images/temperature_combinations_plots.png)
+
+# Explanation of the Model
+
 ### A Global Energy Balance Model
 
 The fundamental variable in this model is the Earth's average temperature, denoted as *T*. The average is taken over the entire Earth's surface and over a long meteorological time. The value of this variable is determined by the energy balance between incoming and outgoing energy within the system.
@@ -82,24 +253,6 @@ $$
 Here, $\sigma^2 [K^2/year]$ represents the noise variance, and $W(t)$ is the standard Wiener process. This last equation is a stochastic differential equation (SDE) describing the evolution of temperature in our model.
 
 It can be solved numerically using various procedures. In this project, the Forward Euler method was employed to simulate the temperature's evolution.
-
-#### Forward Euler Discretization
-
-Here's how the forward Euler numerical integration works:
-
-- **Discretization**: The Forward Euler method approximates solutions of differential equations by breaking the continuous-time domain into discrete time steps ($\Delta t$).
-
-- **Iterative Process**: It starts from an initial condition and iteratively updates the system's state at each time step.
-
-- **Temperature Update**:
-  - To account for the stochastic temperature variability (from the Wiener process), random numbers following a normal distribution (zero mean, variance equal to $\Delta t$) are generated at each time step.
-  - The temperature change $dT$ is then found by adding the deterministic temperature change, $F(T)$, and the stochastic temperature change, $\sigma \cdot W$.
-  - The new temperature value $T(t_n)$ is then found by adding to the previuos temperature value $T(t_{n-1})$ che computed temperature change $dT$. 
-  - The results is the new temperature value for the next time step.
-
-- **Repeat**: The process repeats for the specified number of time steps, allowing us to simulate temperature evolution over time.
-
-The Forward Euler discretization method allows us to simulate temperature evolution over time, considering both deterministic changes as per the energy balance equation and stochastic fluctuations captured by random numbers from the Wiener process.
 
 ### Parametrization of the Deterministic Rate of Temperature Change
 
@@ -204,78 +357,6 @@ Lastly, the temperature evolution is simulated for various noise intensities. Th
 
 - `num_variances`: Number of variance levels to simulate.
 
-
-## Structure of the Project
-
-### Running the Simulation and Plotting Results
-
-To execute the simulation and visualize the results, follow these steps:
-
-1. **Configuration File:** Start by specifying simulation parameters and file paths in the `configuration.txt` file.
-
-2. **Running the Simulation:** Execute the simulation by running `simulation.py` from the command line and specifying the desired configuration file: 'python simulation.py configuration.txt'.
-
-This step generates data files and saves them in the `data` folder.
-
-3. **Generating Plots:** After running the simulation, create plots to visualize the results using `plots.py` with the chosen configuration file: 'python plots.py configuration.txt'.
-
-The plots are saved in the `images` folder.
-
-### Creating a New Configuration File
-
-To create a new configuration file for the simulation, follow these guidelines:
-
-1. **Configuration Sections:**
-
-   The configuration file should have three sections: `settings`, `data_paths`, and `image_paths`.
-
-2. **`settings` Section:**
-
-   In the `settings` section, specify the constants and simulation parameters (see the section *Simulation Parameters and Configuration File*).
-
-3. **`data_paths` Section:**
-
-   In the `data_paths` section of the configuration file, specify the file paths for data storage as follows:
-
-   - `temperatures_for_emission_models_comparison`: Path to store temperature data used for emission models comparison.
-   - `emitted_radiation_for_emission_models_comparison`: Path to store emitted radiation data used for emission models comparison.
-   - `F_for_emission_models_comparison`: Path to store rate of temperature change used for emission models comparison.
-   - `times_for_evolution_towards_steady_states`: Path to store time data for evolution towards steady states.
-   - `temperatures_for_evolution_towards_steady_states`: Path to store temperature data for evolution towards steady states.
-   - `times`: Path to store time values.
-   - `temperatures`: Path to store temperature values.
-   - `frequencies`: Path to store frequency data used for power spectra plots.
-   - `averaged_PSD`: Path to store averaged power spectral density data.
-   - `peak_heights_in_PSD`: Path to store peak heights data in power spectral density.
-   - `times_combinations`: Path to store time data for combinations data.
-   - `temperatures_combinations`: Path to store temperature data for combinations data.
-
-4. **`image_paths` Section:**
-
-   In the `image_paths` section of the configuration file, specify paths for storing generated images as follows:
-
-   - `emission_models_comparison_plots`: Path to save plots for emission models comparison.
-   - `temperatures_towards_steady_states_plot`: Path to save the plot showing temperature convergence towards stable solutions.
-   - `power_spectra_plots`: Path to save power spectra plots.
-   - `peak_heights_plot`: Path to save the plot displaying peak heights in power spectral density.
-   - `temperature_combinations_plots`: Path to save plots showing temperature evolution for specific noise variance combinations.
-
-
-Now you can create a custom configuration file by specifying values for these parameters and paths.
-
-To run the simulation with your custom configuration file, follow the same steps described in the "Running the Simulation and Plotting Results" section, but replace 'configuration.txt' with the name of your custom configuration file.
-
-
-### Project Files
-
-The project consists of the following key files:
-
-- **`configuration.txt`**: The configuration file where simulation parameters and file paths are specified.
-- **`stochastic_resonance.py`**: Contains function definitions required for the simulation.
-- **`testing.py`**: Contains unit tests for functions in `stochastic_resonance.py`.
-- **`simulation.py`**: The main script for running simulations, reading parameters from the configuration file, and saving data to the `data` folder.
-- **`plots.py`**: Contains functions for generating plots based on the data generated by `simulation.py`.
-- **`aesthetics.py`**: Provides functions for enhancing user interaction, including a progress bar and text formatting.
 
 ## References
 
