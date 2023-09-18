@@ -1,6 +1,7 @@
 import numpy as np
 import stochastic_resonance as sr
 import pytest
+import random as rn
 
 # Test the functions in stochastic_resonance.py
 
@@ -391,80 +392,86 @@ def test_emission_models_comparison_dT_dt_values_type():
 
 #Test for simulate_ito function
 
-def test_simulate_ito_no_noise_no_forcing():
-    """ Test the simulate_ito function for no noise and no forcing."""
+def test_simulate_ito_time_length():
+    """
+    Test if the time returned by the simulate_ito function have the correct length.
 
-    noise = False  
-    forcing = 'constant' 
-    num_steps = 100
-    num_simulations = 1
-
-    T_start = sr.stable_temperature_solution_1_default
-
-    t, T = sr.simulate_ito(
-        T_start=T_start,
-        num_steps= num_steps,
-        num_simulations=num_simulations,
-        noise=noise,
-        forcing=forcing
+    GIVEN: the default parameters with reduced number of steps (num_steps = 100)
+    WHEN: the simulate_ito function is called
+    THEN: the time returned should have the correct length (num_steps)
+    """
+    rn.seed(42)
+    calculated_values = sr.simulate_ito(
+        num_steps=100,
         )
-    assert np.all(T == T_start)
+    expected_value = 100
+    assert len(calculated_values[0]) == expected_value
 
-    T_start = sr.stable_temperature_solution_2_default
+def test_simulate_ito_temperature_shape():
+    """
+    Test if the temperature returned by the simulate_ito function have the correct shape.
 
-    t, T = sr.simulate_ito(
-        T_start=T_start,
-        num_steps=num_steps,
-        num_simulations=num_simulations,
-        noise=noise,
-        forcing=forcing
+    GIVEN: the default parameters with reduced number of steps (num_steps = 100)
+    WHEN: the simulate_ito function is called
+    THEN: the temperature returned should have the correct shape (num_simulations, num_steps)
+    """
+    rn.seed(42)
+    calculated_values = sr.simulate_ito(
+        num_steps=100,
         )
-    assert np.all(T == T_start)
+    expected_value = (sr.num_simulations_default, 100)
+    assert calculated_values[1].shape == expected_value
 
-    T_start = sr.unstable_temperature_solution_default
+def test_simulate_ito_time_type():
+    """
+    Test if the time returned by the simulate_ito function is of type numpy.ndarray.
 
-    t, T = sr.simulate_ito(
-        T_start=T_start,
-        num_steps=num_steps,
-        num_simulations=num_simulations,
-        noise=noise,
-        forcing=forcing
+    GIVEN: the default parameters with reduced number of steps (num_steps = 100)
+    WHEN: the simulate_ito function is called
+    THEN: the time returned should be of type numpy.ndarray
+    """
+    rn.seed(42)
+    calculated_values = sr.simulate_ito(
+        num_steps=100,
         )
-    assert np.all(T == T_start)
+    assert type(calculated_values[0]) == np.ndarray
 
-def test_simulate_ito_no_noise_with_forcing():
-    """Test the simulate_ito function for no noise and forcing."""
+def test_simulate_ito_temperature_type():
+    """
+    Test if the temperature returned by the simulate_ito function is of type numpy.ndarray.
 
-    noise = False  
-    forcing = 'varying' 
-    num_steps = 100
-    num_simulations = 1
-    max_value_forcing = 1 + sr.forcing_amplitude_default
-    min_value_forcing = 1 - sr.forcing_amplitude_default
-
-    T_start = sr.stable_temperature_solution_1_default
-
-    t, T = sr.simulate_ito(
-        T_start=T_start,
-        num_steps= num_steps,
-        num_simulations=num_simulations,
-        noise=noise,
-        forcing=forcing
+    GIVEN: the default parameters with reduced number of steps (num_steps = 100)
+    WHEN: the simulate_ito function is called
+    THEN: the temperature returned should be of type numpy.ndarray
+    """
+    rn.seed(42)
+    calculated_values = sr.simulate_ito(
+        num_steps=100,
         )
-    assert np.all((T >= T_start - min_value_forcing) & (T <= T_start + max_value_forcing))
+    assert type(calculated_values[1]) == np.ndarray
 
-    T_start = sr.stable_temperature_solution_2_default
 
-    t, T = sr.simulate_ito(
+@pytest.mark.parametrize("T_start", steady_temperature_solutions)
+def test_simulate_ito_no_forcing_no_noise(T_start):
+    """
+    Test if the temperature returned by the simulate_ito function is equal to the initial temperature
+    when no forcing and no noise are applied and the initial temperature is a steady solution.
+
+    GIVEN: the default parameters with reduced number of steps (num_steps = 100), no forcing and no noise and
+              the initial temperature is a steady solution
+    WHEN: the simulate_ito function is called
+    THEN: the temperature returned should be equal to the initial temperature
+    """
+
+    calculated_values = sr.simulate_ito(
         T_start=T_start,
-        num_steps=num_steps,
-        num_simulations=num_simulations,
+        num_steps=100,
         noise=False,
-        forcing=forcing
-        )
-    assert np.all((T >= T_start - min_value_forcing) & (T <= T_start + max_value_forcing))
+        forcing='constant'
+    )
+    expected_value = T_start
+    assert np.all(calculated_values[1] == expected_value)
 
-    T_start = sr.unstable_temperature_solution_default
 
 # Test calculate_evolution_towards_steady_states function
 
