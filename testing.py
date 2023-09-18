@@ -660,27 +660,57 @@ def test_calculate_peaks_base_near_borders():
 
 # Test for calculate_peak_height function
 
-def test_calculate_peak_height():
-    # Case 1: Peaks and base values are both empty arrays
+def test_calculate_peak_height_empty():
+    """
+    This function tests the calculate_peak_height function when the peaks and the base values are empty arrays.
+
+    GIVEN: empty arrays for peaks and base values
+    WHEN: the calculate_peak_height function is called
+    THEN: the result should be an empty array
+    """
+
     peaks = np.array([])
     peaks_base = np.array([])
     peak_height = sr.calculate_peak_height(peaks, peaks_base)
     assert np.array_equal(peak_height, np.array([]))
 
-    # Case 2: Peaks and base values have one element
+
+def test_calculate_peak_height_one_element():
+    """
+    This function tests the calculate_peak_height function when the peaks and the base values have one element.
+
+    GIVEN: peaks and base values with one element
+    WHEN: the calculate_peak_height function is called
+    THEN: the result should be an array containing the difference between the two elements
+    """
+
     peaks = np.array([5.0])
     peaks_base = np.array([2.0])
     peak_height = sr.calculate_peak_height(peaks, peaks_base)
-    assert np.array_equal(peak_height, np.array([3.0]))
+    assert np.array_equal(peak_height, np.array([3.0]))  
 
-    # Case 3: Peaks and base values have multiple elements
+def test_calculate_peak_height_multiple_elements():
+    """
+    This function tests the calculate_peak_height function when the peaks and the base values have multiple elements.
+
+    GIVEN: peaks and base values with multiple elements
+    WHEN: the calculate_peak_height function is called
+    THEN: the result should be an array containing the difference between the corresponding elements
+    """
     peaks = np.array([4.0, 7.0, 10.0, 6.0])
     peaks_base = np.array([2.0, 3.0, 8.0, 4.0])
     peak_height = sr.calculate_peak_height(peaks, peaks_base)
     expected_heights = np.array([2.0, 4.0, 2.0, 2.0])
-    assert np.array_equal(peak_height, expected_heights)
+    assert np.array_equal(peak_height, expected_heights)   
 
-    # Case 4: Peaks and base values are both zero
+def test_calculate_peak_height_zero():
+    """
+    This function tests the calculate_peak_height function when the peaks and the base values are all zeros
+
+    GIVEN: peaks and base values with all zeros
+    WHEN: the calculate_peak_height function is called
+    THEN: the result should be an array containing zeros
+    """
     peaks = np.array([0.0, 0.0, 0.0])
     peaks_base = np.array([0.0, 0.0, 0.0])
     peak_height = sr.calculate_peak_height(peaks, peaks_base)
