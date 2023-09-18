@@ -616,24 +616,47 @@ def test_calculate_peaks():
 
 # Test for calculate_peaks_base function
 
+def calculate_peaks_base_normal_behaviour():
+    """
+    This function tests the calculate_peaks_base function when the peaks are not at the beginning or at the end of the
+    frequency array and the number of neighbours is 2.
 
-def test_calculate_peaks_base():
+    GIVEN: a PSD_mean array, a peaks_indices array and a number of neighbours
+    WHEN: the calculate_peaks_base function is called
+    THEN: the result should be an array containing the mean of the values of the four neighbours of the peaks
+        (two on the right side and two on the left side).
+    """
+    
     PSD_mean = np.array([[1, 2, 3, 4, 5, 6, 7, 8, 9],
                          [2, 3, 4, 5, 6, 7, 8, 9, 10]])
     peaks_indices = np.array([2, 6])
 
-    # Expected result based on the sample data and default num_neighbors (2)
     expected_peaks_base = np.array([3, 8])
 
     calculated_peaks_base = sr.calculate_peaks_base(PSD_mean, peaks_indices)
 
     assert np.array_equal(calculated_peaks_base, expected_peaks_base)
 
+def test_calculate_peaks_base_near_borders():
+    """
+    This function tests the calculate_peaks_base function when the peaks are at the beginning or at the end of the
+    frequency array and the number of neighbours is 2.
+
+    GIVEN: a PSD_mean array, a peaks_indices array and a number of neighbours
+    WHEN: the calculate_peaks_base function is called
+    THEN: the result should be an array containing the mean of the values of the existing neighbours of the peaks.
+    """
+    
+    PSD_mean = np.array([[1, 2, 3, 4, 5, 6, 7, 8, 9],
+                         [2, 3, 4, 5, 6, 7, 8, 9, 10]])
     peaks_indices = np.array([0, 8])
+
     expected_peaks_base = np.array([2.5, 8.5])
 
-    calculated_peaks_base = sr.calculate_peaks_base(PSD_mean, peaks_indices)    
-    assert np.array_equal(calculated_peaks_base, expected_peaks_base) 
+    calculated_peaks_base = sr.calculate_peaks_base(PSD_mean, peaks_indices)
+
+    assert np.array_equal(calculated_peaks_base, expected_peaks_base)
+
 
 # Test for calculate_peak_height function
 
