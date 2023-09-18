@@ -475,6 +475,76 @@ def test_simulate_ito_no_forcing_no_noise(T_start):
 
 # Test calculate_evolution_towards_steady_states function
 
+def calculate_evolution_towards_steady_states_time_length():
+    """
+    Test if the time returned by the calculate_evolution_towards_steady_states function have the correct length.
+
+    GIVEN: the default parameters
+    WHEN: the calculate_evolution_towards_steady_states function is called
+    THEN: the time returned should have the correct length (num_steps = 100)
+    """
+
+    calculated_values = sr.calculate_evolution_towards_steady_states()
+    expected_value = 100
+    assert len(calculated_values[0]) == expected_value
+
+def calculate_evolution_towards_steady_states_temperature_shape():
+    """
+    Test if the temperature returned by the calculate_evolution_towards_steady_states function have the correct shape.
+
+    GIVEN: the default parameters
+    WHEN: the calculate_evolution_towards_steady_states function is called
+    THEN: the temperature returned should have the correct shape (num_simulations = 9, num_steps = 100)
+    """
+
+    calculated_values = sr.calculate_evolution_towards_steady_states()
+    
+    T_start_length = 9
+    expected_value = (T_start_length, 100)
+
+    assert calculated_values[1].shape == expected_value
+
+def calculate_evolution_towards_steady_states_time_type():
+    """
+    Test if the time returned by the calculate_evolution_towards_steady_states function is of type numpy.ndarray.
+
+    GIVEN: the default parameters
+    WHEN: the calculate_evolution_towards_steady_states function is called
+    THEN: the time returned should be of type numpy.ndarray
+    """
+    calculated_values = sr.calculate_evolution_towards_steady_states()
+    assert type(calculated_values[0]) == np.ndarray
+
+def calculate_evolution_towards_steady_states_temperature_type():
+    """
+    Test if the temperature returned by the calculate_evolution_towards_steady_states function is of type numpy.ndarray.
+
+    GIVEN: the default parameters
+    WHEN: the calculate_evolution_towards_steady_states function is called
+    THEN: the temperature returned should be of type numpy.ndarray
+    """
+    calculated_values = sr.calculate_evolution_towards_steady_states()
+    assert type(calculated_values[1]) == np.ndarray
+
+def test_calculate_evolution_towards_steady_states_temperature_convergence():
+    """
+    Test if the temperature returned by the calculate_evolution_towards_steady_states function converges to the
+    correct steady state values.
+
+    GIVEN: the default parameters
+    WHEN: the calculate_evolution_towards_steady_states function is called
+    THEN: the final temperatures should be near to the steady state values
+    """
+
+    calculated_values = sr.calculate_evolution_towards_steady_states()
+    
+    final_temperatures = calculated_values[1][:, -1]
+    
+    for final_temperature in final_temperatures:
+        assert (final_temperature == pytest.approx(sr.stable_temperature_solution_1_default, rel=1) or
+                final_temperature == pytest.approx(sr.unstable_temperature_solution_default, rel=1) or
+                final_temperature == pytest.approx(sr.stable_temperature_solution_2_default, rel=1))
+
 # Test find_peak_indices function
 
 def test_find_peak_indices():
