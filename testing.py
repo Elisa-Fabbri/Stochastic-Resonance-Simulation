@@ -250,6 +250,145 @@ def test_calculate_rate_of_temperature_change_unstable():
 
 # Test for emission_models_comparison_function
 
+def test_emission_models_comparison_temperature_range():
+    """
+    Test that the temperature values returned by the emission_models_comparison function are within the correct range
+    when the default parameters are used.
+
+    GIVEN: the default parameters
+    WHEN: the emission_models_comparison function is called
+    THEN: the temperature values returned should be within the correct range
+    """
+
+    calculated_values = sr.emission_models_comparison()
+    assert (np.all(calculated_values[0] >= sr.stable_temperature_solution_1_default-10) and
+           np.all(calculated_values[0] <= sr.stable_temperature_solution_2_default+10))
+
+def test_emission_models_comparison_temperature_length():
+    """
+    Test that the temperature values returned by the emission_models_comparison function have the correct length
+    when the default parameters are used.
+
+    GIVEN: the default parameters
+    WHEN: the emission_models_comparison function is called
+    THEN: the temperature values returned should have the correct length (num_points)
+    """
+
+    num_points = int((sr.stable_temperature_solution_2_default+10) - 
+                     (sr.stable_temperature_solution_1_default-10))*10
+    expected_value = num_points
+    calculated_values = sr.emission_models_comparison()
+    assert len(calculated_values[0]) == expected_value
+
+def test_emission_models_comparison_emitted_radiation_shape():
+    """
+    Test that the emitted radiation values returned by the emission_models_comparison function have the correct shape
+    when the default parameters are used.
+
+    GIVEN: the default parameters
+    WHEN: the emission_models_comparison function is called
+    THEN: the emitted radiation values returned should have the correct shape (2, num_points)
+    """
+
+    num_points = int((sr.stable_temperature_solution_2_default+10) - 
+                    (sr.stable_temperature_solution_1_default-10))*10
+    expected_value = (2, num_points)
+    calculated_values = sr.emission_models_comparison()
+    assert calculated_values[1].shape == expected_value
+
+def test_emission_models_comparison_dT_dt_shape():
+    """
+    Test that the dT_dt values returned by the emission_models_comparison function have the correct shape
+    when the default parameters are used.
+
+    GIVEN: the default parameters
+    WHEN: the emission_models_comparison function is called
+    THEN: the dT_dt values returned should have the correct shape (2, num_points)
+    """
+
+    num_points = int((sr.stable_temperature_solution_2_default+10) - 
+                    (sr.stable_temperature_solution_1_default-10))*10
+    expected_value = (2, num_points)
+    calculated_values = sr.emission_models_comparison()
+    assert calculated_values[2].shape == expected_value
+
+def test_emission_models_comparison_temperature_type():
+    """
+    Test that the temperature values returned by the emission_models_comparison function are of type numpy.ndarray
+    when the default parameters are used.
+
+    GIVEN: the default parameters
+    WHEN: the emission_models_comparison function is called
+    THEN: the temperature values returned should be of type numpy.ndarray
+    """
+    calculated_values = sr.emission_models_comparison()
+    assert type(calculated_values[0]) == np.ndarray
+
+def test_emission_models_comparison_emitted_radiation_type():
+    """
+    Test that the emitted radiation values returned by the emission_models_comparison function are of type numpy.ndarray
+    when the default parameters are used.
+
+    GIVEN: the default parameters
+    WHEN: the emission_models_comparison function is called
+    THEN: the emitted radiation values returned should be of type numpy.ndarray
+    """
+    calculated_values = sr.emission_models_comparison()
+    assert type(calculated_values[1]) == np.ndarray
+
+def test_emission_models_comparison_dT_dt_type():
+    """
+    Test that the dT_dt values returned by the emission_models_comparison function are of type numpy.ndarray
+    when the default parameters are used.
+
+    GIVEN: the default parameters
+    WHEN: the emission_models_comparison function is called
+    THEN: the dT_dt values returned should be of type numpy.ndarray
+    """
+    calculated_values = sr.emission_models_comparison()
+    assert type(calculated_values[2]) == np.ndarray
+
+def test_emission_models_comparison_temperature_values():
+    """
+    Test that the temperature values returned by the emission_models_comparison function are correct
+    when the default parameters are used.
+
+    GIVEN: the default parameters
+    WHEN: the emission_models_comparison function is called
+    THEN: the temperature values returned should be correct
+    """
+    expected_value = np.linspace(sr.stable_temperature_solution_1_default-10 , 
+                                 sr.stable_temperature_solution_2_default+10, 
+                                 int(((sr.stable_temperature_solution_2_default+10) -
+                                      (sr.stable_temperature_solution_1_default -10 ))*10))
+    calculated_values = sr.emission_models_comparison()
+    assert np.array_equal(calculated_values[0], expected_value)
+
+def test_emission_models_comparison_emitted_radiation_values_type():
+    """
+    Test that the elements contained in the emitted radiation values returned by the 
+    emission_models_comparison function are real when the default parameters are used.
+
+    GIVEN: the default parameters
+    WHEN: the emission_models_comparison function is called
+    THEN: the elements contained in the emitted radiation values returned should be real
+    """
+    calculated_values = sr.emission_models_comparison()
+    assert np.isreal(calculated_values[1]).all()
+
+def test_emission_models_comparison_dT_dt_values_type():
+    """
+    Test that the elements contained in the dT_dt values returned by the 
+    emission_models_comparison function are real when the default parameters are used.
+
+    GIVEN: the default parameters
+    WHEN: the emission_models_comparison function is called
+    THEN: the elements contained in the dT_dt values returned should be real
+    """
+    calculated_values = sr.emission_models_comparison()
+    assert np.isreal(calculated_values[2]).all()
+
+
 #Test for simulate_ito function
 
 def test_simulate_ito_no_noise_no_forcing():
