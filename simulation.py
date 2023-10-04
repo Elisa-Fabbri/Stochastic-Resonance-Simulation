@@ -9,7 +9,7 @@ specified paths (all this files are contained in the data folder).
 
 import configparser
 import sys
-from os import makedirs
+import os
 import numpy as np
 from scipy import signal
 
@@ -20,12 +20,19 @@ import aesthetics as aes
 
 config = configparser.ConfigParser()
 
-try:
-    config.read(sys.argv[1])
-except IndexError:
+# Reading the configuration file; if it is not specified as an argument, 
+# the 'configuration.txt' file is used as default:
+config_file = sys.argv[1] if len(sys.argv) > 1 else 'configuration.txt'
+
+if not os.path.isfile(config_file):
     with aes.red_text():
-        print('Error: You must specify a configuration file as an argument!')
+        if config_file == 'configuration.txt':
+            print('Error: The default configuration file "configuration.txt" does not exist in the current folder!')
+        else:
+            print(f'Error: The specified configuration file "{config_file}" does not exist in the current folder!')
         sys.exit()
+
+config.read(config_file)
 
 stable_temperature_solution_1 = config['settings'].getfloat('stable_temperature_solution_1')
 unstable_temperature_solution = config['settings'].getfloat('unstable_temperature_solution')
@@ -54,7 +61,7 @@ variance_start = config['settings'].getfloat('variance_start')
 variance_end = config['settings'].getfloat('variance_end')
 num_variances = config['settings'].getint('num_variances')
 
-makedirs('data', exist_ok = True)
+os.makedirs('data', exist_ok = True)
 
 temperatures_for_emission_models_comparison_destination = config['data_paths'].get('temperatures_for_emission_models_comparison')
 emitted_radiation_for_emission_models_comparison_destination = config['data_paths'].get('emitted_radiation_for_emission_models_comparison')

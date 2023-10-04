@@ -71,11 +71,11 @@ To execute the simulation and visualize the results, follow these steps:
 
 1. **Download the Repository:** Begin by downloading the project repository to your local machine. You can do this by using the `git clone` command in your terminal or command prompt: `git clone <repository_url>`
 
-2. **Running the Simulation:** After cloning the repository, execute the simulation by running `simulation.py` from the command line and specifying the desired configuration file: `python simulation.py configuration.txt`.
+2. **Running the Simulation:** After cloning the repository, execute the simulation by running `simulation.py` from the command line. If you want to use a custom configuration file, specify it as an argument: `python simulation.py [custom_configuration.txt]`. If no configuration file is specified, the default 'configuration.txt' will be used.
 
 This step generates data files and saves them in the *data* folder.
 
-3. **Generating Plots:** After running the simulation, create plots to visualize the results using `plots.py` with the chosen configuration file: `python plots.py configuration.txt`.
+3. **Generating Plots:** After running the simulation, create plots to visualize the results using `plots.py` with the chosen configuration file: `python plots.py [custom_configuration.txt]`. If no configuration file is specified, the default 'configuration.txt' will be used.
 
 The plots are saved in the *images* folder.
 
@@ -84,6 +84,8 @@ The plots are saved in the *images* folder.
 ### Creating a New Configuration File
 
 To create a new configuration file for the simulation, follow these guidelines:
+
+**Note**: The configuration file must be located in the repository folder.
 
 1. **Configuration Sections:**
 
@@ -123,7 +125,7 @@ To create a new configuration file for the simulation, follow these guidelines:
 
 Now you can create a custom configuration file by specifying values for these parameters and paths.
 
-To run the simulation with your custom configuration file, follow the same steps described in the *Running the Simulation and Plotting Results* section, but replace *configuration.txt* with the name of your custom configuration file.
+To run the simulation with your custom configuration file, as explained in the *Running the Simulation and Plotting Results* section, you should specify it as a command-line argument.
 
 ### Project Files
 

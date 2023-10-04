@@ -5,8 +5,8 @@ It reads the data from the data folder and generates plots in the images folder.
 """
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 from matplotlib.ticker import ScalarFormatter
-from os import makedirs
 import configparser
 import sys
 
@@ -14,12 +14,19 @@ import aesthetics as aes
 
 config = configparser.ConfigParser()
 
-try:
-    config.read(sys.argv[1])
-except IndexError:
+# Reading the configuration file; if it is not specified as an argument, 
+# the 'configuration.txt' file is used as default:
+config_file = sys.argv[1] if len(sys.argv) > 1 else 'configuration.txt'
+
+if not os.path.isfile(config_file):
     with aes.red_text():
-        print('Error: You must specify a configuration file as an argument!')
+        if config_file == 'configuration.txt':
+            print('Error: The default configuration file "configuration.txt" does not exist in the current folder!')
+        else:
+            print(f'Error: The specified configuration file "{config_file}" does not exist in the current folder!')
         sys.exit()
+
+config.read(config_file)
 
 try:
     temperatures_for_emission_models_comparison_path = config['data_paths'].get('temperatures_for_emission_models_comparison')
@@ -45,7 +52,7 @@ except:
     sys.exit(1)
 
 
-makedirs('images', exist_ok = True)
+os.makedirs('images', exist_ok = True)
 
 try:
     emission_models_comparison_plots_destination = config['image_paths'].get('emission_models_comparison_plots')
