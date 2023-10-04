@@ -66,6 +66,37 @@ except:
     with aes.orange_text():
         print("Please make sure you have correctly specified the image paths in the configuration file.")
 
+
+def check_path_and_load_data(data_path, contained_data):
+    """
+    Check if the specified data path exists and load the data.
+
+    Parameters:
+    - data_path: The path to the data file.
+    - contained_data: The type of data contained in the file.
+
+    Returns:
+    - data: The data stored in the file.
+
+    Raises:
+    - FileNotFoundError: If the file does not exist.
+    - TypeError: If the data path is not specified correctly in the configuration file.
+    """
+    try:
+        data = np.load(data_path)
+    except FileNotFoundError:
+        with aes.red_text():
+            print(f"An error occurred: The file containing the '{contained_data}' data does not exist.")
+        print("To generate this file, please run 'simulation.py' first.")
+        sys.exit(1)
+    except TypeError:
+        with aes.red_text():
+            print("An error occurred while reading data paths from the configuration file.")
+        with aes.orange_text():
+            print("Please make sure you have correctly specified the data paths in the configuration file.")
+        sys.exit()
+    return data
+
 def emission_models_comparison_plots():
     """
     Create comparison plots for emission models.
@@ -76,35 +107,12 @@ def emission_models_comparison_plots():
     """
 
     fig, axes = plt.subplots(1, 2, figsize=(20, 10))
-
-    try:
-        T = np.load(temperatures_for_emission_models_comparison_path)
-    except FileNotFoundError:
-        with aes.red_text():
-            print("An error occurred: The file containing temperature data does not exist.")
-        print("To generate this file, please run 'simulation.py' first.")
-        sys.exit(1)
-    except TypeError:
-        with aes.red_text():
-            print("An error occurred while reading data paths from the configuration file.")
-        with aes.orange_text():
-            print("Please make sure you have correctly specified the data paths in the configuration file.")
-        sys.exit()
-
-    # First plot
-    try:
-        emitted_radiation_values = np.load(emitted_radiation_for_emission_models_comparison_path)
-    except FileNotFoundError:
-        with aes.red_text():
-            print("An error occurred: The file containing the emitted radiation data does not exist.")
-        print("To generate this file, please run 'simulation.py' first.")
-        sys.exit(1)
-    except TypeError:
-        with aes.red_text():
-            print("An error occurred while reading data paths from the configuration file.")
-        with aes.orange_text():
-            print("Please make sure you have correctly specified the data paths in the configuration file.")
-        sys.exit()
+    
+    T = check_path_and_load_data(data_path = temperatures_for_emission_models_comparison_path, 
+                                 contained_data = 'temperature')
+    
+    emitted_radiation_values = check_path_and_load_data(data_path = emitted_radiation_for_emission_models_comparison_path, 
+                                                        contained_data = 'emitted radiation')
 
     emitted_radiation_linear_values = emitted_radiation_values[0]
     emitted_radiation_black_body_values = emitted_radiation_values[1]
@@ -120,20 +128,8 @@ def emission_models_comparison_plots():
 
     axes[0].yaxis.set_major_formatter(ScalarFormatter(useMathText=True, useOffset=True))
 
-    # Second plot
-    try:
-        F_values = np.load(F_for_emission_models_comparison_path)
-    except FileNotFoundError:
-        with aes.red_text():
-            print("An error occurred: The file containing the rate of temperature change data does not exist.")
-        print("To generate this file, please run 'simulation.py' first.")
-        sys.exit(1)
-    except TypeError:
-        with aes.red_text():
-            print("An error occurred while reading data paths from the configuration file.")
-        with aes.orange_text():
-            print("Please make sure you have correctly specified the data paths in the configuration file.")
-        sys.exit()
+    F_values = check_path_and_load_data(data_path = F_for_emission_models_comparison_path, 
+                                        contained_data = 'rate of temperature change')
 
     F_linear_values = F_values[0]
     F_black_body_values = F_values[1]
@@ -169,33 +165,12 @@ def evolution_towards_steady_states_plot():
     the stable solutions.
 
     """
-    try:
-        time = np.load(times_for_evolution_towards_steady_states_path)
-    except FileNotFoundError:
-        with aes.red_text():
-            print("An error occurred: The file containing time data does not exist.")
-        print("To generate this file, please run 'simulation.py' first.")
-        sys.exit(1)
-    except TypeError:
-        with aes.red_text():
-            print("An error occurred while reading data paths from the configuration file.")
-        with aes.orange_text():
-            print("Please make sure you have correctly specified the data paths in the configuration file.")
-        sys.exit()
 
-    try:
-         simulated_temperature = np.load(temperatures_for_evolution_towards_steady_states_path)
-    except FileNotFoundError:
-        with aes.red_text():
-            print("An error occurred: The file containing temperature data does not exist.")
-        print("To generate this file, please run 'simulation.py' first.")
-        sys.exit(1)
-    except TypeError:
-        with aes.red_text():
-            print("An error occurred while reading data paths from the configuration file.")
-        with aes.orange_text():
-            print("Please make sure you have correctly specified the data paths in the configuration file.")
-        sys.exit()
+    time = check_path_and_load_data(data_path = times_for_evolution_towards_steady_states_path, 
+                                    contained_data = 'time')
+    
+    simulated_temperature = check_path_and_load_data(data_path = temperatures_for_evolution_towards_steady_states_path, 
+                                                     contained_data = 'temperature')
 
     f = plt.figure(figsize=(15, 10))
 
@@ -223,34 +198,11 @@ def power_spectra_plots():
 
     """
 
-    try:
-        frequencies = np.load(frequencies_path)
-    except FileNotFoundError:
-        with aes.red_text():
-            print("An error occurred: The file containing frequency data does not exist.")
-        print("To generate this file, please run 'simulation.py' first.")
-        sys.exit(1)
-    except TypeError:
-        with aes.red_text():
-            print("An error occurred while reading data paths from the configuration file.")
-        with aes.orange_text():
-            print("Please make sure you have correctly specified the data paths in the configuration file.")
-        sys.exit()
-
-    try:
-         PSD_mean = np.load(averaged_PSD_path)
-    except FileNotFoundError:
-        with aes.red_text():
-            print("An error occurred: The file containing power spectral density data does not exist.")
-        print("To generate this file, please run 'simulation.py' first.")
-        sys.exit(1)
-    except TypeError:
-        with aes.red_text():
-            print("An error occurred while reading data paths from the configuration file.")
-        with aes.orange_text():
-            print("Please make sure you have correctly specified the data paths in the configuration file.")
-        sys.exit()
-
+    frequencies = check_path_and_load_data(data_path = frequencies_path, 
+                                           contained_data = 'frequency')
+    
+    PSD_mean = check_path_and_load_data(data_path = averaged_PSD_path, 
+                                        contained_data = 'power spectral density')
 
     variance_start = config['settings'].getfloat('variance_start')
     variance_end = config['settings'].getfloat('variance_end')
@@ -306,19 +258,8 @@ def peak_height_plot():
 
     V = np.linspace(variance_start, variance_end, num=num_variances)
 
-    try:
-        peaks_height = np.load(peak_heights_in_PSD_path)
-    except FileNotFoundError:
-        with aes.red_text():
-            print("An error occurred: The file containing peaks heights data does not exist.")
-        print("To generate this file, please run 'simulation.py' first.")
-        sys.exit(1)
-    except TypeError:
-        with aes.red_text():
-            print("An error occurred while reading data paths from the configuration file.")
-        with aes.orange_text():
-            print("Please make sure you have correctly specified the data paths in the configuration file.")
-        sys.exit()
+    peaks_height = check_path_and_load_data(data_path = peak_heights_in_PSD_path,
+                                            contained_data = 'peak heights')
 
     f = plt.figure(figsize=(15, 10))
     plt.scatter(V, peaks_height)
@@ -351,33 +292,11 @@ def plot_simulate_ito_combinations():
     stable_solution_1 = config['settings'].getfloat('stable_temperature_solution_1')
     stable_solution_2 = config['settings'].getfloat('stable_temperature_solution_2')
 
-    try:
-        times = np.load(times_combinations_path)
-    except FileNotFoundError:
-        with aes.red_text():
-            print("An error occurred: The file containing time data does not exist.")
-        print("To generate this file, please run 'simulation.py' first.")
-        sys.exit(1)
-    except TypeError:
-        with aes.red_text():
-            print("An error occurred while reading data paths from the configuration file.")
-        with aes.orange_text():
-            print("Please make sure you have correctly specified the data paths in the configuration file.")
-        sys.exit()
+    times = check_path_and_load_data(data_path = times_combinations_path,
+                                        contained_data = 'time')
 
-    try:
-        temperatures = np.load(temperatures_combinations_path)
-    except FileNotFoundError:
-        with aes.red_text():
-            print("An error occurred: The file containing temperature data does not exist.")
-        print("To generate this file, please run 'simulation.py' first.")
-        sys.exit(1)
-    except TypeError:
-        with aes.red_text():
-            print("An error occurred while reading data paths from the configuration file.")
-        with aes.orange_text():
-            print("Please make sure you have correctly specified the data paths in the configuration file.")
-        sys.exit()
+    temperatures = check_path_and_load_data(data_path = temperatures_combinations_path,
+                                            contained_data = 'temperature')
 
     titles = [
         'Without noise and without periodic forcing',
