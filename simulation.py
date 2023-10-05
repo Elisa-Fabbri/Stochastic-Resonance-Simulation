@@ -16,7 +16,7 @@ from scipy import signal
 import stochastic_resonance as sr
 import aesthetics as aes
 
-#---------------------------------------------------------------------
+#-------Reading parameters values and paths from the configuration file-----------
 
 config = configparser.ConfigParser()
 
@@ -92,7 +92,7 @@ temperatures_combinations_destination = config['data_paths'].get('temperatures_c
 
 #------Generation of data for the emission models comparison--------------
 
-print('Calculating times and temperature values for comparing emission models...')
+print('Calculating values for the emission models comparison...')
 
 temperatures_values, emitted_radiation_values, F_values = sr.emission_models_comparison(
     										surface_thermal_capacity = C_years,
@@ -104,10 +104,11 @@ temperatures_values, emitted_radiation_values, F_values = sr.emission_models_com
 #Saving data
 np.save(temperatures_for_emission_models_comparison_destination, temperatures_values)
 np.save(emitted_radiation_for_emission_models_comparison_destination, emitted_radiation_values)
-np.save(F_for_emission_models_comparison_destination, F_values)
-
 with aes.green_text():
-    print('Results saved!')
+    print('Emitted radiation values saved!')
+np.save(F_for_emission_models_comparison_destination, F_values)
+with aes.green_text():
+    print('Rate of temperature change values saved!')
 
 #----Generation of data for showing the evolution of temperature towards steady states---------
 
@@ -133,8 +134,11 @@ np.save(temperatures_for_evolution_towards_steady_states_destination,
         evolution_towards_steady_states_temperature)
 
 with aes.green_text():
-    print('Results saved!')
-#-----------------------------------------------------------------------
+    print('Temperature values saved!')
+
+#-----Simulation of temperature evolution for different noise variances---------
+
+print('Simulating temperature evolution for different noise variances...')
 
 V = np.linspace(variance_start, variance_end, num_variances)
 
@@ -164,7 +168,7 @@ for i, v in enumerate(V):
 with aes.green_text():
     print('Simulation completed.')
 
-#----------------------------------------------------------------------
+#Saving data
 
 print('Saving results...')
 
@@ -172,9 +176,9 @@ np.save(temperatures_destination, Temperature)
 np.save(times_destination, Time)
 
 with aes.green_text():
-    print('Data saved successfully!')
+    print('Time and temperature data saved successfully!')
 
-#-----------------------------------------------------------------------
+#-----Calculation of the power spectral density-------
 
 Frequencies = np.zeros((len(V), np.floor_divide(num_steps, 2) +1))
 PSD_mean = np.zeros((len(V), np.floor_divide(num_steps, 2) +1))
@@ -194,15 +198,15 @@ with aes.green_text():
 
 #-----------------------------------------------------------------------
 
-print('Saving the results')
+print('Saving results...')
 
 np.save(frequencies_destination, Frequencies)
 np.save(averaged_PSD_destination, PSD_mean)
 
 with aes.green_text():
-    print('Data saved successfully!')
+    print('Frequency and PSD data saved successfully!')
 
-#-------------------------------------------------------------------------
+#-----Calculation of the peak heights in the power spectral density-------
 
 print('Calculating peak heights in the power spectral density...')
 
@@ -214,14 +218,15 @@ peaks_heights = sr.calculate_peak_height(peaks, peaks_bases)
 np.save(peak_heights_in_PSD_destination, peaks_heights)
 
 with aes.green_text():
-    print('Results saved!')
+    print('Peak heights values saved!')
 
 V_SR_index = np.argmax(peaks_heights)
 V_SR = V[V_SR_index]
 
 print(f'Stochastic resonance mechanism found at variance value: {V_SR:.3f}')
 
-#-----------------------------------------------------------------------------
+#-----Simulation of temperature evolution with and without noise and periodic forcing----
+# The variance value used is the one that maximizes the peak height in the PSD.
 
 print('Simulating Temperature Combinations: Periodic Forcing, No Forcing, Noise, and No Noise...')
 
@@ -242,6 +247,6 @@ np.save(times_combinations_destination, time_combinations)
 np.save(temperatures_combinations_destination, temperatures_combinations)
 
 with aes.green_text():
-    print('Results saved!')
+    print('Time and temperature data saved!')
 
 

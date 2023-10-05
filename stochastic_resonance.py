@@ -52,7 +52,8 @@ num_simulations_default = 10
 
 def emitted_radiation(temperature,
                       emission_model=emission_model_default,
-                      conversion_factor=num_sec_in_a_year):
+                      conversion_factor=num_sec_in_a_year
+                      ):
     """
     Calculate the emitted radiation from the Earth's surface based on the chosen emission model.
 
@@ -98,7 +99,8 @@ def emitted_radiation(temperature,
 
 def periodic_forcing(time,
                      amplitude = forcing_amplitude_default,
-                     angular_frequency = forcing_angular_frequency_default):
+                     angular_frequency = forcing_angular_frequency_default
+                     ):
     """
     Calculate the periodic forcing applied to the system.
 
@@ -124,14 +126,16 @@ def periodic_forcing(time,
     periodic_forcing = np.array(amplitude) * np.cos(np.array(angular_frequency) * time)
     return 1 + periodic_forcing
 
-def calculate_rate_of_temperature_change(temperature,
+def calculate_rate_of_temperature_change(
+                 temperature,
       					 surface_thermal_capacity = surface_earth_thermal_capacity_in_years,
       					 relaxation_time = relaxation_time_default,
       					 stable_temperature_solution_1 = stable_temperature_solution_1_default,
       					 unstable_temperature_solution = unstable_temperature_solution_default,
       					 stable_temperature_solution_2 = stable_temperature_solution_2_default,
       					 emission_model = emission_model_default,
-      					 periodic_forcing_value = 1):
+      					 periodic_forcing_value = 1
+                 ):
 
     """
     Calculate the rate of temperature change (dT/dt) given a certain temperature (T) using a 
@@ -179,11 +183,13 @@ def calculate_rate_of_temperature_change(temperature,
 
 
 
-def emission_models_comparison(surface_thermal_capacity = surface_earth_thermal_capacity_in_years,
+def emission_models_comparison(
+             surface_thermal_capacity = surface_earth_thermal_capacity_in_years,
 			       relaxation_time = relaxation_time_default,
 			       stable_temperature_solution_1 = stable_temperature_solution_1_default,
 			       unstable_temperature_solution = unstable_temperature_solution_default,
-			       stable_temperature_solution_2 = stable_temperature_solution_2_default):
+			       stable_temperature_solution_2 = stable_temperature_solution_2_default
+             ):
     """
     Compare emitted radiation and rate of temperature change for 'linear' and 'black body' emission models.
 
@@ -308,12 +314,14 @@ def simulate_ito(
     t = np.arange(t_start, t_start + num_steps * dt, dt)  # len(t) = num_steps
     T = np.zeros((num_simulations, num_steps))
     T[:, 0] = T_start
+
     if noise == True:
         W = np.random.normal(0, np.sqrt(dt), (num_simulations, num_steps))
     elif noise == False:
         W = np.zeros((num_simulations, num_steps))
     else:
         raise ValueError("Invalid value for 'noise'. Please use True or False")
+    
     if forcing == "constant":
         forcing_values = np.ones(num_steps)
     elif forcing == "varying":
@@ -321,6 +329,7 @@ def simulate_ito(
                                           angular_frequency = forcing_angular_frequency)
     else:
         raise ValueError("Invalid value for 'forcing'. Please use 'constant' or 'varying'")
+    
     for i in aes.progress(range(num_steps - 1)):
         Fi = calculate_rate_of_temperature_change(
             temperature = T[:, i],
@@ -334,8 +343,7 @@ def simulate_ito(
         )
         dT = Fi * dt + sigma * W[:, i]
         T[:, i + 1] = T[:, i] + dT
-    with aes.green_text():
-        print('finished!')
+
     return t, T
 
 def calculate_evolution_towards_steady_states(
@@ -408,7 +416,9 @@ def calculate_evolution_towards_steady_states(
 
     return time, temperature
 
-def find_peak_indices(frequencies, period = forcing_period_default):
+def find_peak_indices(frequencies, 
+                      period = forcing_period_default
+                      ):
     """
     Find indices of theoretically predicted peaks in a frequency spectrum.
 
@@ -427,7 +437,9 @@ def find_peak_indices(frequencies, period = forcing_period_default):
     peaks_indices = np.abs(frequencies - (1/period)).argmin(axis = 1)
     return peaks_indices
 
-def calculate_peaks(PSD_mean, peaks_indices):
+def calculate_peaks(PSD_mean, 
+                    peaks_indices
+                    ):
     """
     Calculate the values of peaks in a power spectral density.
 
@@ -445,7 +457,10 @@ def calculate_peaks(PSD_mean, peaks_indices):
     peaks = PSD_mean[np.arange(PSD_mean.shape[0]), peaks_indices]
     return peaks
 
-def calculate_peaks_base(PSD_mean, peaks_indices, num_neighbors=2):
+def calculate_peaks_base(PSD_mean, 
+                         peaks_indices, 
+                         num_neighbors=2
+                         ):
     """
     Calculate the values of the base of the peaks in a power spectral density.
 
@@ -474,10 +489,13 @@ def calculate_peaks_base(PSD_mean, peaks_indices, num_neighbors=2):
         valid_indices = np.unique(valid_indices)
         neighbor_values = PSD_mean[i, valid_indices]
         peaks_base[i] = np.mean(neighbor_values)
+
     return peaks_base
 
 
-def calculate_peak_height(peaks, peaks_base):
+def calculate_peak_height(peaks, 
+                          peaks_base
+                          ):
     """
     Calculate the heights of peaks in a power spectral density.
 
@@ -508,7 +526,8 @@ def simulate_ito_combinations_and_collect_results(
 						  forcing_amplitude = forcing_amplitude_default,
 						  forcing_angular_frequency = forcing_angular_frequency_default,
 						  emission_model = emission_model_default,
-              seed_value = 0):
+              seed_value = 0
+              ):
     """
     Simulate temperature with various combinations of noise and forcing.
 
