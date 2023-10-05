@@ -1,3 +1,6 @@
+# This is a configuration file
+
+# The 'settings' section contains the values of the parameters used in the simulation.
 [settings]
 
 stable_temperature_solution_1 = 280
@@ -20,6 +23,7 @@ num_variances = 16
 
 seed_value = 42
 
+# The 'data_paths' section contains the paths for saving the data.
 [data_paths]
 
 temperatures_for_emission_models_comparison = ./data/temperatures_values_for_models_comparison.npy
@@ -39,6 +43,7 @@ peak_heights_in_PSD = ./data/peak_heights_values_in_PSD.npy
 times_combinations = ./data/times_values_combinations.npy
 temperatures_combinations = ./data/temperatures_values_combinations.npy
 
+#The 'image_paths' section contains the paths for saving the plots.
 [image_paths]
 
 emission_models_comparison_plots = ./images/emission_models_comparison_plots.png
