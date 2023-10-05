@@ -18,6 +18,8 @@ variance_start = 0.01
 variance_end = 0.3
 num_variances = 16
 
+seed_value = 42
+
 [data_paths]
 
 temperatures_for_emission_models_comparison = ./data/temperatures_values_for_models_comparison.npy

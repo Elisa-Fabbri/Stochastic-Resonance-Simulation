@@ -363,6 +363,9 @@ Lastly, the temperature evolution is simulated for various noise intensities. Th
 
 - **num_variances**: Number of variance levels to simulate.
 
+- **seed_value** (optional): The seed value for the random number generator used in the simulation.
+If not provided, a random seed value is generated between 0 and 1000000.
+
 
 ## References
 

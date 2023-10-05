@@ -61,6 +61,16 @@ variance_start = config['settings'].getfloat('variance_start')
 variance_end = config['settings'].getfloat('variance_end')
 num_variances = config['settings'].getint('num_variances')
 
+if 'seed_value' in config['settings']:
+    seed_value = config['settings'].getint('seed_value')
+    print("The seed value used for this simulation is: ", seed_value)
+else: 
+    # Generate a random seed value between 0 and 1000000
+    seed_value = np.random.randint(0, 1000000)
+    with aes.orange_text():
+        print('The seed value was not specified in the configuration file.')
+    print('The randomly generated seed value used for this simulation is: ', seed_value)
+
 os.makedirs('data', exist_ok = True)
 
 temperatures_for_emission_models_comparison_destination = config['data_paths'].get('temperatures_for_emission_models_comparison')
@@ -111,7 +121,8 @@ evolution_towards_steady_states_time, evolution_towards_steady_states_temperatur
         stable_temperature_solution_2=stable_temperature_solution_2,
         forcing_amplitude=forcing_amplitude,
         forcing_angular_frequency=forcing_angular_frequency,
-        emission_model=emission_model
+        emission_model=emission_model,
+        seed_value = seed_value
     )
 
 #Saving data
@@ -124,8 +135,6 @@ np.save(temperatures_for_evolution_towards_steady_states_destination,
 with aes.green_text():
     print('Results saved!')
 #-----------------------------------------------------------------------
-
-print('Simulating temperature evolution with noise and periodic forcing...')
 
 V = np.linspace(variance_start, variance_end, num_variances)
 
@@ -147,7 +156,8 @@ for i, v in enumerate(V):
 					forcing_amplitude = forcing_amplitude,
 					forcing_angular_frequency = forcing_angular_frequency,
 					noise = True,
-					emission_model = emission_model)
+					emission_model = emission_model,
+                    seed_value = seed_value)
     Temperature[i, :, :] = temperature
     Time[i, :] = time
 
@@ -225,7 +235,8 @@ time_combinations, temperatures_combinations = sr.simulate_ito_combinations_and_
 												stable_temperature_solution_2 = stable_temperature_solution_2,
 												forcing_amplitude = forcing_amplitude,
 												forcing_angular_frequency = forcing_angular_frequency,
-												emission_model = emission_model)
+												emission_model = emission_model,
+                                                seed_value = seed_value)
 
 np.save(times_combinations_destination, time_combinations)
 np.save(temperatures_combinations_destination, temperatures_combinations)

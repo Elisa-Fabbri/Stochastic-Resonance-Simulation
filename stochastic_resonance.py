@@ -161,7 +161,6 @@ def calculate_rate_of_temperature_change(temperature,
     - dT/dt (float): The calculated rate of temperature change (dT/dt) at the specified temperature (T).
     """
 
-
     beta = -((surface_thermal_capacity / (relaxation_time * emitted_radiation(
         temperature=stable_temperature_solution_2,
         emission_model=emission_model))) *
@@ -264,7 +263,8 @@ def simulate_ito(
     forcing_angular_frequency = forcing_angular_frequency_default,
     noise = True,
     emission_model = emission_model_default,
-    forcing = 'varying'
+    forcing = 'varying',
+    seed_value = 0
     ):
 
     """
@@ -296,13 +296,13 @@ def simulate_ito(
     - noise (bool): A flag indicating whether to include noise in the simulation. Default is True.
     - emission_model (str): The emission model to use ('linear' or 'black body'). Default is 'linear'.
     - forcing (str): The type of forcing to apply ('constant' or 'varying'). Default is 'varying'.
+    - seed_value (int): The seed value for the random number generator. Default is 0.
 
     Returns:
     - t (numpy.ndarray): An array of time values for the simulation.
     - T (numpy.ndarray): An array of temperature values for each simulation run and time step.
     """
-
-    seed_value = 42
+    
     np.random.seed(seed_value)
     sigma = np.sqrt(noise_variance)
     t = np.arange(t_start, t_start + num_steps * dt, dt)  # len(t) = num_steps
@@ -340,13 +340,14 @@ def simulate_ito(
 
 def calculate_evolution_towards_steady_states(
                           surface_thermal_capacity = surface_earth_thermal_capacity_in_years,
-					      relaxation_time = relaxation_time_default,
-					      stable_temperature_solution_1 = stable_temperature_solution_1_default,
-					      unstable_temperature_solution = unstable_temperature_solution_default,
-					      stable_temperature_solution_2 = stable_temperature_solution_2_default,
-					      forcing_amplitude = forcing_amplitude_default,
-					      forcing_angular_frequency = forcing_angular_frequency_default,
-					      emission_model = emission_model_default
+					                relaxation_time = relaxation_time_default,
+					                stable_temperature_solution_1 = stable_temperature_solution_1_default,
+					                unstable_temperature_solution = unstable_temperature_solution_default,
+					                stable_temperature_solution_2 = stable_temperature_solution_2_default,
+					                forcing_amplitude = forcing_amplitude_default,
+					                forcing_angular_frequency = forcing_angular_frequency_default,
+					                emission_model = emission_model_default,
+                          seed_value = 0
                           ):
     """
     Calculate temperature evolution towards steady states.
@@ -370,6 +371,7 @@ def calculate_evolution_towards_steady_states(
     - forcing_angular_frequency (float): The angular frequency of periodic forcing.
     Default is (2 * pi) / 1e5.
     - emission_model (str): The emission model to use ('linear' or 'black body'). Default is 'linear'.
+    - seed_value (int): The seed value for the random number generator. Default is 0.
 
     Returns:
     - time (numpy.ndarray): An array of time values for the simulation.
@@ -390,18 +392,19 @@ def calculate_evolution_towards_steady_states(
                        temperatures + [temp + epsilon for temp in temperatures])
 
     time, temperature = simulate_ito(T_start = T_start,
-				     num_steps = 100,
-				     num_simulations = len(T_start),
-				     surface_thermal_capacity = surface_thermal_capacity,
-				     relaxation_time = relaxation_time,
-				     stable_temperature_solution_1 = stable_temperature_solution_1,
-				     unstable_temperature_solution = unstable_temperature_solution,
-				     stable_temperature_solution_2 = stable_temperature_solution_2,
-				     forcing_amplitude = forcing_amplitude,
-				     forcing_angular_frequency = forcing_angular_frequency,
-				     noise = False,
-				     emission_model = emission_model,
-				     forcing = 'constant')
+				                             num_steps = 100,
+				                             num_simulations = len(T_start),
+				                             surface_thermal_capacity = surface_thermal_capacity,
+				                             relaxation_time = relaxation_time,
+				                             stable_temperature_solution_1 = stable_temperature_solution_1,
+				                             unstable_temperature_solution = unstable_temperature_solution,
+				                             stable_temperature_solution_2 = stable_temperature_solution_2,
+				                             forcing_amplitude = forcing_amplitude,
+				                             forcing_angular_frequency = forcing_angular_frequency,
+				                             noise = False,
+				                             emission_model = emission_model,
+				                             forcing = 'constant',
+                                     seed_value = seed_value)
 
     return time, temperature
 
@@ -492,7 +495,8 @@ def calculate_peak_height(peaks, peaks_base):
     peak_height = peaks - peaks_base
     return peak_height
 
-def simulate_ito_combinations_and_collect_results(T_start = stable_temperature_solution_2_default,
+def simulate_ito_combinations_and_collect_results(
+              T_start = stable_temperature_solution_2_default,
 						  noise_variance = 0,
 						  dt = time_step_default,
 						  num_steps = num_steps_default,
@@ -503,7 +507,8 @@ def simulate_ito_combinations_and_collect_results(T_start = stable_temperature_s
 						  stable_temperature_solution_2 = stable_temperature_solution_2_default,
 						  forcing_amplitude = forcing_amplitude_default,
 						  forcing_angular_frequency = forcing_angular_frequency_default,
-						  emission_model = emission_model_default):
+						  emission_model = emission_model_default,
+              seed_value = 0):
     """
     Simulate temperature with various combinations of noise and forcing.
 
@@ -530,6 +535,7 @@ def simulate_ito_combinations_and_collect_results(T_start = stable_temperature_s
     - forcing_angular_frequency (float): The angular frequency of periodic forcing.
     Default is (2 * pi) / 1e5.
     - emission_model (str): The emission model to use ('linear' or 'black body'). Default is 'linear'.
+    - seed_value (int): The seed value for the random number generator. Default is 0.
 
     Returns:
     - times (list): A list of arrays containing time values for each simulation.
@@ -546,22 +552,23 @@ def simulate_ito_combinations_and_collect_results(T_start = stable_temperature_s
 
     for noise_status, forcing_type in [(False, 'constant'), (True, 'constant'), 
                                        (False, 'varying'), (True, 'varying')]:
-        time, temperature = simulate_ito(T_start= T_start,
-					 noise_variance=noise_variance if noise_status else 0,
-					 dt = dt,
-					 num_steps = num_steps,
-					 num_simulations= 1,
-					 surface_thermal_capacity = surface_thermal_capacity,
-					 relaxation_time = relaxation_time,
-					 stable_temperature_solution_1 = stable_temperature_solution_1,
-					 unstable_temperature_solution = unstable_temperature_solution,
-					 stable_temperature_solution_2 = stable_temperature_solution_2,
-					 forcing_amplitude = forcing_amplitude,
-					 forcing_angular_frequency = forcing_angular_frequency,
-					 noise=noise_status,
-					 emission_model = emission_model,
-					 forcing=forcing_type)
-        times.append(time)
-        temperatures.append(temperature)
+      time, temperature = simulate_ito(T_start= T_start,
+					                             noise_variance=noise_variance if noise_status else 0,
+					                             dt = dt,
+					                             num_steps = num_steps,
+					                             num_simulations= 1,
+					                             surface_thermal_capacity = surface_thermal_capacity,
+					                             relaxation_time = relaxation_time,
+					                             stable_temperature_solution_1 = stable_temperature_solution_1,
+					                             unstable_temperature_solution = unstable_temperature_solution,
+					                             stable_temperature_solution_2 = stable_temperature_solution_2,
+					                             forcing_amplitude = forcing_amplitude,
+					                             forcing_angular_frequency = forcing_angular_frequency,
+					                             noise=noise_status,
+					                             emission_model = emission_model,
+					                             forcing=forcing_type,
+                                       seed_value = seed_value)
+      times.append(time)
+      temperatures.append(temperature)
 
     return times, temperatures
