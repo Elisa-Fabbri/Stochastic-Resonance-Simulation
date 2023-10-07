@@ -179,7 +179,7 @@ def test_periodic_forcing_is_one():
     """
     expected_value = 1
     calculated_value = sr.periodic_forcing(sr.forcing_period_default/4, sr.forcing_amplitude_default)
-    assert sr.periodic_forcing(sr.forcing_period_default/4, sr.forcing_amplitude_default) == expected_value
+    assert calculated_value == expected_value
     
 def test_periodic_forcing_for_list():
     """
@@ -412,6 +412,45 @@ def test_emission_models_comparison_dT_dt_values_type():
     calculated_values = sr.emission_models_comparison()
     assert np.isreal(calculated_values[2]).all()
 
+def test_emission_models_comparison_emitted_radiation_is_positive():
+    """
+    Test that the emitted radiation values returned by the emission_models_comparison function are 
+    positive when the default parameters are used.
+
+    GIVEN: the default parameters
+    WHEN: the emission_models_comparison function is called
+    THEN: the emitted radiation values returned should be positive
+    """
+    calculated_values = sr.emission_models_comparison()
+    assert (np.all(calculated_values[1]) >= 0)
+
+def test_emission_models_comparison_dT_dt_sign():
+    """
+    Test that the dT_dt values returned by the emission_models_comparison function have the correct
+    sign when the default parameters are used.
+
+    GIVEN: the default parameters
+    WHEN: the emission_models_comparison function is called
+    THEN: the dT_dt values returned should have the correct sign
+    """
+
+    calculated_values = sr.emission_models_comparison()
+    dT_dt_calculated_values = calculated_values[2]
+
+    temperature_solutions_nearest_indices = np.array([
+        np.argmin(np.abs(calculated_values[0] - sr.stable_temperature_solution_1_default)),
+        np.argmin(np.abs(calculated_values[0] - sr.unstable_temperature_solution_default)),
+        np.argmin(np.abs(calculated_values[0] - sr.stable_temperature_solution_2_default))
+    ])
+    
+    assert (np.all(dT_dt_calculated_values[:, :(temperature_solutions_nearest_indices[0] - 1)] > 0)) and \
+           (np.all(dT_dt_calculated_values[:, (temperature_solutions_nearest_indices[0] + 1): \
+                                              (temperature_solutions_nearest_indices[1] - 1)] < 0)) and \
+           (np.all(dT_dt_calculated_values[:, (temperature_solutions_nearest_indices[1] + 1): \
+                                              (temperature_solutions_nearest_indices[2] - 1)] > 0)) and \
+           (np.all(dT_dt_calculated_values[:, (temperature_solutions_nearest_indices[2] + 1):] < 0)) 
+    
+
 
 #Test for simulate_ito function
 
@@ -494,6 +533,26 @@ def test_simulate_ito_no_forcing_no_noise(T_start):
     )
     expected_value = T_start
     assert np.all(calculated_values[1] == expected_value)
+
+def test_simulate_ito_temperature_mean():
+    """
+    Test if the mean of the temperature returned by the simulate_ito function is in a valid range.
+
+    GIVEN: the default parameters with a reduced number of simulations (num_simulations = 1) and 
+            a noise variance of 0.1 (noise_variance = 0.1).
+    WHEN: the simulate_ito function is called
+    THEN: the mean of the temperature returned should be in a range of 10 degrees below and above the 
+            first and the second temperature solutions respectively.
+    """
+
+    rn.seed(42)
+    calculated_values = sr.simulate_ito(
+        noise_variance = 0.1,
+        num_steps = 1000,
+        num_simulations = 1
+    )
+    assert ((np.mean(calculated_values[1]) >= sr.stable_temperature_solution_1_default-10) and
+            np.mean(calculated_values[1] <= sr.stable_temperature_solution_2_default+10))
 
 
 # Test calculate_evolution_towards_steady_states function
