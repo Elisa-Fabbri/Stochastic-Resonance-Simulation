@@ -11,58 +11,6 @@ The mechanism of stochastic resonance was first described in the early 1980s by 
 
 The goal of this repository is to use numerical simulations to investigate the stochastic resonance phenomenon within the context of climate dynamics, the field where it was first introduced.
 
-## The stochastic resonance mechanism in climate change
-
-### Observations of Past Climate and the Milanković Cycles
-
-Over the past 800,000 years, Earth's climate has undergone cyclical shifts between glacial and interglacial periods, occurring approximately every 100,000 years. These climatic cycles follow a characteristic sawtooth pattern, featuring a rapid warming during transitions to interglacial periods, lasting about 10,000 years, followed by a gradual return to glacial conditions. This process leads to an average Earth temperature variation of approximately 10 degrees Celsius. In addition to this primary periodicity, two minor cyclic fluctuations with periods of about 41,000 and 26,000 years have been observed. Collectively, these three cycles are known as the "Milanković cycles," named in honor of the Serbian scientist who, as early as 1941, successfully explained their regularity using Earth's orbital parameters. Specifically, the 100,000-year cycle is associated with variations in Earth's orbital eccentricity (how much the orbit deviates from a perfect circle), the 41,000-year cycle relates to changes in the tilt of Earth's axis, and the 26,000-year cycle is influenced by the precession of the equinoxes.
-
-These variations in orbital parameters, driven by the gravitational influence of other planets in our solar system, are responsible for fluctuations in the average solar radiation reaching our planet. It has been hypothesized that these Milanković cycles may have played a crucial role in initiating and concluding Earth's glacial epochs.
-
-However, when considering the global scale, variations in solar irradiance are relatively limited and cannot, by themselves, account for the observed drastic temperature change of 10 degrees Celsius. Therefore, there is a need to identify an amplification mechanism capable of translating these modest solar variations into significant climatic shifts. This project focuses on the proposal put forth by Italian researchers Benzi, Parisi, Sutera, and Vulpiani in the early 1980s, introducing the concept of stochastic resonance as a potential amplification mechanism.
-
-### The Stochastic Resonance Model: Amplifying the Milanković Cycles
-
-In the work by Benzi, Parisi, Sutera, and Vulpiani, a model for the Earth's temperature evolution over time is introduced. This work is quite extensive and requires time for a detailed explanation. Therefore, in this section, I will provide commentary only on the final result, while referring the derivation to the *Explanation of the Model* section.
-
-The proposed stochastic differential equation (SDE) to describe the evolution of Earth's temperature over time is as follows:
-
-$$
-\frac{dT}{dt} = F(T) + \sigma \frac{dW}{dt}
-$$
-
-Where:
-
-- $T$ represents Earth's temperature [K].
-- $C$ represents the surface thermal capacity of the Earth [J/m² K].
-- $F(T)$ is the deterministic part of the equation that accounts for the Milanković cycles and stable and unstable temperature solutions. Stable temperatures are values to which the system converges, such as the average glacial and interglacial temperatures on Earth. The unstable solution is an unobservable solution located midway between these two extremes.
-- $W$ is a one-dimensional Wiener process that models the random variability of temperature on much shorter timescales than those considered in the deterministic model.
-- $\sigma^2$ [K^2/year] represents the variance of this noise and can be adjusted to study how different levels of variability can affect temperature behavior under various conditions.
-
-In essence, the true innovation of the proposed model is the introduction of the stochastic term in the equation.
-
-This new term allows us to explore how climatic variability, can influence the evolution of Earth's temperature. In particular, researchers have found that for a certain value of the noise variance $\sigma^2$, there is an amplification of the periodic signal in the power spectrum, leading to an amplification of the Milanković Cycles.
-
-The equation can be numerically solved in various ways, but in this project, the Forward Euler method was used, which is explained in more detail below.
-
-#### Forward Euler Discretization
-
-Here's how the forward Euler numerical integration works:
-
-- **Discretization**: The Forward Euler method approximates solutions of differential equations by breaking the continuous-time domain into discrete time steps ($\Delta t$).
-
-- **Iterative Process**: It starts from an initial condition and iteratively updates the system's state at each time step.
-
-- **Temperature Update**:
-  - To account for the stochastic temperature variability (from the Wiener process), random numbers following a normal distribution (zero mean, variance equal to $\Delta t$) are generated at each time step.
-  - The temperature change $dT$ is then found by adding the deterministic temperature change, $F(T)$, and the stochastic temperature change, $\sigma \cdot W$.
-  - The new temperature value $T(t_n)$ is then found by adding to the previuos temperature value $T(t_{n-1})$ che computed temperature change $dT$. 
-  - The results is the new temperature value for the next time step.
-
-- **Repeat**: The process repeats for the specified number of time steps, allowing us to simulate temperature evolution over time.
-
-The Forward Euler discretization method allows us to simulate temperature evolution over time, considering both deterministic changes as per the energy balance equation and stochastic fluctuations captured by random numbers from the Wiener process.
-
 ## Structure of the Project
 
 ### Running the Simulation and Plotting Results
@@ -137,6 +85,60 @@ The project consists of the following key files:
 - **`simulation.py`**: The main script for running simulations, reading parameters from the configuration file, and saving data to the *data* folder.
 - **`plots.py`**: Contains functions for generating plots based on the data generated by *simulation.py*.
 - **`aesthetics.py`**: Provides functions for enhancing user interaction, including a progress bar and text formatting.
+
+
+## The stochastic resonance mechanism in climate change
+
+### Observations of Past Climate and the Milanković Cycles
+
+Over the past 800,000 years, Earth's climate has undergone cyclical shifts between glacial and interglacial periods, occurring approximately every 100,000 years. These climatic cycles follow a characteristic sawtooth pattern, featuring a rapid warming during transitions to interglacial periods, lasting about 10,000 years, followed by a gradual return to glacial conditions. This process leads to an average Earth temperature variation of approximately 10 degrees Celsius. In addition to this primary periodicity, two minor cyclic fluctuations with periods of about 41,000 and 26,000 years have been observed. Collectively, these three cycles are known as the "Milanković cycles," named in honor of the Serbian scientist who, as early as 1941, successfully explained their regularity using Earth's orbital parameters. Specifically, the 100,000-year cycle is associated with variations in Earth's orbital eccentricity (how much the orbit deviates from a perfect circle), the 41,000-year cycle relates to changes in the tilt of Earth's axis, and the 26,000-year cycle is influenced by the precession of the equinoxes.
+
+These variations in orbital parameters, driven by the gravitational influence of other planets in our solar system, are responsible for fluctuations in the average solar radiation reaching our planet. It has been hypothesized that these Milanković cycles may have played a crucial role in initiating and concluding Earth's glacial epochs.
+
+However, when considering the global scale, variations in solar irradiance are relatively limited and cannot, by themselves, account for the observed drastic temperature change of 10 degrees Celsius. Therefore, there is a need to identify an amplification mechanism capable of translating these modest solar variations into significant climatic shifts. This project focuses on the proposal put forth by Italian researchers Benzi, Parisi, Sutera, and Vulpiani in the early 1980s, introducing the concept of stochastic resonance as a potential amplification mechanism.
+
+### The Stochastic Resonance Model: Amplifying the Milanković Cycles
+
+In the work by Benzi, Parisi, Sutera, and Vulpiani, a model for the Earth's temperature evolution over time is introduced. This work is quite extensive and requires time for a detailed explanation. Therefore, in this section, I will provide commentary only on the final result, while referring the derivation to the *Explanation of the Model* section.
+
+The proposed stochastic differential equation (SDE) to describe the evolution of Earth's temperature over time is as follows:
+
+$$
+\frac{dT}{dt} = F(T) + \sigma \frac{dW}{dt}
+$$
+
+Where:
+
+- $T$ represents Earth's temperature [K].
+- $C$ represents the surface thermal capacity of the Earth [J/m² K].
+- $F(T)$ is the deterministic part of the equation that accounts for the Milanković cycles and stable and unstable temperature solutions. Stable temperatures are values to which the system converges, such as the average glacial and interglacial temperatures on Earth. The unstable solution is an unobservable solution located midway between these two extremes.
+- $W$ is a one-dimensional Wiener process that models the random variability of temperature on much shorter timescales than those considered in the deterministic model.
+- $\sigma^2$ [K^2/year] represents the variance of this noise and can be adjusted to study how different levels of variability can affect temperature behavior under various conditions.
+
+In essence, the true innovation of the proposed model is the introduction of the stochastic term in the equation.
+
+This new term allows us to explore how climatic variability, can influence the evolution of Earth's temperature. In particular, researchers have found that for a certain value of the noise variance $\sigma^2$, there is an amplification of the periodic signal in the power spectrum, leading to an amplification of the Milanković Cycles.
+
+The equation can be numerically solved in various ways, but in this project, the Forward Euler method was used, which is explained in more detail below.
+
+#### Forward Euler Discretization
+
+Here's how the forward Euler numerical integration works:
+
+- **Discretization**: The Forward Euler method approximates solutions of differential equations by breaking the continuous-time domain into discrete time steps ($\Delta t$).
+
+- **Iterative Process**: It starts from an initial condition and iteratively updates the system's state at each time step.
+
+- **Temperature Update**:
+  - To account for the stochastic temperature variability (from the Wiener process), random numbers following a normal distribution (zero mean, variance equal to $\Delta t$) are generated at each time step.
+  - The temperature change $dT$ is then found by adding the deterministic temperature change, $F(T)$, and the stochastic temperature change, $\sigma \cdot W$.
+  - The new temperature value $T(t_n)$ is then found by adding to the previuos temperature value $T(t_{n-1})$ che computed temperature change $dT$. 
+  - The results is the new temperature value for the next time step.
+
+- **Repeat**: The process repeats for the specified number of time steps, allowing us to simulate temperature evolution over time.
+
+The Forward Euler discretization method allows us to simulate temperature evolution over time, considering both deterministic changes as per the energy balance equation and stochastic fluctuations captured by random numbers from the Wiener process.
+
 
 ### Meaning of the obtained plots and examples
 
